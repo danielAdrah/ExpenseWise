@@ -1,0 +1,106 @@
+import 'package:go_router/go_router.dart';
+import 'package:trackme/features/auth/presentation/pages/sign_in_view.dart';
+import 'package:trackme/main_navbar.dart';
+import '../../../features/auth/presentation/pages/sign_up_view.dart';
+import '../../../features/expenses/presentation/pages/create_expense_view.dart';
+import '../../../features/expenses/presentation/pages/update_expense.dart';
+import '../../../features/goals/presentation/pages/create_goal.dart';
+import '../../../features/goals/presentation/pages/goal_detail.dart';
+import '../../../features/goals/presentation/pages/goals_view.dart';
+import '../../../features/on_boarding/presentation/pages/onboarding_view.dart';
+import '../../../features/settings/presentation/pages/settings_view.dart';
+import '../../../features/spendings_limits/presentation/pages/create_limit.dart';
+import '../../../features/spendings_limits/presentation/pages/edit_limit.dart';
+import '../../../features/spendings_limits/presentation/pages/limit_detail.dart';
+import '../../../features/spendings_limits/presentation/pages/spending_limit_view.dart';
+
+final GoRouter router = GoRouter(
+  debugLogDiagnostics: true,
+  initialLocation: '/',
+  routes: [
+    GoRoute(
+      path: '/',
+      name: 'onboarding',
+      builder: (context, state) => const Onboarding(),
+    ),
+    //======
+    GoRoute(
+      path: '/signUp',
+      name: 'signUp',
+      builder: (context, state) => const SignUpView(),
+    ),
+    //=====
+    GoRoute(
+      path: '/signIn',
+      name: 'signIn',
+      builder: (context, state) => const SignInView(),
+    ),
+    //======
+    GoRoute(
+      path: '/mainBar',
+      name: 'mainBar',
+      builder: (context, state) => const MainNavBar(),
+    ),
+    //======
+    GoRoute(
+      path: '/settingsView',
+      name: 'settingsView',
+      builder: (context, state) => const SettingsView(),
+    ),
+    //======
+    GoRoute(
+      path: '/createExpense',
+      name: 'createExpense',
+      builder: (context, state) => const CreateExpenseView(),
+    ),
+    //======
+    GoRoute(
+      path: '/editExpense',
+      name: 'editExpense',
+      builder: (context, state) => const EditExpense(),
+    ),
+    //======
+    GoRoute(
+      path: '/goalView',
+      name: 'goalView',
+      builder: (context, state) => const GoalView(),
+    ),
+    //======
+    GoRoute(
+      path: '/goalDetail',
+      name: 'goalDetail',
+      builder: (context, state) => const GoalDetail(),
+    ),
+    //======
+    GoRoute(
+      path: '/createGoal',
+      name: 'createGoal',
+      builder: (context, state) => const CreateGoal(),
+    ),
+    //======
+    GoRoute(
+      path: '/spendingsLimit',
+      name: 'spendingsLimit',
+      builder: (context, state) => const SpendingLimit(),
+    ),
+    //======
+    GoRoute(
+      path: '/createLimit',
+      name: 'createLimit',
+      builder: (context, state) => const CreateLimit(),
+    ),
+    //======
+    GoRoute(
+      path: '/editLimit',
+      name: 'editLimit',
+      builder: (context, state) => const EditLimit(),
+    ),
+    //======
+    GoRoute(
+      path: '/limitDetail',
+      name: 'limitDetail',
+      builder: (context, state) => const LimitDetail(),
+    ),
+    //======
+  ],
+);
