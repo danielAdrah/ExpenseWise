@@ -38,14 +38,16 @@ class _GoalDetailState extends State<GoalDetail> {
             curve: Curves.decelerate,
             child: Column(
               children: [
-                const SizedBox(height: 20),
-                CircleAvatar(
-                  radius: 80,
-                  backgroundColor: theme.primary,
-                  child: const Icon(CupertinoIcons.car_detailed,
-                      color: Colors.white, size: 90),
-                ),
-                const SizedBox(height: 25),
+                const SizedBox(height: 10),
+                // CircleAvatar(
+                //   radius: 80,
+                //   backgroundColor: theme.primary,
+                //   child: const Icon(CupertinoIcons.car_detailed,
+                //       color: Colors.white, size: 90),
+                // ),
+                Image.asset("assets/img/money_goal.png",
+                    width: 180, height: 180),
+                const SizedBox(height: 15),
                 Text("Buy new car",
                     style: TextStyle(
                       color: theme.inversePrimary,

@@ -3,7 +3,6 @@ import 'package:go_router/go_router.dart';
 
 import '../../../../core/components/main_app_bar.dart';
 
-
 import '../widgets/goal_card.dart';
 
 class GoalView extends StatefulWidget {
@@ -35,6 +34,7 @@ class _GoalViewState extends State<GoalView> {
               delegate: SliverChildBuilderDelegate(
                 (context, index) {
                   return GoalCard(
+                    img: "assets/img/money_goal.png",
                     width: width,
                     height: height,
                     goalName: "New Car",
@@ -42,7 +42,6 @@ class _GoalViewState extends State<GoalView> {
                     finalBalance: "900000",
                     date: "2/2/2024",
                     onTap: () {
-                      
                       context.pushNamed("goalDetail");
                     },
                   );
@@ -50,7 +49,6 @@ class _GoalViewState extends State<GoalView> {
                 childCount: 10,
               ),
             ),
-        
           ],
         ),
       ),

@@ -1,10 +1,10 @@
+import 'dart:ui';
 import 'package:animate_do/animate_do.dart';
 import 'package:flutter/material.dart';
 
-
 import '../../../../core/components/inline_nav_bar.dart';
-import '../../../../core/theme/app_color.dart';
-import '../../../goals/presentation/widgets/goal_item.dart';
+import '../widgets/blur_card.dart';
+import '../widgets/info_row.dart';
 
 class LimitDetail extends StatefulWidget {
   const LimitDetail({super.key});
@@ -14,119 +14,167 @@ class LimitDetail extends StatefulWidget {
 }
 
 class _LimitDetailState extends State<LimitDetail> {
+  bool showDetails = false;
+
+  final List<Map<String, String>> recentExpenses = [
+    {'name': 'McDonald\'s', 'amount': '\$12.00'},
+    {'name': 'Supermarket', 'amount': '\$75.00'},
+    {'name': 'Coffee Shop', 'amount': '\$6.00'},
+    {'name': 'Coffee Shop', 'amount': '\$6.00'},
+    {'name': 'Coffee Shop', 'amount': '\$6.00'},
+    {'name': 'Coffee Shop', 'amount': '\$6.00'},
+  ];
+
   @override
   Widget build(BuildContext context) {
-    var width = MediaQuery.of(context).size.width;
-    var media = MediaQuery.of(context).size;
     final theme = Theme.of(context).colorScheme;
     return Scaffold(
       backgroundColor: theme.surface,
       body: SafeArea(
-        child: SingleChildScrollView(
-          child: Column(
-            children: [
-              const InlineNavBar(title: "Limit Details"),
-              Stack(
-                alignment: Alignment.center,
-                children: [
-                  Padding(
-                    padding: EdgeInsets.only(
-                        right: media.width * 0.055,
-                        left: media.width * 0.055,
-                        top: media.width * 0.05),
-                    child: Container(
-                      margin: const EdgeInsets.symmetric(vertical: 20),
-                      height: 600,
-                      decoration: BoxDecoration(
-                          color: theme.primaryContainer,
-                          border:
-                              Border.all(color: TColor.border.withOpacity(0.3)),
-                          borderRadius: BorderRadius.circular(25)),
-                      child: FadeInDown(
-                        delay: const Duration(milliseconds: 150),
-                        curve: Curves.decelerate,
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            const SizedBox(height: 70),
-                            GoalItem(
-                              width: width,
-                              title: "The limit Category",
-                              value: "food",
-                            ),
-                            Padding(
-                              padding: const EdgeInsets.symmetric(vertical: 18),
-                              child: Divider(
-                                  color: TColor.gray50,
-                                  indent: 20,
-                                  endIndent: 20,
-                                  thickness: 1),
-                            ),
-                            GoalItem(
-                              width: width,
-                              title: "The limit balance",
-                              value: " \$50000",
-                            ),
-                            Padding(
-                              padding: const EdgeInsets.symmetric(vertical: 18),
-                              child: Divider(
-                                  color: TColor.gray50,
-                                  indent: 20,
-                                  endIndent: 20,
-                                  thickness: 1),
-                            ),
-                            GoalItem(
-                              width: width,
-                              title: " spending amount",
-                              value: " \$300000",
-                            ),
-                            Padding(
-                              padding: const EdgeInsets.symmetric(vertical: 18),
-                              child: Divider(
-                                  color: TColor.gray50,
-                                  indent: 20,
-                                  endIndent: 20,
-                                  thickness: 1),
-                            ),
-                            GoalItem(
-                              width: width,
-                              title: "Remaining amount",
-                              value: "\$20000",
-                            ),
-                            Padding(
-                              padding: const EdgeInsets.symmetric(vertical: 18),
-                              child: Divider(
-                                  color: TColor.gray50,
-                                  indent: 20,
-                                  endIndent: 20,
-                                  thickness: 1),
-                            ),
-                            GoalItem(
-                              width: width,
-                              title: "Start date",
-                              value: "2/2/2025",
-                            ),
-                            Padding(
-                              padding: const EdgeInsets.symmetric(vertical: 18),
-                              child: Divider(
-                                  color: TColor.gray50,
-                                  indent: 20,
-                                  endIndent: 20,
-                                  thickness: 1),
-                            ),
-                            GoalItem(
-                              width: width,
-                              title: "End date",
-                              value: "2/3/2025",
-                            ),
-                          ],
-                        ),
-                      ),
+        child: Padding(
+          padding: const EdgeInsets.only(bottom: 16, right: 16, left: 16),
+          child: SingleChildScrollView(
+            child: Column(
+              children: [
+                // const SizedBox(height: 20),
+                const InlineNavBar(title: "Limit Details"),
+                const SizedBox(height: 15),
+                BounceInDown(
+                  duration: const Duration(milliseconds: 800),
+                  child: Image.asset("assets/img/wallet.png",
+                      width: 100, height: 100),
+                  // child: Icon(Icons.account_balance_wallet_rounded,
+                  //     size: 80, color: theme.primary),
+                ),
+                const SizedBox(height: 10),
+                FadeIn(
+                  duration: const Duration(milliseconds: 1500),
+                  child: Text(
+                    "Track your budget smartly.",
+                    style: TextStyle(
+                      fontSize: 18,
+                      color: theme.inversePrimary,
+                      fontFamily: 'Poppins',
+                      fontWeight: FontWeight.w500,
                     ),
                   ),
-                ],
-              ),
-            ],
+                ),
+                const SizedBox(height: 30),
+                SlideInUp(
+                  duration: const Duration(milliseconds: 1000),
+                  child: BlurCard(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        //here we will display the category name of the selected limit
+                        Container(
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 12, vertical: 6),
+                          decoration: BoxDecoration(
+                            color: Colors.grey[800],
+                            borderRadius: BorderRadius.circular(20),
+                          ),
+                          child: const Text("Food",
+                              style: TextStyle(
+                                  color: Colors.white,
+                                  fontFamily: 'Poppins',
+                                  fontWeight: FontWeight.bold)),
+                        ),
+                        const SizedBox(height: 16),
+                        // Progress Bar
+                        ClipRRect(
+                          borderRadius: BorderRadius.circular(20),
+                          child: LinearProgressIndicator(
+                            value: 0.6,
+                            minHeight: 10,
+                            backgroundColor: Colors.grey[800],
+                            valueColor: AlwaysStoppedAnimation<Color>(
+                                theme.inverseSurface),
+                          ),
+                        ),
+                        const SizedBox(height: 6),
+                        Text("60% used",
+                            style: TextStyle(
+                                color: Colors.grey[400],
+                                fontSize: 14,
+                                fontFamily: 'Poppins')),
+                        const SizedBox(height: 20),
+                        // Values
+                        InfoRow(
+                            label: "Limit Balance",
+                            value: "\$50,000",
+                            theme: theme),
+                        InfoRow(
+                            label: "Spending Amount",
+                            value: "\$30,000",
+                            theme: theme),
+                        InfoRow(
+                            label: "Remaining",
+                            value: "\$20,000",
+                            theme: theme),
+                        const Divider(color: Colors.grey),
+                        const SizedBox(height: 10),
+                        InfoRow(
+                            label: "Start", value: "2/2/2025", theme: theme),
+                        InfoRow(label: "End", value: "2/3/2025", theme: theme),
+                        const SizedBox(height: 10),
+
+                        Center(
+                          child: TextButton.icon(
+                            onPressed: () {
+                              setState(() {
+                                showDetails = !showDetails;
+                              });
+                            },
+                            icon: Icon(
+                              showDetails
+                                  ? Icons.expand_less
+                                  : Icons.expand_more,
+                              color: theme.primary,
+                            ),
+                            label: Text(
+                              showDetails ? "Hide Details" : "More Details",
+                              style: TextStyle(
+                                  color: theme.primary, fontFamily: 'Poppins'),
+                            ),
+                          ),
+                        ),
+
+                        AnimatedCrossFade(
+                          firstChild: const SizedBox(),
+                          secondChild: Column(
+                            children: recentExpenses.map((expense) {
+                              return FadeInUp(
+                                delay: const Duration(milliseconds: 100),
+                                child: ListTile(
+                                  dense: true,
+                                  contentPadding: EdgeInsets.zero,
+                                  leading: Icon(Icons.receipt_long,
+                                      color: theme.primary, size: 20),
+                                  title: Text(expense['name']!,
+                                      style: TextStyle(
+                                          color: theme.inversePrimary,
+                                          fontFamily: 'Arvo')),
+                                  trailing: Text(expense['amount']!,
+                                      style: TextStyle(
+                                          color: theme.inversePrimary,
+                                          fontFamily: 'Poppins',
+                                          fontWeight: FontWeight.bold)),
+                                ),
+                              );
+                            }).toList(),
+                          ),
+                          crossFadeState: showDetails
+                              ? CrossFadeState.showSecond
+                              : CrossFadeState.showFirst,
+                          duration: const Duration(milliseconds: 400),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
       ),

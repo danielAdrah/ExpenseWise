@@ -21,7 +21,7 @@ ThemeData lightMode = ThemeData(
 //=========D A R K T H E M E
 ThemeData darkMode = ThemeData(
   colorScheme: ColorScheme.dark(
-    surface: Colors.black,
+    surface: const Color(0xFF121212),
     // TColor.gray80,
     primary: const Color(0XFF7E0FFF),
     inversePrimary: Colors.white.withOpacity(0.8),

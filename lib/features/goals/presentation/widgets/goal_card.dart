@@ -15,6 +15,7 @@ class GoalCard extends StatefulWidget {
     required this.finalBalance,
     required this.date,
     required this.onTap,
+    required this.img,
   });
 
   final double width;
@@ -23,6 +24,7 @@ class GoalCard extends StatefulWidget {
   final String current;
   final String finalBalance;
   final String date;
+  final String img;
   void Function()? onTap;
 
   @override
@@ -58,147 +60,152 @@ class _GoalCardState extends State<GoalCard> {
                 Row(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    CircleAvatar(
-                      backgroundColor: theme.primary,
-                      radius: 40,
-                      child: const Icon(CupertinoIcons.car_detailed,
-                          color: Colors.white, size: 40),
-                    ),
+                    Image.asset(widget.img,
+                        width: 80, height: 80),
+                    // CircleAvatar(
+                    //   backgroundColor: theme.primary,
+                    //   radius: 40,
+                    //   child: const Icon(CupertinoIcons.car_detailed,
+                    //       color: Colors.white, size: 40),
+                    // ),
                     const SizedBox(width: 20),
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Row(
-                          children: [
-                            Text(
-                              widget.goalName,
-                              style: TextStyle(
-                                color: theme.inversePrimary,
-                                fontFamily: 'Poppins',
-                                fontSize: 22,
-                                fontWeight: FontWeight.bold,
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Row(
+                            children: [
+                              Text(
+                                widget.goalName,
+                                style: TextStyle(
+                                  color: theme.inversePrimary,
+                                  fontFamily: 'Poppins',
+                                  fontSize: 22,
+                                  fontWeight: FontWeight.bold,
+                                ),
                               ),
-                            ),
-                            SizedBox(width: width / 5),
-                            IconButton(
-                              onPressed: () {
-                                showDialog(
-                                  context: context,
-                                  builder: (context) {
-                                    return AlertDialog(
-                                      backgroundColor: theme.primaryContainer,
-                                      content: Text(
-                                        "Are You Sure You Want To Delete This ?",
-                                        style: TextStyle(
-                                            color: theme.inversePrimary,
-                                            fontFamily: 'Poppins'),
-                                      ),
-                                      actions: [
-                                        TextButton(
-                                          onPressed: () {
-                                            context.pop();
-                                          },
-                                          child: Text(
-                                            "Yes",
-                                            style: TextStyle(
-                                                color: theme.inversePrimary),
-                                          ),
+                              SizedBox(width: width / 5),
+                              IconButton(
+                                onPressed: () {
+                                  showDialog(
+                                    context: context,
+                                    builder: (context) {
+                                      return AlertDialog(
+                                        backgroundColor: theme.primaryContainer,
+                                        content: Text(
+                                          "Are You Sure You Want To Delete This ?",
+                                          style: TextStyle(
+                                              color: theme.inversePrimary,
+                                              fontFamily: 'Poppins'),
                                         ),
-                                        TextButton(
-                                          onPressed: () {
-                                            context.pop();
-                                          },
-                                          child: Text("No",
+                                        actions: [
+                                          TextButton(
+                                            onPressed: () {
+                                              context.pop();
+                                            },
+                                            child: Text(
+                                              "Yes",
                                               style: TextStyle(
-                                                  color: theme.inversePrimary)),
-                                        ),
-                                      ],
-                                    );
-                                  },
-                                );
-                              },
-                              icon: Icon(
-                                CupertinoIcons.multiply,
-                                color: theme.inversePrimary,
-                                size: 30,
+                                                  color: theme.inversePrimary),
+                                            ),
+                                          ),
+                                          TextButton(
+                                            onPressed: () {
+                                              context.pop();
+                                            },
+                                            child: Text("No",
+                                                style: TextStyle(
+                                                    color:
+                                                        theme.inversePrimary)),
+                                          ),
+                                        ],
+                                      );
+                                    },
+                                  );
+                                },
+                                icon: Icon(
+                                  CupertinoIcons.multiply,
+                                  color: theme.inversePrimary,
+                                  size: 30,
+                                ),
                               ),
+                            ],
+                          ),
+                          SizedBox(height: 15),
+                          Padding(
+                            padding:
+                                EdgeInsets.only(bottom: widget.height * 0.025),
+                            child: Row(
+                              children: [
+                                Text(
+                                  "Current Balacne  : ",
+                                  style: TextStyle(
+                                    fontSize: 14,
+                                    color: theme.inversePrimary,
+                                    fontFamily: 'Arvo',
+                                  ),
+                                ),
+                                Text(
+                                  "\$${widget.current}",
+                                  style: TextStyle(
+                                    fontSize: 13,
+                                    color: theme.inversePrimary,
+                                    fontFamily: 'Arvo',
+                                  ),
+                                ),
+                              ],
                             ),
-                          ],
-                        ),
-                        SizedBox(height: 15),
-                        Padding(
-                          padding:
-                              EdgeInsets.only(bottom: widget.height * 0.025),
-                          child: Row(
-                            children: [
-                              Text(
-                                "Current Balacne  : ",
-                                style: TextStyle(
-                                  fontSize: 14,
-                                  color: theme.inversePrimary,
-                                  fontFamily: 'Arvo',
-                                ),
-                              ),
-                              Text(
-                                "\$${widget.current}",
-                                style: TextStyle(
-                                  fontSize: 13,
-                                  color: theme.inversePrimary,
-                                  fontFamily: 'Arvo',
-                                ),
-                              ),
-                            ],
                           ),
-                        ),
-                        Padding(
-                          padding:
-                              EdgeInsets.only(bottom: widget.height * 0.025),
-                          child: Row(
-                            children: [
-                              Text(
-                                "Required Balacne  : ",
-                                style: TextStyle(
-                                  fontSize: 14,
-                                  color: theme.inversePrimary,
-                                  fontFamily: 'Arvo',
+                          Padding(
+                            padding:
+                                EdgeInsets.only(bottom: widget.height * 0.025),
+                            child: Row(
+                              children: [
+                                Text(
+                                  "Required Balacne  : ",
+                                  style: TextStyle(
+                                    fontSize: 14,
+                                    color: theme.inversePrimary,
+                                    fontFamily: 'Arvo',
+                                  ),
                                 ),
-                              ),
-                              Text(
-                                "\$${widget.finalBalance}",
-                                style: TextStyle(
-                                  fontSize: 13,
-                                  color: theme.inversePrimary,
-                                  fontFamily: 'Arvo',
+                                Text(
+                                  "\$${widget.finalBalance}",
+                                  style: TextStyle(
+                                    fontSize: 13,
+                                    color: theme.inversePrimary,
+                                    fontFamily: 'Arvo',
+                                  ),
                                 ),
-                              ),
-                            ],
+                              ],
+                            ),
                           ),
-                        ),
-                        Padding(
-                          padding:
-                              EdgeInsets.only(bottom: widget.height * 0.025),
-                          child: Row(
-                            children: [
-                              Text(
-                                " Deadline : ",
-                                style: TextStyle(
-                                  fontSize: 14,
-                                  color: theme.inversePrimary,
-                                  fontFamily: 'Arvo',
+                          Padding(
+                            padding:
+                                EdgeInsets.only(bottom: widget.height * 0.025),
+                            child: Row(
+                              children: [
+                                Text(
+                                  " Deadline : ",
+                                  style: TextStyle(
+                                    fontSize: 14,
+                                    color: theme.inversePrimary,
+                                    fontFamily: 'Arvo',
+                                  ),
                                 ),
-                              ),
-                              Text(
-                                widget.date,
-                                style: TextStyle(
-                                  fontSize: 13,
-                                  color: theme.inversePrimary,
-                                  fontFamily: 'Arvo',
+                                Text(
+                                  widget.date,
+                                  style: TextStyle(
+                                    fontSize: 13,
+                                    color: theme.inversePrimary,
+                                    fontFamily: 'Arvo',
+                                  ),
                                 ),
-                              ),
-                            ],
+                              ],
+                            ),
                           ),
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
                   ],
                 ),
