@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 
-
 class MyListTile extends StatefulWidget {
   final String type;
   final String title;
@@ -34,12 +33,12 @@ class _MyListTileState extends State<MyListTile> {
               width: 1.5,
               color: Theme.of(context).colorScheme.primaryContainer,
             ),
-            boxShadow: const [
+            boxShadow: [
               BoxShadow(
-                color: Colors.grey,
-                offset: Offset(1, 1),
-                blurRadius: 0.1,
-                blurStyle: BlurStyle.outer,
+                color: Colors.black.withOpacity(0.05),
+                offset: Offset(0, 6),
+                blurRadius: 12,
+                // blurStyle: BlurStyle.outer,
               )
             ],
           ),

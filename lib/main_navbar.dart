@@ -6,6 +6,7 @@ import 'package:go_router/go_router.dart';
 import 'core/theme/app_color.dart';
 import 'features/dashboard/presentation/pages/dashboard_view.dart';
 
+import 'features/expenses/presentation/pages/upcoming_expense_view.dart';
 import 'features/goals/presentation/pages/goals_view.dart';
 
 class MainNavBar extends StatefulWidget {
@@ -38,14 +39,12 @@ class _MainNavBarState extends State<MainNavBar> {
           height: 70,
           width: 70,
           decoration: const BoxDecoration(
-          
             shape: BoxShape.circle,
             gradient: RadialGradient(
               colors: [
                 Color(0XFF8B5CF6),
                 Color(0XFF5A31F4),
               ],
-             
             ),
           ),
           child: const Center(
@@ -190,12 +189,7 @@ class _MainNavBarState extends State<MainNavBar> {
                 onTap: () {
                   setState(() {
                     selectTab = 3;
-                    currentTabView = Container(
-                      child: const Center(
-                        child: Text("4"),
-                      ),
-                    );
-                    ;
+                    currentTabView = const UpcomingExpenseView();
                   });
                 },
                 child: Column(
@@ -205,11 +199,7 @@ class _MainNavBarState extends State<MainNavBar> {
                       onTap: () {
                         setState(() {
                           selectTab = 3;
-                          currentTabView = Container(
-                            child: const Center(
-                              child: Text("4"),
-                            ),
-                          );
+                          currentTabView = const UpcomingExpenseView();
                         });
                       },
                       iconType: IconType.animatedOnTap,
@@ -288,7 +278,8 @@ _showDialoge(BuildContext context) {
                           context.pushNamed('createGoal');
                         }
                         if (index == 2) {
-                          // Get.to(() => const CreateIncome());
+                          Navigator.popUntil(context, (route) => route.isFirst);
+                          context.pushNamed('createUpcoming');
                         }
                         if (index == 3) {
                           Navigator.popUntil(context, (route) => route.isFirst);

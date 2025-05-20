@@ -109,7 +109,7 @@ class _SignInViewState extends State<SignInView> {
                             child: PrimaryButton(
                                 title: "Sign In",
                                 onPressed: () {
-                                  context.goNamed('mainBar');
+                                  context.goNamed('createAcc');
                                 }),
                           ),
                         ),
@@ -125,23 +125,13 @@ class _SignInViewState extends State<SignInView> {
                               text: TextSpan(
                                 text: "Don't have an account? ",
                                 style: Theme.of(context).textTheme.bodyMedium,
-                                // TextStyle(
-                                //     color: Theme.of(context)
-                                //         .colorScheme
-                                //         .inversePrimary,
-                                //     fontSize: 16),
+                              
                                 children: [
                                   TextSpan(
                                     text: "SignUp",
                                     style:
                                         Theme.of(context).textTheme.titleMedium,
-                                    // TextStyle(
-                                    //   color: Theme.of(context)
-                                    //       .colorScheme
-                                    //       .inversePrimary,
-                                    //   fontSize: 17,
-                                    //   fontWeight: FontWeight.bold,
-                                    // ),
+                             
                                   ),
                                 ],
                               ),

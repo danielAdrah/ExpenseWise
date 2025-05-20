@@ -73,7 +73,7 @@ class _MyPieChartState extends State<MyPieChart> {
           legendPosition: LegendPosition.right,
           legendTextStyle: TextStyle(
               color: Theme.of(context).colorScheme.inversePrimary,
-              fontFamily: 'Arvo',
+              fontFamily: 'Poppins',
               fontSize: 16),
         ),
         chartValuesOptions: ChartValuesOptions(

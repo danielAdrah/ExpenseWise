@@ -5,20 +5,22 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 import '../../../../core/components/custom_button.dart';
+import '../../../../core/components/date_text_field.dart';
 import '../../../../core/components/gradient_icon.dart';
 import '../../../../core/components/gradient_text.dart';
 import '../../../../core/components/inline_nav_bar.dart';
 import '../../../../core/components/rounded_textField.dart';
+import '../../../../core/theme/app_color.dart';
 
-class CreateExpenseView extends StatefulWidget {
-  const CreateExpenseView({super.key});
+class EditUpcomingExpense extends StatefulWidget {
+  const EditUpcomingExpense({super.key});
 
   @override
-  State<CreateExpenseView> createState() => _CreateExpenseViewState();
+  State<EditUpcomingExpense> createState() => _EditUpcomingExpenseState();
 }
 
-class _CreateExpenseViewState extends State<CreateExpenseView> {
-  DateTime date = DateTime.now();
+class _EditUpcomingExpenseState extends State<EditUpcomingExpense> {
+  final TextEditingController date = TextEditingController();
   String? selectedCategory;
   String? selectedSubcategory;
   bool showSubcategories = false;
@@ -39,7 +41,10 @@ class _CreateExpenseViewState extends State<CreateExpenseView> {
     "Utilities": [const Color(0xFF36D1DC), const Color(0xFF5B86E5)],
     "Housing": [const Color(0xFFFF416C), const Color(0xFFFF4B2B)],
     "Shopping": const [Color(0xFFFF5FA2), Color(0xFF8E44AD)],
-    "HealthCare": const [Color.fromARGB(255, 104, 68, 223), Color.fromARGB(255, 95, 72, 197)],
+    "HealthCare": const [
+      Color.fromARGB(255, 104, 68, 223),
+      Color.fromARGB(255, 95, 72, 197)
+    ],
     "Education": const [Color(0xFF43C6AC), Color.fromARGB(255, 82, 76, 180)],
   };
 
@@ -83,7 +88,7 @@ class _CreateExpenseViewState extends State<CreateExpenseView> {
     "Courses": CupertinoIcons.device_laptop,
     "Books&Supplies": CupertinoIcons.book_circle_fill,
   };
-  
+
   final Map<String, List<Color>> subcategoryGradients = {
     "Car": const [Color(0xFFef4444), Color(0xFFfb923c)],
     "Train": [const Color(0xFF6190E8), const Color(0xFFA7BFE8)],
@@ -101,17 +106,22 @@ class _CreateExpenseViewState extends State<CreateExpenseView> {
     "Rent": const [Color(0xFFFFC107), Color(0xFFFF8F00)],
     "House Fixing": const [Color(0xFF00BCD4), Color(0xFF3F51B5)],
     "Furniture": const [Color(0xFF757F9A), Color(0xFFD7DDE8)],
-    "Electronics": const [Color.fromARGB(255, 8, 124, 196), Color.fromARGB(255, 82, 83, 190)],
+    "Electronics": const [
+      Color.fromARGB(255, 8, 124, 196),
+      Color.fromARGB(255, 82, 83, 190)
+    ],
     "Clothing": const [Color(0xFFBBD2C5), Color(0xFF536976)],
     "Home Goods": const [Color(0xFFDA4453), Color(0xFF89216B)],
     "Therapy": const [Color(0xFF00B09B), Color(0xFF96C93D)],
     "Medicin": const [Color(0xFFFF6B6B), Color(0xFFFFA17F)],
-    "Docotr Visits": const [Color(0xFF43C6AC), Color.fromARGB(255, 45, 40, 134)],
+    "Docotr Visits": const [
+      Color(0xFF43C6AC),
+      Color.fromARGB(255, 45, 40, 134)
+    ],
     "Tution Fees": const [Color(0xFFBBD2C5), Color(0xFF536976)],
     "Courses": const [Color(0xFFC04848), Color.fromARGB(255, 136, 10, 136)],
     "Books&Supplies": const [Color(0xFFFFC107), Color(0xFFFF8F00)],
   };
-
 
   void _onCategorySelected(String category) {
     setState(() {
@@ -126,42 +136,6 @@ class _CreateExpenseViewState extends State<CreateExpenseView> {
       selectedSubcategory = subcategory;
     });
   }
-
-  // Future<void> _submitExpense() async {
-  //   final name = nameController.text.trim();
-  //   final quantity = int.tryParse(quantityController.text.trim()) ?? 0;
-  //   final price = double.tryParse(priceController.text.trim()) ?? 0.0;
-
-  //   if (selectedCategory == null  selectedSubcategory == null  name.isEmpty) {
-  //     ScaffoldMessenger.of(context).showSnackBar(
-  //       const SnackBar(content: Text("Please fill all required fields")),
-  //     );
-  //     return;
-  //   }
-
-  //   await FirebaseFirestore.instance.collection('expenses').add({
-  //     'category': selectedCategory,
-  //     'subcategory': selectedSubcategory,
-  //     'name': name,
-  //     'quantity': quantity,
-  //     'price': price,
-  //     'timestamp': FieldValue.serverTimestamp(),
-  //   });
-
-  //   ScaffoldMessenger.of(context).showSnackBar(
-  //     const SnackBar(content: Text("Expense saved!")),
-  //   );
-
-  //   // Reset form
-  //   setState(() {
-  //     selectedCategory = null;
-  //     selectedSubcategory = null;
-  //     showSubcategories = false;
-  //     nameController.clear();
-  //     quantityController.clear();
-  //     priceController.clear();
-  //   });
-  // }
 
   @override
   Widget build(BuildContext context) {
@@ -180,7 +154,7 @@ class _CreateExpenseViewState extends State<CreateExpenseView> {
           child: Column(
             children: [
               const SizedBox(height: 20),
-              const InlineNavBar(title: "Create Expense"),
+              const InlineNavBar(title: "Edit Upcoming"),
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 20),
                 child: Column(
@@ -191,7 +165,7 @@ class _CreateExpenseViewState extends State<CreateExpenseView> {
                       duration: const Duration(milliseconds: 500),
                       curve: Curves.decelerate,
                       child: Text(
-                        "Selcet Category",
+                        "Selcet New Category",
                         style: TextStyle(
                           color: theme.inversePrimary,
                           fontFamily: 'Poppins',
@@ -297,6 +271,19 @@ class _CreateExpenseViewState extends State<CreateExpenseView> {
                           onIconPressed: () {},
                           preIcon: Icons.attach_money_outlined),
                     ),
+                    const SizedBox(height: 25),
+                    FadeInDown(
+                      duration: const Duration(milliseconds: 1000),
+                      curve: Curves.decelerate,
+                      child: DateTextField(
+                        onTap: showDate,
+                        title: "Expense Date",
+                        controller: date,
+                        keyboardType: TextInputType.number,
+                        icon: Icons.date_range_rounded,
+                        onIconPressed: () {},
+                      ),
+                    ),
                     const SizedBox(height: 60),
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 40),
@@ -313,6 +300,20 @@ class _CreateExpenseViewState extends State<CreateExpenseView> {
         ),
       ),
     );
+  }
+
+  Future<void> showDate() async {
+    DateTime? picked = await showDatePicker(
+      context: context,
+      initialDate: DateTime.now(),
+      firstDate: DateTime(2000),
+      lastDate: DateTime(3000),
+      barrierColor: TColor.gray30,
+    );
+    if (picked != null) {
+      // controller.startDate.text = picked.toString().substring(0, 10);
+      date.text = picked.toString().substring(0, 10);
+    }
   }
 
   //========GRADIENT CHIP

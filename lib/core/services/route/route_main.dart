@@ -1,14 +1,19 @@
 import 'package:go_router/go_router.dart';
 import 'package:trackme/features/auth/presentation/pages/sign_in_view.dart';
 import 'package:trackme/main_navbar.dart';
+import '../../../features/auth/presentation/pages/create_account.dart';
 import '../../../features/auth/presentation/pages/sign_up_view.dart';
 import '../../../features/expenses/presentation/pages/create_expense_view.dart';
+import '../../../features/expenses/presentation/pages/create_upcoming.dart';
 import '../../../features/expenses/presentation/pages/update_expense.dart';
+import '../../../features/expenses/presentation/pages/update_upcoming.dart';
 import '../../../features/goals/presentation/pages/create_goal.dart';
 import '../../../features/goals/presentation/pages/goal_detail.dart';
 import '../../../features/goals/presentation/pages/goals_view.dart';
 import '../../../features/on_boarding/presentation/pages/onboarding_view.dart';
+import '../../../features/settings/presentation/pages/account_tab.dart';
 import '../../../features/settings/presentation/pages/settings_view.dart';
+import '../../../features/settings/presentation/pages/summary_tab.dart';
 import '../../../features/spendings_limits/presentation/pages/create_limit.dart';
 import '../../../features/spendings_limits/presentation/pages/edit_limit.dart';
 import '../../../features/spendings_limits/presentation/pages/limit_detail.dart';
@@ -37,6 +42,12 @@ final GoRouter router = GoRouter(
     ),
     //======
     GoRoute(
+      path: '/createAcc',
+      name: 'createAcc',
+      builder: (context, state) => const CreatAccount(),
+    ),
+    //======
+    GoRoute(
       path: '/mainBar',
       name: 'mainBar',
       builder: (context, state) => const MainNavBar(),
@@ -55,9 +66,21 @@ final GoRouter router = GoRouter(
     ),
     //======
     GoRoute(
+      path: '/createUpcoming',
+      name: 'createUpcoming',
+      builder: (context, state) => const CreateUpcomingExpense(),
+    ),
+    //======
+    GoRoute(
       path: '/editExpense',
       name: 'editExpense',
       builder: (context, state) => const EditExpense(),
+    ),
+    //======
+    GoRoute(
+      path: '/editUpcoming',
+      name: 'editUpcoming',
+      builder: (context, state) => const EditUpcomingExpense(),
     ),
     //======
     GoRoute(
@@ -100,6 +123,18 @@ final GoRouter router = GoRouter(
       path: '/limitDetail',
       name: 'limitDetail',
       builder: (context, state) => const LimitDetail(),
+    ),
+    //======
+    GoRoute(
+      path: '/settingsView/accView',
+      name: 'accView',
+      builder: (context, state) => const AccountsView(),
+    ),
+    //======
+    GoRoute(
+      path: '/settingsView/summaryTab',
+      name: 'summaryTab',
+      builder: (context, state) => const SummaryView(),
     ),
     //======
   ],

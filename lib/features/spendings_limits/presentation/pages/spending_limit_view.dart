@@ -5,7 +5,7 @@ import 'package:animate_do/animate_do.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:go_router/go_router.dart';
-import '../widgets/limit_tile.dart';
+import '../widgets/limit_card.dart';
 
 class SpendingLimit extends StatefulWidget {
   const SpendingLimit({super.key});
@@ -84,9 +84,10 @@ class _SpendingLimitState extends State<SpendingLimit> {
       body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.only(top: 10),
-          child: ListView.builder(
+          child: ListView.separated(
+            separatorBuilder: (_, __) => const SizedBox(height: 16),
             physics: const BouncingScrollPhysics(),
-            itemCount: 5,
+            itemCount: 15,
             itemBuilder: ((context, index) {
               return Slidable(
                 endActionPane:
@@ -151,12 +152,11 @@ class _SpendingLimitState extends State<SpendingLimit> {
                     onTap: () {
                       context.pushNamed('limitDetail');
                     },
-                    child: const LimitTile(
-                      limitName: "Food",
-                      totalAmount: "100000",
-                      spendAmount: "60000",
-                      remainedAmount: "40000",
-                      progressValue: 35 * 100,
+                    child: const SpendingLimitCard(
+                      limitCategory: 'shopping',
+                      totalAmount: 100000,
+                      remainedAmount: 40000,
+                      spendAmount: 60000,
                     ),
                   ),
                 ),

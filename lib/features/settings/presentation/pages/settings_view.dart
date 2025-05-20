@@ -3,6 +3,7 @@ import 'package:animate_do/animate_do.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 import '../../../../core/components/nav_bar.dart';
 import '../../../../core/components/settings_value.dart';
 import '../../../../core/theme/app_color.dart';
@@ -119,10 +120,10 @@ class _SettingsViewState extends State<SettingsView>
                                               CrossAxisAlignment.start,
                                           children: [
                                             profileItem(Icons.person, 'Name',
-                                                'John Doe', theme),
+                                                'Daniel Adrah', theme),
                                             const SizedBox(height: 16),
                                             profileItem(Icons.email, 'E-mail',
-                                                'john@example.com', theme),
+                                                'dado@gmail.com', theme),
                                             const SizedBox(height: 16),
                                             profileItem(Icons.lock, ' Password',
                                                 'Encrypted', theme),
@@ -237,7 +238,6 @@ class _SettingsViewState extends State<SettingsView>
                                   ),
                                   child: Column(
                                     children: [
-                                    
                                       SwitchListTile(
                                         value: isDarkMode,
                                         onChanged: (val) {
@@ -260,7 +260,9 @@ class _SettingsViewState extends State<SettingsView>
                                           Icons.arrow_forward_ios,
                                           color: theme.inversePrimary,
                                         ),
-                                        onTap2: () {},
+                                        onTap2: () {
+                                          context.pushNamed('summaryTab');
+                                        },
                                       ),
                                       const SizedBox(height: 5),
                                       SettingsValue(
@@ -270,7 +272,9 @@ class _SettingsViewState extends State<SettingsView>
                                           Icons.arrow_forward_ios,
                                           color: theme.inversePrimary,
                                         ),
-                                        onTap2: () {},
+                                        onTap2: () {
+                                          context.pushNamed('accView');
+                                        },
                                       ),
                                     ],
                                   ),
@@ -324,7 +328,46 @@ class _SettingsViewState extends State<SettingsView>
                                           Icons.arrow_forward_ios,
                                           color: theme.inversePrimary,
                                         ),
-                                        onTap2: () {},
+                                        onTap2: () {
+                                          showDialog(
+                                            context: context,
+                                            builder: (context) {
+                                              return AlertDialog(
+                                                backgroundColor:
+                                                    theme.primaryContainer,
+                                                content: Text(
+                                                  "Are You Sure You Want To Delete This ?",
+                                                  style: TextStyle(
+                                                      color:
+                                                          theme.inversePrimary,
+                                                      fontFamily: 'Poppins'),
+                                                ),
+                                                actions: [
+                                                  TextButton(
+                                                    onPressed: () {
+                                                      context.pop();
+                                                    },
+                                                    child: Text(
+                                                      "Yes",
+                                                      style: TextStyle(
+                                                          color: theme
+                                                              .inversePrimary),
+                                                    ),
+                                                  ),
+                                                  TextButton(
+                                                    onPressed: () {
+                                                      context.pop();
+                                                    },
+                                                    child: Text("No",
+                                                        style: TextStyle(
+                                                            color: theme
+                                                                .inversePrimary)),
+                                                  ),
+                                                ],
+                                              );
+                                            },
+                                          );
+                                        },
                                       ),
                                     ],
                                   ),
@@ -367,11 +410,11 @@ class _SettingsViewState extends State<SettingsView>
               leading: Icon(icon, color: theme.inversePrimary),
               title: Text(label,
                   style: TextStyle(
-                      color: theme.inversePrimary, fontFamily: 'Arvo')),
+                      color: theme.inversePrimary, fontFamily: 'Poppins')),
               trailing: Text(value,
                   style: TextStyle(
                       color: theme.inversePrimary,
-                      fontFamily: 'Arvo',
+                      fontFamily: 'Poppins',
                       fontSize: 13)),
             ),
     );
