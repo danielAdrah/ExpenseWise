@@ -5,7 +5,6 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:trackme/core/components/primary_button.dart';
 
-import '../../../../core/theme/app_text.dart';
 import '../widgets/auth_text_field.dart';
 
 class SignUpView extends StatefulWidget {
@@ -83,15 +82,21 @@ class _SignUpViewState extends State<SignUpView> {
                             duration: Duration(milliseconds: 800),
                             child: Text(
                               "Get Started",
-                              style: AppText.headlineLarge,
-                              // AppText.headlineLarge,
+                              style: TextStyle(
+                                color: Theme.of(context)
+                                    .colorScheme
+                                    .inversePrimary,
+                                fontFamily: "Arvo",
+                                fontWeight: FontWeight.w800,
+                                fontSize: 25,
+                              ),
                             ),
                           ),
                         ),
                         const SizedBox(height: 40),
                         FadeInDown(
                           duration: Duration(milliseconds: 800),
-                          // curve: Curves.easeInOut,
+                          
                           child: AuthTextField(
                             title: "Name",
                             controller: nameCont,

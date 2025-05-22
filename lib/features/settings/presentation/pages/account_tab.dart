@@ -1,10 +1,7 @@
-// ignore_for_file: prefer_const_literals_to_create_immutables, prefer_const_constructors, unnecessary_string_interpolations
-
 import 'package:animate_do/animate_do.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:go_router/go_router.dart';
-
 
 import '../widgets/account_tile.dart';
 
@@ -27,7 +24,7 @@ class _AccountsViewState extends State<AccountsView> {
         centerTitle: true,
         automaticallyImplyLeading: false,
         title: FadeInDown(
-          delay: Duration(milliseconds: 200),
+          delay: const Duration(milliseconds: 200),
           curve: Curves.decelerate,
           child: Text('My Accounts',
               style: TextStyle(
@@ -36,7 +33,7 @@ class _AccountsViewState extends State<AccountsView> {
                   fontFamily: 'Arvo')),
         ),
         leading: FadeInLeft(
-          duration: Duration(milliseconds: 200),
+          duration: const Duration(milliseconds: 200),
           curve: Curves.decelerate,
           child: IconButton(
               onPressed: () {
@@ -49,17 +46,39 @@ class _AccountsViewState extends State<AccountsView> {
         ),
         actions: [
           FadeInRight(
-              duration: Duration(milliseconds: 200),
+              duration: const Duration(milliseconds: 200),
               curve: Curves.decelerate,
               child:
                   Image.asset("assets/img/logo1.png", width: 55, height: 55)),
         ],
       ),
+      floatingActionButton: FloatingActionButton(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(25)),
+        onPressed: () {
+          context.pushNamed('createSecAccount');
+        },
+        child: Container(
+          height: 70,
+          width: 70,
+          decoration: const BoxDecoration(
+            shape: BoxShape.circle,
+            gradient: RadialGradient(
+              colors: [
+                Color(0XFF8B5CF6),
+                Color(0XFF5A31F4),
+              ],
+            ),
+          ),
+          child: const Center(
+            child: Icon(Icons.add, color: Colors.white, size: 35),
+          ),
+        ),
+      ),
       body: SafeArea(
           child: Padding(
-        padding: EdgeInsets.only(left: 15, right: 15, top: 20),
+        padding: const EdgeInsets.only(left: 15, right: 15, top: 20),
         child: ListView.builder(
-            itemCount: 5,
+            itemCount: 2,
             itemBuilder: (context, index) {
               return Slidable(
                 endActionPane:
@@ -99,7 +118,6 @@ class _AccountsViewState extends State<AccountsView> {
                           );
                         },
                       );
-                   
                     },
                     icon: Icons.delete,
                     backgroundColor: Colors.red,
@@ -108,9 +126,9 @@ class _AccountsViewState extends State<AccountsView> {
                   ),
                 ]),
                 child: FadeInUp(
-                  delay: Duration(milliseconds: 200),
+                  delay: const Duration(milliseconds: 200),
                   curve: Curves.decelerate,
-                  child: AccountTile(
+                  child: const AccountTile(
                     icon: Icons.account_box,
                     currency: "Syrian Bound",
                     title: "Daily Account",

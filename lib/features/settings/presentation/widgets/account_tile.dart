@@ -19,7 +19,6 @@ class AccountTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context).colorScheme;
     return InkWell(
       onTap: () {},
       child: Padding(
@@ -27,36 +26,47 @@ class AccountTile extends StatelessWidget {
         child: Container(
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(15),
-            border: Border.all(
-              width: 1.5,
-              color: theme.inversePrimary,
-            ),
+            gradient: LinearGradient(colors: const [
+              Color(0XFF5A31F4),
+              Color(0XFF8B5CF6),
+            ]),
           ),
-          child: ListTile(
-            contentPadding: EdgeInsets.all(10),
-            leading: Icon(
-              icon,
-              color: theme.inversePrimary,
-              size: 30,
+          child: Container(
+            margin: EdgeInsets.all(2),
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(15),
+              // color: theme.surface,
+              // border: Border.all(
+              //   width: 1.5,
+              //   color: theme.inversePrimary,
+              // ),
             ),
-            title: Text(
-              title,
-              style: TextStyle(
-                  fontWeight: FontWeight.bold,
-                  color: theme.inversePrimary,
-                  fontFamily: 'Poppins'),
+            child: ListTile(
+              contentPadding: EdgeInsets.all(10),
+              leading: Icon(
+                icon,
+                color: Colors.white,
+                size: 30,
+              ),
+              title: Text(
+                title,
+                style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white,
+                    fontFamily: 'Poppins'),
+              ),
+              trailing: Text('\$$budget',
+                  style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 12,
+                      fontFamily: 'Poppins')),
+              subtitle: Text(currency,
+                  style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 10,
+                      fontFamily: 'Poppins')),
+              textColor: TColor.white,
             ),
-            trailing: Text(budget,
-                style: TextStyle(
-                    color: theme.inversePrimary,
-                    fontSize: 12,
-                    fontFamily: 'Poppins')),
-            subtitle: Text(currency,
-                style: TextStyle(
-                    color: theme.inversePrimary,
-                    fontSize: 10,
-                    fontFamily: 'Poppins')),
-            textColor: TColor.white,
           ),
         ),
       ),

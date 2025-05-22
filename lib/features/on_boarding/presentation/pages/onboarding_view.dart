@@ -4,7 +4,8 @@ import 'package:go_router/go_router.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
-import '../../../../core/theme/app_text.dart';
+import '../../../../core/components/custom_button.dart';
+
 import '../widgets/on_boarding_design.dart';
 
 class Onboarding extends StatefulWidget {
@@ -58,8 +59,12 @@ class _OnboardingState extends State<Onboarding> {
                     delay: const Duration(milliseconds: 600),
                     child: Text(
                       pages[index].title!,
-                      // style: AppText.headLineSmall,
-                      style: AppText.headlineMedium,
+                      style: TextStyle(
+                        color: Theme.of(context).colorScheme.inversePrimary,
+                        fontFamily: "Arvo",
+                        fontWeight: FontWeight.w700,
+                        fontSize: 19,
+                      ),
                     ),
                   ),
                   const SizedBox(
@@ -72,8 +77,12 @@ class _OnboardingState extends State<Onboarding> {
                       child: Text(
                         pages[index].body!,
                         textAlign: TextAlign.center,
-                        style: AppText.bodySmall,
-                        //  AppText.bodyMedium,
+                        style: TextStyle(
+                          fontFamily: "Poppins",
+                          color: Theme.of(context).colorScheme.inversePrimary,
+                          fontWeight: FontWeight.w300,
+                          fontSize: 13,
+                        ),
                       ),
                     ),
                   ),
@@ -89,17 +98,11 @@ class _OnboardingState extends State<Onboarding> {
                     child: SizedBox(
                       width: 240,
                       height: 40,
-                      child: ElevatedButton(
-                        style: ButtonStyle(
-                            backgroundColor: MaterialStatePropertyAll(
-                                Theme.of(context).colorScheme.primary)),
+                      child: CustomButton(
+                        title: "Get Started",
                         onPressed: () {
                           context.goNamed('signUp');
                         },
-                        child: const Text(
-                          "GetStarted",
-                          style: TextStyle(color: Colors.white, fontSize: 15),
-                        ),
                       ),
                     ),
                   )

@@ -12,8 +12,11 @@ import '../../../features/goals/presentation/pages/goal_detail.dart';
 import '../../../features/goals/presentation/pages/goals_view.dart';
 import '../../../features/on_boarding/presentation/pages/onboarding_view.dart';
 import '../../../features/settings/presentation/pages/account_tab.dart';
+import '../../../features/settings/presentation/pages/create_income.dart';
+import '../../../features/settings/presentation/pages/create_sec_account.dart';
+import '../../../features/settings/presentation/pages/income_tab.dart';
 import '../../../features/settings/presentation/pages/settings_view.dart';
-import '../../../features/settings/presentation/pages/summary_tab.dart';
+import '../../../features/settings/presentation/pages/statistics.dart';
 import '../../../features/spendings_limits/presentation/pages/create_limit.dart';
 import '../../../features/spendings_limits/presentation/pages/edit_limit.dart';
 import '../../../features/spendings_limits/presentation/pages/limit_detail.dart';
@@ -132,9 +135,27 @@ final GoRouter router = GoRouter(
     ),
     //======
     GoRoute(
-      path: '/settingsView/summaryTab',
-      name: 'summaryTab',
-      builder: (context, state) => const SummaryView(),
+      path: '/settingsView/statisticsTab',
+      name: 'statisticsTab',
+      builder: (context, state) => const StatisticsView(),
+    ),
+    //======
+    GoRoute(
+      path: '/settingsView/incomeView',
+      name: 'incomeView',
+      builder: (context, state) => const IncomeTabView(),
+    ),
+    //======
+    GoRoute(
+      path: '/settingsView/createIncome',
+      name: 'createIncome',
+      builder: (context, state) => const CreateIncome(),
+    ),
+    //======
+    GoRoute(
+      path: '/settingsView/createSecAccount',
+      name: 'createSecAccount',
+      builder: (context, state) => const CreateSecAccount(),
     ),
     //======
   ],

@@ -22,7 +22,15 @@ class CreateGoal extends StatefulWidget {
 }
 
 class _CreateGoalState extends State<CreateGoal> {
-  List<String> categories = ["Food", "Transport", "Utilities"];
+  List<String> categories = [
+    "Transportation",
+    "Food",
+    "Utilities",
+    "Housing",
+    "Shopping",
+    "HealthCare",
+    "Education",
+  ];
 
   final TextEditingController date = TextEditingController();
   void clearField() {}
@@ -45,53 +53,13 @@ class _CreateGoalState extends State<CreateGoal> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const SizedBox(height: 40),
-                  FadeInDown(
-                    curve: Curves.decelerate,
-                    duration: const Duration(milliseconds: 600),
-                    child: Container(
-                      decoration: BoxDecoration(
-                          color: theme.tertiary,
-                          borderRadius: BorderRadius.circular(35)),
-                      width: width * 0.9,
-                      height: 60,
-                      child: Center(
-                        child: DropdownButton<String>(
-                          borderRadius: BorderRadius.circular(25),
-
-                          hint: Text("Select a category",
-                              style: TextStyle(color: theme.inversePrimary)),
-
-                          items: categories.map((category) {
-                            return DropdownMenuItem<String>(
-                              value: category,
-                              child: Row(
-                                children: [
-                                  Icon(Icons.widgets_outlined,
-                                      color: theme.inversePrimary),
-                                  const SizedBox(width: 8),
-                                  Text(
-                                    category,
-                                    style:
-                                        TextStyle(color: theme.inversePrimary),
-                                  ),
-                                ],
-                              ), // Display the category name
-                            );
-                          }).toList(),
-                          isExpanded: true,
-                          padding: EdgeInsets.symmetric(horizontal: 12),
-                          underline: Text(
-                            "",
-                            style: TextStyle(color: TColor.white),
-                          ),
-                          onChanged: (String? val) {
-                            if (val != null) {
-                              // controller.fetchSubcategory();
-                            }
-                          }, //o Implement your logic here when a selection changes
-                        ),
-                      ),
+                  const SizedBox(height: 25),
+                  Center(
+                    child: FadeInDown(
+                      duration: const Duration(milliseconds: 800),
+                      curve: Curves.decelerate,
+                      child: Image.asset("assets/img/money_goal.png",
+                          width: 180, height: 180),
                     ),
                   ),
                   const SizedBox(height: 25),
@@ -109,6 +77,7 @@ class _CreateGoalState extends State<CreateGoal> {
                     curve: Curves.decelerate,
                     child: RoundedTextField(
                         title: "Goal Budget",
+                        keyboardType: TextInputType.number,
                         onIconPressed: () {},
                         preIcon: Icons.attach_money_outlined),
                   ),

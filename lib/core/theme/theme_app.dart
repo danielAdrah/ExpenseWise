@@ -12,9 +12,10 @@ ThemeData lightMode = ThemeData(
     primaryContainer: Colors.white,
     background: Color(0XFFFAFAFA),
     tertiary: Color(0XFFf2f2fd),
-    onSecondaryContainer:  Color(0xFFE8E5FF),
+    onSecondaryContainer: Color(0xFFE8E5FF),
     inverseSurface: Color(0XFF5f69ca),
     onInverseSurface: Color(0xFFD8D0FF),
+    onPrimary: Colors.black,
   ),
 );
 
@@ -33,6 +34,7 @@ ThemeData darkMode = ThemeData(
     onSecondaryContainer: Colors.grey[800]?.withOpacity(0.5),
     // TColor.gray60,
     inverseSurface: const Color.fromARGB(255, 100, 38, 172),
-    onInverseSurface : Color(0XFF3A3A4D),
+    onInverseSurface: Color(0XFF3A3A4D),
+    onPrimary: Colors.white,
   ),
 );

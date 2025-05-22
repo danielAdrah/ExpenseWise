@@ -24,7 +24,7 @@ class _CreateExpenseViewState extends State<CreateExpenseView> {
   bool showSubcategories = false;
 
   final Map<String, List<String>> categoryData = {
-    "transportation": ["Car", "Train", "Plane"],
+    "Transportation": ["Car", "Train", "Plane"],
     "Food": ["Groceries", "Restaurant", "Snacks", "Drinks"],
     "Utilities": ["Electricity", "Water", "Internet"],
     "Housing": ["Rent", "House Fixing", "Furniture"],
@@ -34,17 +34,20 @@ class _CreateExpenseViewState extends State<CreateExpenseView> {
   };
 
   final Map<String, List<Color>> categoryGradients = {
-    "transportation": const [Color(0xFF17a2b8), Color(0xFF0d9488)],
+    "Transportation": const [Color(0xFF17a2b8), Color(0xFF0d9488)],
     "Food": [const Color(0xFFFF416C), const Color(0xFFFF4B2B)],
     "Utilities": [const Color(0xFF36D1DC), const Color(0xFF5B86E5)],
     "Housing": [const Color(0xFFFF416C), const Color(0xFFFF4B2B)],
     "Shopping": const [Color(0xFFFF5FA2), Color(0xFF8E44AD)],
-    "HealthCare": const [Color.fromARGB(255, 104, 68, 223), Color.fromARGB(255, 95, 72, 197)],
+    "HealthCare": const [
+      Color.fromARGB(255, 104, 68, 223),
+      Color.fromARGB(255, 95, 72, 197)
+    ],
     "Education": const [Color(0xFF43C6AC), Color.fromARGB(255, 82, 76, 180)],
   };
 
   final Map<String, IconData> categoryIcon = {
-    "transportation": CupertinoIcons.car_detailed,
+    "Transportation": CupertinoIcons.car_detailed,
     "Food": CupertinoIcons.cart,
     "Utilities": CupertinoIcons.wrench,
     "Housing": CupertinoIcons.house,
@@ -83,7 +86,7 @@ class _CreateExpenseViewState extends State<CreateExpenseView> {
     "Courses": CupertinoIcons.device_laptop,
     "Books&Supplies": CupertinoIcons.book_circle_fill,
   };
-  
+
   final Map<String, List<Color>> subcategoryGradients = {
     "Car": const [Color(0xFFef4444), Color(0xFFfb923c)],
     "Train": [const Color(0xFF6190E8), const Color(0xFFA7BFE8)],
@@ -101,17 +104,22 @@ class _CreateExpenseViewState extends State<CreateExpenseView> {
     "Rent": const [Color(0xFFFFC107), Color(0xFFFF8F00)],
     "House Fixing": const [Color(0xFF00BCD4), Color(0xFF3F51B5)],
     "Furniture": const [Color(0xFF757F9A), Color(0xFFD7DDE8)],
-    "Electronics": const [Color.fromARGB(255, 8, 124, 196), Color.fromARGB(255, 82, 83, 190)],
+    "Electronics": const [
+      Color.fromARGB(255, 8, 124, 196),
+      Color.fromARGB(255, 82, 83, 190)
+    ],
     "Clothing": const [Color(0xFFBBD2C5), Color(0xFF536976)],
     "Home Goods": const [Color(0xFFDA4453), Color(0xFF89216B)],
     "Therapy": const [Color(0xFF00B09B), Color(0xFF96C93D)],
     "Medicin": const [Color(0xFFFF6B6B), Color(0xFFFFA17F)],
-    "Docotr Visits": const [Color(0xFF43C6AC), Color.fromARGB(255, 45, 40, 134)],
+    "Docotr Visits": const [
+      Color(0xFF43C6AC),
+      Color.fromARGB(255, 45, 40, 134)
+    ],
     "Tution Fees": const [Color(0xFFBBD2C5), Color(0xFF536976)],
     "Courses": const [Color(0xFFC04848), Color.fromARGB(255, 136, 10, 136)],
     "Books&Supplies": const [Color(0xFFFFC107), Color(0xFFFF8F00)],
   };
-
 
   void _onCategorySelected(String category) {
     setState(() {
@@ -285,6 +293,7 @@ class _CreateExpenseViewState extends State<CreateExpenseView> {
                       curve: Curves.decelerate,
                       child: RoundedTextField(
                           title: "Expense Quantity",
+                          keyboardType: TextInputType.number,
                           onIconPressed: () {},
                           preIcon: CupertinoIcons.bag_fill_badge_plus),
                     ),
@@ -294,6 +303,7 @@ class _CreateExpenseViewState extends State<CreateExpenseView> {
                       curve: Curves.decelerate,
                       child: RoundedTextField(
                           title: "Expense Price",
+                          keyboardType: TextInputType.number,
                           onIconPressed: () {},
                           preIcon: Icons.attach_money_outlined),
                     ),

@@ -1,4 +1,3 @@
-// ignore_for_file: prefer_const_constructors, unused_local_variable
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -18,6 +17,8 @@ class _CreatAccountState extends State<CreatAccount> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context).colorScheme;
+    final double height = MediaQuery.of(context).size.height;
+    final double width = MediaQuery.of(context).size.width;
     return Scaffold(
       backgroundColor: theme.surface,
       body: SafeArea(
@@ -25,12 +26,12 @@ class _CreatAccountState extends State<CreatAccount> {
         padding: const EdgeInsets.symmetric(vertical: 15, horizontal: 20),
         child: SingleChildScrollView(
           child: FadeInUp(
-            delay: Duration(milliseconds: 500),
+            delay: const Duration(milliseconds: 500),
             curve: Curves.decelerate,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                SizedBox(height: 50),
+                const SizedBox(height: 50),
                 Text(
                   "What is in your mind for  this account?!",
                   style: TextStyle(
@@ -39,7 +40,14 @@ class _CreatAccountState extends State<CreatAccount> {
                       fontFamily: 'Poppins',
                       fontWeight: FontWeight.bold),
                 ),
-                SizedBox(height: 40),
+                const SizedBox(height: 20),
+                Image.asset(
+                  "assets/img/analytics.png",
+                  width: width * 0.5,
+                  height: height * 0.22,
+                  fit: BoxFit.fill,
+                ),
+                const SizedBox(height: 20),
                 AuthTextField(
                   title: "Account Name",
                   keyboardType: TextInputType.text,
@@ -64,7 +72,7 @@ class _CreatAccountState extends State<CreatAccount> {
                   onIconPressed: () {},
                 ),
                 const SizedBox(height: 20),
-                SizedBox(height: 80),
+                const SizedBox(height: 80),
                 CustomButton(
                     title: "Confirm",
                     onPressed: () {

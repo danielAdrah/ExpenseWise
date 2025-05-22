@@ -5,7 +5,6 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:trackme/core/components/primary_button.dart';
 
-import '../../../../core/theme/app_text.dart';
 import '../widgets/auth_text_field.dart';
 
 class SignInView extends StatefulWidget {
@@ -63,7 +62,14 @@ class _SignInViewState extends State<SignInView> {
                             duration: Duration(milliseconds: 750),
                             child: Text(
                               "Welcome Back !!",
-                              style: AppText.headlineLarge,
+                              style: TextStyle(
+                                color: Theme.of(context)
+                                    .colorScheme
+                                    .inversePrimary,
+                                fontFamily: "Arvo",
+                                fontWeight: FontWeight.w800,
+                                fontSize: 25,
+                              ),
                             ),
                           ),
                         ),
@@ -125,13 +131,11 @@ class _SignInViewState extends State<SignInView> {
                               text: TextSpan(
                                 text: "Don't have an account? ",
                                 style: Theme.of(context).textTheme.bodyMedium,
-                              
                                 children: [
                                   TextSpan(
                                     text: "SignUp",
                                     style:
                                         Theme.of(context).textTheme.titleMedium,
-                             
                                   ),
                                 ],
                               ),

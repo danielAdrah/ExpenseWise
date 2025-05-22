@@ -5,16 +5,17 @@ import 'package:animate_do/animate_do.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:go_router/go_router.dart';
-import '../widgets/limit_card.dart';
+import '../../../../core/theme/app_color.dart';
+import '../widgets/income_card.dart';
 
-class SpendingLimit extends StatefulWidget {
-  const SpendingLimit({super.key});
+class IncomeTabView extends StatefulWidget {
+  const IncomeTabView({super.key});
 
   @override
-  State<SpendingLimit> createState() => _SpendingLimitState();
+  State<IncomeTabView> createState() => _IncomeTabViewState();
 }
 
-class _SpendingLimitState extends State<SpendingLimit> {
+class _IncomeTabViewState extends State<IncomeTabView> {
   // @override
   // void initState() {
   //   super.initState();
@@ -35,7 +36,7 @@ class _SpendingLimitState extends State<SpendingLimit> {
         title: FadeInDown(
             delay: const Duration(milliseconds: 150),
             curve: Curves.decelerate,
-            child: Text("Spending Limits",
+            child: Text("My Incomes",
                 style: TextStyle(
                     color: theme.inversePrimary, fontFamily: 'Arvo'))),
         leading: FadeInLeft(
@@ -62,17 +63,17 @@ class _SpendingLimitState extends State<SpendingLimit> {
       floatingActionButton: FloatingActionButton(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(25)),
         onPressed: () {
-          context.pushNamed('createLimit');
+          context.pushNamed('createIncome');
         },
         child: Container(
           height: 70,
           width: 70,
-          decoration: const BoxDecoration(
+          decoration: BoxDecoration(
             shape: BoxShape.circle,
             gradient: RadialGradient(
               colors: [
-                Color(0XFF8B5CF6),
-                Color(0XFF5A31F4),
+                TColor.secondaryG50,
+                TColor.secondaryG,
               ],
             ),
           ),
@@ -134,29 +135,18 @@ class _SpendingLimitState extends State<SpendingLimit> {
                     borderRadius: BorderRadius.circular(5),
                     spacing: 2,
                   ),
-                  SlidableAction(
-                    onPressed: (context) {
-                      context.pushNamed('editLimit');
-                    },
-                    icon: Icons.edit,
-                    backgroundColor: Colors.green,
-                    label: "Edit",
-                    borderRadius: BorderRadius.circular(5),
-                    spacing: 2,
-                  ),
                 ]),
                 child: FadeInUp(
                   delay: const Duration(milliseconds: 150),
                   curve: Curves.decelerate,
                   child: InkWell(
                     onTap: () {
-                      context.pushNamed('limitDetail');
+                      // context.pushNamed('limitDetail');
                     },
-                    child: const SpendingLimitCard(
-                      limitCategory: 'Education',
-                      totalAmount: 100000,
-                      remainedAmount: 40000,
-                      spendAmount: 60000,
+                    child: IncomeCard(
+                      title: "Investment",
+                      price: "1500",
+                      date: DateTime.now(),
                     ),
                   ),
                 ),

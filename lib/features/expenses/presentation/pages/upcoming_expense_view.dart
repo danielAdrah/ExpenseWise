@@ -1,3 +1,4 @@
+import 'package:animate_do/animate_do.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:go_router/go_router.dart';
@@ -16,7 +17,7 @@ class _UpcomingExpenseViewState extends State<UpcomingExpenseView> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context).colorScheme;
-  
+
     return Scaffold(
       backgroundColor: theme.surface,
       body: SafeArea(
@@ -89,11 +90,15 @@ class _UpcomingExpenseViewState extends State<UpcomingExpenseView> {
                         spacing: 2,
                       ),
                     ]),
-                    child: MyListTile(
-                        type: "Food",
-                        title: "Meat",
-                        price: "1500",
-                        date: DateTime.now()),
+                    child: FadeInUp(
+                      delay: const Duration(milliseconds: 300),
+                      curve: Curves.decelerate,
+                      child: MyListTile(
+                          type: "Food",
+                          title: "Meat",
+                          price: "1500",
+                          date: DateTime.now()),
+                    ),
                   );
                 },
                 childCount: 15,
@@ -104,5 +109,4 @@ class _UpcomingExpenseViewState extends State<UpcomingExpenseView> {
       ),
     );
   }
-  
 }

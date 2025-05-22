@@ -5,8 +5,9 @@ import 'package:go_router/go_router.dart';
 import 'package:trackme/core/components/my_list_tile.dart';
 
 import '../../../../core/components/main_app_bar.dart';
-import '../../../../core/components/my_pie_chart.dart';
 import '../../../../core/theme/app_color.dart';
+import '../widgets/total_pie_chart.dart';
+// import '../widgets/total_pie_chart.dart';
 
 class DashboardView extends StatefulWidget {
   const DashboardView({super.key});
@@ -32,12 +33,12 @@ class _DashboardViewState extends State<DashboardView> {
           slivers: [
             SliverAppBar(
               stretch: true,
-              expandedHeight: media.width * 1,
+              expandedHeight: media.width * 1.1,
               flexibleSpace: FlexibleSpaceBar(
                 background: Column(
                   children: [
                     Container(
-                      height: media.width * 1,
+                      height: media.width * 1.1,
                       decoration: BoxDecoration(
                         color: Theme.of(context).colorScheme.primaryContainer,
                         borderRadius: const BorderRadius.only(
@@ -54,72 +55,60 @@ class _DashboardViewState extends State<DashboardView> {
                                 horizontal: media.width * 0.03),
                             child: const MainAppBar(),
                           ),
-                          Center(
-                            child: Text(
-                              "Expenses",
-                              style: TextStyle(
-                                  color: Theme.of(context)
-                                      .colorScheme
-                                      .inversePrimary,
-                                  fontFamily: 'Arvo',
-                                  fontSize: 18,
-                                  fontWeight: FontWeight.bold),
-                            ),
-                          ),
-                          const SizedBox(height: 15),
-                          const SizedBox(
-                            // height: media.width * 0.9,
-                            child: MyPieChart(),
-                          ),
-                          const SizedBox(height: 45),
+                          const SizedBox(height: 8),
+                          const InteractivePieChart(),
+                          const SizedBox(height: 30),
                           Padding(
                               padding:
                                   const EdgeInsets.symmetric(horizontal: 80),
-                              child: Container(
-                                decoration: BoxDecoration(
-                                    color:
-                                        Theme.of(context).colorScheme.surface,
-                                    border: Border.all(
-                                      color: Theme.of(context)
-                                          .colorScheme
-                                          .inversePrimary
-                                          .withOpacity(0.4),
+                              child: ZoomInDown(
+                                delay: const Duration(milliseconds: 500),
+                                child: Container(
+                                  decoration: BoxDecoration(
+                                      color:
+                                          Theme.of(context).colorScheme.surface,
+                                      border: Border.all(
+                                        color: Theme.of(context)
+                                            .colorScheme
+                                            .inversePrimary
+                                            .withOpacity(0.4),
+                                      ),
+                                      borderRadius: BorderRadius.circular(15)),
+                                  width: 100,
+                                  child: DropdownButton<String>(
+                                    borderRadius: BorderRadius.circular(25),
+                                    hint: Text("Select an account",
+                                        style: TextStyle(
+                                            color: Theme.of(context)
+                                                .colorScheme
+                                                .inversePrimary)),
+                                    items: accounts.map((String account) {
+                                      return DropdownMenuItem<String>(
+                                        value: account,
+                                        child: Row(
+                                          children: [
+                                            Text(
+                                              account,
+                                              style: TextStyle(
+                                                  color: Theme.of(context)
+                                                      .colorScheme
+                                                      .inversePrimary),
+                                            ),
+                                          ],
+                                        ), // Display the category name
+                                      );
+                                    }).toList(),
+                                    isExpanded: true,
+                                    padding: const EdgeInsets.symmetric(
+                                        horizontal: 12),
+                                    underline: Text(
+                                      "",
+                                      style: TextStyle(color: TColor.white),
                                     ),
-                                    borderRadius: BorderRadius.circular(15)),
-                                width: 100,
-                                child: DropdownButton<String>(
-                                  borderRadius: BorderRadius.circular(25),
-                                  hint: Text("Select an account",
-                                      style: TextStyle(
-                                          color: Theme.of(context)
-                                              .colorScheme
-                                              .inversePrimary)),
-                                  items: accounts.map((String account) {
-                                    return DropdownMenuItem<String>(
-                                      value: account,
-                                      child: Row(
-                                        children: [
-                                          Text(
-                                            account,
-                                            style: TextStyle(
-                                                color: Theme.of(context)
-                                                    .colorScheme
-                                                    .inversePrimary),
-                                          ),
-                                        ],
-                                      ), // Display the category name
-                                    );
-                                  }).toList(),
-                                  isExpanded: true,
-                                  padding: const EdgeInsets.symmetric(
-                                      horizontal: 12),
-                                  underline: Text(
-                                    "",
-                                    style: TextStyle(color: TColor.white),
+                                    onChanged: (String? val) {
+                                      if (val != null) {}
+                                    },
                                   ),
-                                  onChanged: (String? val) {
-                                    if (val != null) {}
-                                  },
                                 ),
                               )),
                         ],
@@ -197,7 +186,7 @@ class _DashboardViewState extends State<DashboardView> {
                         ),
                       ]),
                       child: MyListTile(
-                          type: "Food",
+                          type: "HealthCare",
                           title: "Meat",
                           price: "1500",
                           date: DateTime.now()),

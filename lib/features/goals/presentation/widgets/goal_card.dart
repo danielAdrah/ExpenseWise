@@ -38,7 +38,7 @@ class _GoalCardState extends State<GoalCard> {
   Widget build(BuildContext context) {
     final theme = Theme.of(context).colorScheme;
     final width = MediaQuery.of(context).size.width;
-    return FadeInDown(
+    return FadeInUp(
       delay: Duration(milliseconds: 250),
       curve: Curves.decelerate,
       child: InkWell(
@@ -60,8 +60,7 @@ class _GoalCardState extends State<GoalCard> {
                 Row(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Image.asset(widget.img,
-                        width: 80, height: 80),
+                    Image.asset(widget.img, width: 80, height: 80),
                     // CircleAvatar(
                     //   backgroundColor: theme.primary,
                     //   radius: 40,

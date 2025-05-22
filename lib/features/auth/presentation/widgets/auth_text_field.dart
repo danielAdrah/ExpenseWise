@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 
-import '../../../../core/theme/app_text.dart';
 
 // ignore: must_be_immutable
 class AuthTextField extends StatelessWidget {
@@ -45,9 +44,15 @@ class AuthTextField extends StatelessWidget {
         filled: true,
         helperText: helpText,
         hintText: title,
-        helperStyle:
-            TextStyle(color: Theme.of(context).colorScheme.inversePrimary,fontFamily: 'Poppins'),
-        hintStyle: AppText.bodySmall,
+        helperStyle: TextStyle(
+            color: Theme.of(context).colorScheme.inversePrimary,
+            fontFamily: 'Poppins'),
+        hintStyle: TextStyle(
+          fontFamily: "Poppins",
+          fontWeight: FontWeight.w300,
+          color: Theme.of(context).colorScheme.inversePrimary,
+          fontSize: 13,
+        ),
 
         // TextStyle(color: Theme.of(context).colorScheme.inversePrimary),
         suffixIcon: GestureDetector(

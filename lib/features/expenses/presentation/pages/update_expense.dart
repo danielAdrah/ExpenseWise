@@ -24,7 +24,7 @@ class _EditExpenseState extends State<EditExpense> {
   bool showSubcategories = false;
 
   final Map<String, List<String>> categoryData = {
-    "transportation": ["Car", "Train", "Plane"],
+    "Transportation": ["Car", "Train", "Plane"],
     "Food": ["Groceries", "Restaurant", "Snacks", "Drinks"],
     "Utilities": ["Electricity", "Water", "Internet"],
     "Housing": ["Rent", "House Fixing", "Furniture"],
@@ -34,7 +34,7 @@ class _EditExpenseState extends State<EditExpense> {
   };
 
   final Map<String, List<Color>> categoryGradients = {
-    "transportation": const [Color(0xFF17a2b8), Color(0xFF0d9488)],
+    "Transportation": const [Color(0xFF17a2b8), Color(0xFF0d9488)],
     "Food": [const Color(0xFFFF416C), const Color(0xFFFF4B2B)],
     "Utilities": [const Color(0xFF36D1DC), const Color(0xFF5B86E5)],
     "Housing": [const Color(0xFFFF416C), const Color(0xFFFF4B2B)],
@@ -47,7 +47,7 @@ class _EditExpenseState extends State<EditExpense> {
   };
 
   final Map<String, IconData> categoryIcon = {
-    "transportation": CupertinoIcons.car_detailed,
+    "Transportation": CupertinoIcons.car_detailed,
     "Food": CupertinoIcons.cart,
     "Utilities": CupertinoIcons.wrench,
     "Housing": CupertinoIcons.house,
@@ -257,6 +257,7 @@ class _EditExpenseState extends State<EditExpense> {
                       curve: Curves.decelerate,
                       child: RoundedTextField(
                           title: "Expense Quantity",
+                          keyboardType: TextInputType.number,
                           onIconPressed: () {},
                           preIcon: CupertinoIcons.bag_fill_badge_plus),
                     ),
@@ -266,6 +267,7 @@ class _EditExpenseState extends State<EditExpense> {
                       curve: Curves.decelerate,
                       child: RoundedTextField(
                           title: "Expense Price",
+                          keyboardType: TextInputType.number,
                           onIconPressed: () {},
                           preIcon: Icons.attach_money_outlined),
                     ),

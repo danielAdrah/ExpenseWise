@@ -28,11 +28,13 @@ class SettingsValue extends StatelessWidget {
                 Icon(
                   icon,
                   color: Theme.of(context).colorScheme.inversePrimary,
+                  size: 27,
                 ),
                 const SizedBox(width: 8),
                 Text(name,
                     style: TextStyle(
                       fontFamily: 'Arvo',
+                      fontSize: 14,
                       color: Theme.of(context).colorScheme.inversePrimary,
                     )),
               ],

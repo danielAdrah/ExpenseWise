@@ -1,4 +1,4 @@
-// ignore_for_file: prefer_for_elements_to_map_fromiterable, prefer_const_constructors, invalid_use_of_protected_member
+// ignore_for_file: prefer_for_elements_to_map_fromiterable, prefer_const_constructors, invalid_use_of_protected_member, unused_local_variable
 
 import 'package:flutter/material.dart';
 
@@ -8,9 +8,10 @@ import '../../../../core/theme/app_color.dart';
 import '../../../dashboard/data/models/pie_chart_model.dart';
 
 class SubPieChart extends StatefulWidget {
-  SubPieChart({super.key, required this.category});
+  SubPieChart({super.key, required this.category, this.gradientList});
 
   final String category;
+  final List<List<Color>>? gradientList;
 
   @override
   State<SubPieChart> createState() => _SubPieChartState();
@@ -19,24 +20,26 @@ class SubPieChart extends StatefulWidget {
 class _SubPieChartState extends State<SubPieChart> {
   @override
   Widget build(BuildContext context) {
-    final gradientList = <List<Color>>[
-      [
-        Color.fromARGB(255, 153, 188, 241),
-        Color(0xFF64b3f4),
-        Color(0xFF4286f4),
-      ],
-      [
-        Color(0xFFb3e5fc),
-        Color(0xFF4dd0e1),
-        Color.fromARGB(255, 62, 153, 165),
-      ],
-      [
-        Color(0xFFb9f6ca),
-        Color(0xFF69f0ae),
-        Color(0xFF00e676),
-      ]
-    ];
+    // final gradientList = <List<Color>>[
+    //   [
+    //     Color.fromARGB(255, 153, 188, 241),
+    //     Color(0xFF64b3f4),
+    //     Color(0xFF4286f4),
+    //   ],
+    //   [
+    //     Color(0xFFb3e5fc),
+    //     Color(0xFF4dd0e1),
+    //     Color.fromARGB(255, 62, 153, 165),
+    //   ],
+    //   [
+        
+        // Color(0xFF69f0ae),
+        // Color(0xFF00e676),
+    //   ]
+    // ];
+  
     List<PieChartData> emptyPieChartData = [
+      PieChartData("", 0),
       PieChartData("", 0),
       PieChartData("", 0),
       PieChartData("", 0),
@@ -47,6 +50,7 @@ class _SubPieChartState extends State<SubPieChart> {
       PieChartData("Food", 32),
       PieChartData("Utilities", 30),
       PieChartData("Transport", 45),
+      PieChartData("Shopping", 50),
       // PieChartData("Education", 35),
       // PieChartData("Other", 60),
     ];
@@ -54,7 +58,7 @@ class _SubPieChartState extends State<SubPieChart> {
     return Padding(
       padding: const EdgeInsets.only(left: 15),
       child: PieChart(
-        gradientList: gradientList,
+        gradientList: widget.gradientList,
         dataMap:
             // controller.transportSubPieInfo.value.isEmpty
             //     ? Map.fromIterable(emptyPieChartData,
@@ -74,7 +78,9 @@ class _SubPieChartState extends State<SubPieChart> {
             // controller.transportSubPieInfo.value.isEmpty ? false : true,
             showLegendsInRow: false,
             legendPosition: LegendPosition.right,
-            legendTextStyle: TextStyle(color: TColor.white)),
+            legendTextStyle: TextStyle(
+                color: Theme.of(context).colorScheme.inversePrimary,
+                fontFamily: 'Poppins')),
         chartValuesOptions: ChartValuesOptions(
           chartValueStyle: TextStyle(color: TColor.white),
           showChartValueBackground: false,
@@ -153,7 +159,9 @@ class _FoodSubPieChartState extends State<FoodSubPieChart> {
             showLegends: true,
             showLegendsInRow: false,
             legendPosition: LegendPosition.right,
-            legendTextStyle: TextStyle(color: TColor.white)),
+            legendTextStyle: TextStyle(
+                color: Theme.of(context).colorScheme.inversePrimary,
+                fontFamily: 'Poppins')),
         chartValuesOptions: ChartValuesOptions(
           chartValueStyle: TextStyle(color: TColor.white),
           showChartValueBackground: false,
@@ -231,7 +239,9 @@ class _HomeSubPieChartState extends State<HomeSubPieChart> {
             showLegends: true,
             showLegendsInRow: false,
             legendPosition: LegendPosition.right,
-            legendTextStyle: TextStyle(color: TColor.white)),
+            legendTextStyle: TextStyle(
+                color: Theme.of(context).colorScheme.inversePrimary,
+                fontFamily: 'Poppins')),
         chartValuesOptions: ChartValuesOptions(
           chartValueStyle: TextStyle(color: TColor.white),
           showChartValueBackground: false,

@@ -21,8 +21,16 @@ class CreateLimit extends StatefulWidget {
 }
 
 class _CreateLimitState extends State<CreateLimit> {
-  List<String> categories = ["Food", "Transport", "Utilities"];
-  
+  List<String> categories = [
+    "Transportation",
+    "Food",
+    "Utilities",
+    "Housing",
+    "Shopping",
+    "HealthCare",
+    "Education",
+  ];
+
   final TextEditingController goalName = TextEditingController();
   final TextEditingController budget = TextEditingController();
   final TextEditingController date = TextEditingController();
@@ -96,7 +104,6 @@ class _CreateLimitState extends State<CreateLimit> {
                       ),
                     ),
                   ),
-                  
                   const SizedBox(height: 25),
                   FadeInDown(
                     duration: const Duration(milliseconds: 800),
@@ -149,7 +156,6 @@ class _CreateLimitState extends State<CreateLimit> {
     );
   }
 
- 
   Future<void> showDate() async {
     DateTime? picked = await showDatePicker(
       context: context,

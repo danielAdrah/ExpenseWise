@@ -19,7 +19,15 @@ class EditLimit extends StatefulWidget {
 }
 
 class _EditLimitState extends State<EditLimit> {
-  List<String> categories = ["Food", "Transport", "Utilities"];
+  List<String> categories = [
+    "Transportation",
+    "Food",
+    "Utilities",
+    "Housing",
+    "Shopping",
+    "HealthCare",
+    "Education",
+  ];
 
   final TextEditingController goalName = TextEditingController();
   final TextEditingController budget = TextEditingController();

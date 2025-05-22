@@ -33,18 +33,13 @@ class _GoalDetailState extends State<GoalDetail> {
       ),
       body: SafeArea(
         child: SingleChildScrollView(
-          child: FadeInDown(
-            delay: const Duration(milliseconds: 100),
+          child: FadeInUp(
+            delay: const Duration(milliseconds: 300),
             curve: Curves.decelerate,
             child: Column(
               children: [
                 const SizedBox(height: 10),
-                // CircleAvatar(
-                //   radius: 80,
-                //   backgroundColor: theme.primary,
-                //   child: const Icon(CupertinoIcons.car_detailed,
-                //       color: Colors.white, size: 90),
-                // ),
+               
                 Image.asset("assets/img/money_goal.png",
                     width: 180, height: 180),
                 const SizedBox(height: 15),
