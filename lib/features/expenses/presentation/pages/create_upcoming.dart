@@ -39,8 +39,8 @@ class _CreateUpcomingExpenseState extends State<CreateUpcomingExpense> {
   final Map<String, List<Color>> categoryGradients = {
     "Transportation": const [Color(0xFF17a2b8), Color(0xFF0d9488)],
     "Food": [const Color(0xFFFF416C), const Color(0xFFFF4B2B)],
-    "Utilities": [const Color(0xFF36D1DC), const Color(0xFF5B86E5)],
-    "Housing": [const Color(0xFFFF416C), const Color(0xFFFF4B2B)],
+    "Utilities": const [Color(0xFFFFC107), Color(0xFFFF8F00)],
+    "Housing": const [Color(0xFFFF6B6B), Color(0xFFFFA17F)],
     "Shopping": const [Color(0xFFFF5FA2), Color(0xFF8E44AD)],
     "HealthCare": const [
       Color.fromARGB(255, 104, 68, 223),

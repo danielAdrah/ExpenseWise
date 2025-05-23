@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
 import 'core/theme/app_color.dart';
+import 'features/charts/presentation/pages/chart_view.dart';
 import 'features/dashboard/presentation/pages/dashboard_view.dart';
 
 import 'features/expenses/presentation/pages/upcoming_expense_view.dart';
@@ -106,11 +107,7 @@ class _MainNavBarState extends State<MainNavBar> {
                 onTap: () {
                   setState(() {
                     selectTab = 1;
-                    currentTabView = Container(
-                      child: const Center(
-                        child: Text("2"),
-                      ),
-                    );
+                    currentTabView = ChartsPage();
                   });
                 },
                 child: Column(
@@ -120,11 +117,7 @@ class _MainNavBarState extends State<MainNavBar> {
                       onTap: () {
                         setState(() {
                           selectTab = 1;
-                          currentTabView = Container(
-                            child: const Center(
-                              child: Text("2"),
-                            ),
-                          );
+                          currentTabView =ChartsPage();
                         });
                       },
                       iconType: IconType.animatedOnTap,

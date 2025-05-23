@@ -275,7 +275,7 @@ class _SettingsViewState extends State<SettingsView>
                                             backgroundColor:
                                                 theme.primaryContainer,
                                             content: Text(
-                                              "Are You Sure You Want To Delete This ?",
+                                              "Are You Sure You Want To Delete This Account?",
                                               style: TextStyle(
                                                   color: theme.inversePrimary,
                                                   fontFamily: 'Poppins'),

@@ -3,6 +3,7 @@ import 'package:trackme/features/auth/presentation/pages/sign_in_view.dart';
 import 'package:trackme/main_navbar.dart';
 import '../../../features/auth/presentation/pages/create_account.dart';
 import '../../../features/auth/presentation/pages/sign_up_view.dart';
+import '../../../features/charts/presentation/pages/chart_view.dart';
 import '../../../features/expenses/presentation/pages/create_expense_view.dart';
 import '../../../features/expenses/presentation/pages/create_upcoming.dart';
 import '../../../features/expenses/presentation/pages/update_expense.dart';
@@ -156,6 +157,12 @@ final GoRouter router = GoRouter(
       path: '/settingsView/createSecAccount',
       name: 'createSecAccount',
       builder: (context, state) => const CreateSecAccount(),
+    ),
+    //======
+    GoRoute(
+      path: '/chartsView',
+      name: 'chartsView',
+      builder: (context, state) => const ChartsPage(),
     ),
     //======
   ],

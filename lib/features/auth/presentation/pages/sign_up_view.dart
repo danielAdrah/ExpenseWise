@@ -188,8 +188,8 @@ class _SignUpViewState extends State<SignUpView> {
                             child: PrimaryButton(
                                 title: "Sign Up",
                                 onPressed: () {
-                                  if (formKey.currentState!.validate()) {}
                                   context.goNamed('mainBar');
+                                  // if (formKey.currentState!.validate()) {}
                                 }),
                           ),
                         ),
