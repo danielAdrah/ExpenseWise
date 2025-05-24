@@ -33,7 +33,7 @@ class _CreateSecAccountState extends State<CreateSecAccount> {
                   delay: const Duration(milliseconds: 1000),
                   curve: Curves.decelerate,
                   child: Text(
-                    "What is in your mind for  this account?!",
+                    "Got a new plan? Name your account",
                     style: TextStyle(
                         color: theme.inversePrimary,
                         fontSize: 22,

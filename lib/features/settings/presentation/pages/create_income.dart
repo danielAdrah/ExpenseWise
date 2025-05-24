@@ -37,8 +37,11 @@ class _CreateIncomeState extends State<CreateIncome> {
   final Map<String, List<Color>> categoryGradients = {
     "Salary & Wages": const [Color(0xFF17a2b8), Color(0xFF0d9488)],
     "Business Income": [const Color(0xFFFF416C), const Color(0xFFFF4B2B)],
-    "Investment": [const Color(0xFF36D1DC), const Color(0xFF5B86E5)],
-    "Freelance": [const Color(0xFFFF416C), const Color(0xFFFF4B2B)],
+    "Investment": const [Color(0xFFFFC107), Color(0xFFFF8F00)],
+    "Freelance": const [
+      Color.fromARGB(255, 104, 68, 223),
+      Color.fromARGB(255, 95, 72, 197)
+    ],
     "Online Earning": const [Color(0xFFFF5FA2), Color(0xFF8E44AD)],
   };
 
@@ -83,7 +86,7 @@ class _CreateIncomeState extends State<CreateIncome> {
               const SizedBox(height: 20),
               const InlineNavBar(title: "Create Income"),
               Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 20),
+                padding: const EdgeInsets.only(left: 20),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -124,42 +127,49 @@ class _CreateIncomeState extends State<CreateIncome> {
                       ),
                     ),
                     const SizedBox(height: 40),
-                    FadeInDown(
-                      duration: const Duration(milliseconds: 800),
-                      curve: Curves.decelerate,
-                      child: RoundedTextField(
-                          title: "Income Amount",
-                          onIconPressed: () {},
-                          keyboardType: TextInputType.number,
-                          preIcon: Icons.attach_money_outlined),
-                    ),
-                    const SizedBox(height: 25),
-                    FadeInDown(
-                      duration: const Duration(milliseconds: 900),
-                      curve: Curves.decelerate,
-                      child: DateTextField(
-                        onTap: showDate,
-                        title: "Income Date",
-                        controller: date,
-                        keyboardType: TextInputType.number,
-                        icon: Icons.date_range_rounded,
-                        onIconPressed: () {},
+                    Padding(
+                      padding: const EdgeInsets.only(right: 20),
+                      child: Column(
+                        children: [
+                          FadeInDown(
+                            duration: const Duration(milliseconds: 800),
+                            curve: Curves.decelerate,
+                            child: RoundedTextField(
+                                title: "Income Amount",
+                                onIconPressed: () {},
+                                keyboardType: TextInputType.number,
+                                preIcon: Icons.attach_money_outlined),
+                          ),
+                          const SizedBox(height: 25),
+                          FadeInDown(
+                            duration: const Duration(milliseconds: 900),
+                            curve: Curves.decelerate,
+                            child: DateTextField(
+                              onTap: showDate,
+                              title: "Income Date",
+                              controller: date,
+                              keyboardType: TextInputType.number,
+                              icon: Icons.date_range_rounded,
+                              onIconPressed: () {},
+                            ),
+                          ),
+                          const SizedBox(height: 25),
+                          FadeInDown(
+                            duration: const Duration(milliseconds: 900),
+                            curve: Curves.decelerate,
+                            child: RoundedTextArea(
+                              length: 3,
+                              title: "Enter Some Note",
+                              onIconPressed: () {},
+                              preIcon: Icons.list,
+                            ),
+                            //  RoundedTextField(
+                            //     title: "Note",
+                            //     onIconPressed: () {},
+                            //     preIcon: Icons.list_outlined),
+                          ),
+                        ],
                       ),
-                    ),
-                    const SizedBox(height: 25),
-                    FadeInDown(
-                      duration: const Duration(milliseconds: 900),
-                      curve: Curves.decelerate,
-                      child: RoundedTextArea(
-                        length: 3,
-                        title: "Enter Some Note",
-                        onIconPressed: () {},
-                        preIcon: Icons.list,
-                      ),
-                      //  RoundedTextField(
-                      //     title: "Note",
-                      //     onIconPressed: () {},
-                      //     preIcon: Icons.list_outlined),
                     ),
                     const SizedBox(height: 60),
                     Padding(

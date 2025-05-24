@@ -157,7 +157,7 @@ class _CreateUpcomingExpenseState extends State<CreateUpcomingExpense> {
               const SizedBox(height: 20),
               const InlineNavBar(title: "Create Upcoming"),
               Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 20),
+                padding: const EdgeInsets.only(left: 20),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -246,45 +246,52 @@ class _CreateUpcomingExpenseState extends State<CreateUpcomingExpense> {
                           : const SizedBox(),
                     ),
                     const SizedBox(height: 50),
-                    FadeInDown(
-                      duration: const Duration(milliseconds: 800),
-                      curve: Curves.decelerate,
-                      child: RoundedTextField(
-                          title: "Expense Title",
-                          onIconPressed: () {},
-                          preIcon: Icons.view_headline_sharp),
-                    ),
-                    const SizedBox(height: 25),
-                    FadeInDown(
-                      duration: const Duration(milliseconds: 900),
-                      curve: Curves.decelerate,
-                      child: RoundedTextField(
-                          title: "Expense Quantity",
-                          keyboardType: TextInputType.number,
-                          onIconPressed: () {},
-                          preIcon: CupertinoIcons.bag_fill_badge_plus),
-                    ),
-                    const SizedBox(height: 25),
-                    FadeInDown(
-                      duration: const Duration(milliseconds: 900),
-                      curve: Curves.decelerate,
-                      child: RoundedTextField(
-                          title: "Expense Price",
-                          keyboardType: TextInputType.number,
-                          onIconPressed: () {},
-                          preIcon: Icons.attach_money_outlined),
-                    ),
-                    const SizedBox(height: 25),
-                    FadeInDown(
-                      duration: const Duration(milliseconds: 1000),
-                      curve: Curves.decelerate,
-                      child: DateTextField(
-                        onTap: showDate,
-                        title: "Expense Date",
-                        controller: date,
-                        keyboardType: TextInputType.number,
-                        icon: Icons.date_range_rounded,
-                        onIconPressed: () {},
+                    Padding(
+                      padding: const EdgeInsets.only(right: 20),
+                      child: Column(
+                        children: [
+                          FadeInDown(
+                            duration: const Duration(milliseconds: 800),
+                            curve: Curves.decelerate,
+                            child: RoundedTextField(
+                                title: "Expense Title",
+                                onIconPressed: () {},
+                                preIcon: Icons.view_headline_sharp),
+                          ),
+                          const SizedBox(height: 25),
+                          FadeInDown(
+                            duration: const Duration(milliseconds: 900),
+                            curve: Curves.decelerate,
+                            child: RoundedTextField(
+                                title: "Expense Quantity",
+                                keyboardType: TextInputType.number,
+                                onIconPressed: () {},
+                                preIcon: CupertinoIcons.bag_fill_badge_plus),
+                          ),
+                          const SizedBox(height: 25),
+                          FadeInDown(
+                            duration: const Duration(milliseconds: 900),
+                            curve: Curves.decelerate,
+                            child: RoundedTextField(
+                                title: "Expense Price",
+                                keyboardType: TextInputType.number,
+                                onIconPressed: () {},
+                                preIcon: Icons.attach_money_outlined),
+                          ),
+                          const SizedBox(height: 25),
+                          FadeInDown(
+                            duration: const Duration(milliseconds: 1000),
+                            curve: Curves.decelerate,
+                            child: DateTextField(
+                              onTap: showDate,
+                              title: "Expense Date",
+                              controller: date,
+                              keyboardType: TextInputType.number,
+                              icon: Icons.date_range_rounded,
+                              onIconPressed: () {},
+                            ),
+                          ),
+                        ],
                       ),
                     ),
                     const SizedBox(height: 60),

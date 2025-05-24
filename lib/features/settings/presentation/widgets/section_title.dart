@@ -16,8 +16,8 @@ class SectionTitle extends StatelessWidget {
       style: TextStyle(
           color: theme.onPrimary,
           fontFamily: "Poppins",
-          fontSize: 15,
-          fontWeight: FontWeight.w600),
+          fontSize: 16,
+          fontWeight: FontWeight.bold),
     );
   }
 }

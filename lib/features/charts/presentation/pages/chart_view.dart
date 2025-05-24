@@ -258,6 +258,14 @@ class ChartsPage extends StatelessWidget {
         barTouchData: BarTouchData(
           touchTooltipData: BarTouchTooltipData(
             tooltipBgColor: theme.surface,
+            getTooltipItem: (group, groupIndex, rod, rodIndex) {
+              return BarTooltipItem(
+                  '${categories[group.x]} \n \$${values[group.x]}',
+                  TextStyle(
+                      color: theme.primary,
+                      fontWeight: FontWeight.w600,
+                      fontFamily: 'Poppins'));
+            },
           ),
         ),
         gridData: FlGridData(getDrawingVerticalLine: (value) {

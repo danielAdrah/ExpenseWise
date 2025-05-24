@@ -45,7 +45,7 @@ class _StatisticsViewState extends State<StatisticsView> {
           delay: const Duration(milliseconds: 200),
           curve: Curves.decelerate,
           child: Text(
-            "Summary",
+            "Statistics",
             style: TextStyle(
                 color: theme.inversePrimary, fontSize: 22, fontFamily: "Arvo"),
           ),
@@ -87,7 +87,7 @@ class _StatisticsViewState extends State<StatisticsView> {
                   child: ZoomInDown(
                     delay: const Duration(milliseconds: 200),
                     child: Text(
-                      "Here you will find more analysis for your spendings",
+                      "Zoom Into Your Spendings",
                       style: TextStyle(
                           color: theme.inversePrimary,
                           fontSize: 18,
@@ -97,7 +97,7 @@ class _StatisticsViewState extends State<StatisticsView> {
                     ),
                   ),
                 ),
-                const SizedBox(height: 50),
+                const SizedBox(height: 40),
                 const Padding(
                   padding: EdgeInsets.symmetric(horizontal: 40, vertical: 7),
                   child: SectionTitle(title: "Transportation"),
