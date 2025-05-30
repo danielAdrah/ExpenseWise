@@ -31,6 +31,7 @@ class AuthTextField extends StatelessWidget {
   Widget build(BuildContext context) {
     return TextFormField(
       validator: validator,
+      
       style: TextStyle(
           color: Theme.of(context).colorScheme.inversePrimary,
           decoration: TextDecoration.none),

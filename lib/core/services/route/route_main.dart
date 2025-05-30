@@ -1,6 +1,7 @@
 import 'package:go_router/go_router.dart';
 import 'package:trackme/features/auth/presentation/pages/sign_in_view.dart';
 import 'package:trackme/main_navbar.dart';
+import '../../../features/auth/presentation/pages/auth_gate.dart';
 import '../../../features/auth/presentation/pages/create_account.dart';
 import '../../../features/auth/presentation/pages/sign_up_view.dart';
 import '../../../features/charts/presentation/pages/chart_view.dart';
@@ -30,7 +31,7 @@ final GoRouter router = GoRouter(
     GoRoute(
       path: '/',
       name: 'onboarding',
-      builder: (context, state) => const Onboarding(),
+      builder: (context, state) => const AuthGate(),
     ),
     //======
     GoRoute(

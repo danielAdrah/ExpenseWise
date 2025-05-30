@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "715975718915",
+    "project_id": "expensewise-86702",
+    "storage_bucket": "expensewise-86702.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:715975718915:android:f0904221b5f898ddebf636",
+        "android_client_info": {
+          "package_name": "com.example.trackme"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCK48UtkY3SaVgksekwD8J9Nd0tlpMcWWE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

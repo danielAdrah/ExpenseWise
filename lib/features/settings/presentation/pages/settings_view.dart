@@ -1,5 +1,4 @@
 import 'package:animate_do/animate_do.dart';
-
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -8,6 +7,7 @@ import '../../../../core/components/inline_nav_bar.dart';
 import '../../../../core/components/settings_value.dart';
 import '../../../../core/theme/app_color.dart';
 import '../../../../core/theme/bloc/theme_bloc.dart';
+import '../../../auth/presentation/bloc/auth_bloc.dart';
 
 class SettingsView extends StatefulWidget {
   const SettingsView({super.key});
@@ -250,14 +250,24 @@ class _SettingsViewState extends State<SettingsView>
                               ),
                               child: Column(
                                 children: [
-                                  SettingsValue(
-                                    name: "Log Out",
-                                    icon: Icons.logout_outlined,
-                                    child: Icon(
-                                      Icons.arrow_forward_ios,
-                                      color: theme.inversePrimary,
-                                    ),
-                                    onTap2: () {},
+                                  BlocConsumer<AuthBloc, AuthState>(
+                                    listener: (context, state2) {},
+                                    builder: (context, state2) {
+                                      return SettingsValue(
+                                        name: "Log Out",
+                                        icon: Icons.logout_outlined,
+                                        child: Icon(
+                                          Icons.arrow_forward_ios,
+                                          color: theme.inversePrimary,
+                                        ),
+                                        onTap2: () {
+                                          context.read<AuthBloc>().add(
+                                                SignOutRequested(),
+                                              );
+                                          context.pushNamed('signIn');
+                                        },
+                                      );
+                                    },
                                   ),
                                   const SizedBox(height: 5),
                                   SettingsValue(

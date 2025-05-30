@@ -1,9 +1,16 @@
+// ignore_for_file: avoid_print
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import "package:animate_do/animate_do.dart";
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:go_router/go_router.dart';
 import 'package:trackme/core/components/custom_button.dart';
+import 'package:trackme/features/auth/domain/entity/account_entity.dart';
+import '../../../../core/components/methods.dart';
+import '../../../../core/theme/app_color.dart';
+import '../bloc/auth_bloc.dart';
 import '../widgets/auth_text_field.dart';
 
 class CreatAccount extends StatefulWidget {
@@ -14,6 +21,9 @@ class CreatAccount extends StatefulWidget {
 }
 
 class _CreatAccountState extends State<CreatAccount> {
+  final accName = TextEditingController();
+  final accCurrency = TextEditingController();
+  final accBudget = TextEditingController();
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context).colorScheme;
@@ -51,7 +61,7 @@ class _CreatAccountState extends State<CreatAccount> {
                 AuthTextField(
                   title: "Account Name",
                   keyboardType: TextInputType.text,
-                  controller: TextEditingController(),
+                  controller: accName,
                   preIcon: Icons.person_4_outlined,
                   onIconPressed: () {},
                 ),
@@ -59,7 +69,7 @@ class _CreatAccountState extends State<CreatAccount> {
                 AuthTextField(
                   title: "Account Currency",
                   keyboardType: TextInputType.text,
-                  controller: TextEditingController(),
+                  controller: accCurrency,
                   preIcon: CupertinoIcons.money_dollar,
                   onIconPressed: () {},
                 ),
@@ -67,17 +77,52 @@ class _CreatAccountState extends State<CreatAccount> {
                 AuthTextField(
                   title: "Account Budget",
                   keyboardType: TextInputType.number,
-                  controller: TextEditingController(),
+                  controller: accBudget,
                   preIcon: CupertinoIcons.money_dollar_circle,
                   onIconPressed: () {},
                 ),
-                const SizedBox(height: 20),
                 const SizedBox(height: 80),
-                CustomButton(
-                    title: "Confirm",
-                    onPressed: () {
+                BlocConsumer<AuthBloc, AuthState>(
+                  listener: (context, state) {
+                    if (state is AccountCreated) {
                       context.goNamed('mainBar');
-                    }),
+                    }
+                    if (state is AccountCreatingFailed) {
+                      final sBar = Methods().errorSnackBar(state.message);
+                      ScaffoldMessenger.of(context).showSnackBar(sBar);
+                    }
+                  },
+                  builder: (context, state) {
+                    return state is AccountCreating
+                        ? Center(
+                            child: SpinKitSpinningLines(
+                            color: TColor.primary2,
+                            size: 40,
+                          ))
+                        : CustomButton(
+                            title: "Confirm",
+                            onPressed: () {
+                              print(accName.text);
+                              print(accCurrency.text);
+                              print(accBudget.text);
+
+                              context.read<AuthBloc>().add(CreateAccountEvent(
+                                  account: AccountEntity(
+                                      accountName: accName.text,
+                                      currency: accCurrency.text,
+                                      budget: double.parse(accBudget.text))));
+                            });
+                  },
+                ),
+                TextButton(
+                  onPressed: () {
+                    context.pushNamed('mainBar');
+                  },
+                  child: const Text(
+                    "Skip",
+                    style: TextStyle(fontFamily: 'Poppins'),
+                  ),
+                ),
               ],
             ),
           ),
