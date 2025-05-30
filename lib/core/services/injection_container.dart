@@ -11,6 +11,12 @@ import '../../features/auth/domain/usecases/sign_in_usecase.dart';
 import '../../features/auth/domain/usecases/sign_out_usecase.dart';
 import '../../features/auth/domain/usecases/sign_up_usecase.dart';
 import '../../features/auth/presentation/bloc/auth_bloc.dart';
+import '../../features/settings/data/datasources/user_remote_data_source.dart';
+import '../../features/settings/data/repository/user_repository_imp.dart';
+import '../../features/settings/domain/repository/user_repository.dart';
+import '../../features/settings/domain/usecases/get_user_data_usecase.dart';
+import '../../features/settings/domain/usecases/update_user_data_usecase.dart';
+import '../../features/settings/presentation/bloc/user_info_bloc.dart';
 // import 'presentation/bloc/auth_bloc.dart';
 
 final sl = GetIt.instance;
@@ -24,10 +30,18 @@ Future<void> init() async {
   sl.registerLazySingleton<AuthRemoteDataSource>(
     () => AuthRemoteDataSourceImp(auth: sl(), firestore: sl()),
   );
+  //---
+  sl.registerLazySingleton<UserRemoteDataSource>(
+    () => UserRemoteDataSourceImp(auth: sl(), firestore: sl()),
+  );
 
   // Repositories
   sl.registerLazySingleton<AuthRepository>(
     () => AuthRepositoryImp(remote: sl()),
+  );
+  //---
+  sl.registerLazySingleton<UserRepository>(
+    () => UserRepositoryImp(remote: sl()),
   );
 
   // Use cases
@@ -37,6 +51,9 @@ Future<void> init() async {
   sl.registerLazySingleton(() => SignOutUsecase(repo: sl()));
   sl.registerLazySingleton(() => GetCurrentUserUseCase(repo: sl()));
   sl.registerLazySingleton(() => CreateAccountUsercase(repo: sl()));
+  //---
+  sl.registerLazySingleton(() => GetUserDataUsecase(repo: sl()));
+  sl.registerLazySingleton(() => UpdateUserDataUsecase(repo: sl()));
 
   // BLoC
   sl.registerFactory(() => AuthBloc(
@@ -52,4 +69,9 @@ Future<void> init() async {
         sl(),
         sl(),
       ));
+  sl.registerFactory(() => UserInfoBloc(
+        getInfoUseecase: sl(),
+      ));
+
+  //==========================
 }
