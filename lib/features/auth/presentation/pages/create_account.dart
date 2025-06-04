@@ -108,6 +108,7 @@ class _CreatAccountState extends State<CreatAccount> {
 
                               context.read<AuthBloc>().add(CreateAccountEvent(
                                   account: AccountEntity(
+                                      id: '',
                                       accountName: accName.text,
                                       currency: accCurrency.text,
                                       budget: double.parse(accBudget.text))));

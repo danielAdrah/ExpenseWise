@@ -1,6 +1,6 @@
 
 import '../entity/user_entity.dart';
-import 'auth_repository.dart';
+import '../repository/auth_repository.dart';
 
 class GetCurrentUserUseCase {
   //IN THIS CLASS WE STORE THE FINAL IMPLEMENTATION IF THE METHOD

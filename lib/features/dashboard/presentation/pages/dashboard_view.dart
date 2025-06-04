@@ -1,11 +1,22 @@
+// ignore_for_file: avoid_print
+
 import 'package:animate_do/animate_do.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
+import 'package:get_storage/get_storage.dart';
 import 'package:go_router/go_router.dart';
 import 'package:trackme/core/components/my_list_tile.dart';
+import 'package:trackme/features/expenses/presentation/bloc/expense_event.dart';
 
 import '../../../../core/components/main_app_bar.dart';
 import '../../../../core/theme/app_color.dart';
+import '../../../auth/presentation/bloc/auth_bloc.dart';
+import '../../../expenses/data/models/expense_model.dart';
+import '../../../expenses/presentation/bloc/expense_bloc.dart';
+import '../../../expenses/presentation/bloc/expense_state.dart';
 import '../widgets/total_pie_chart.dart';
 // import '../widgets/total_pie_chart.dart';
 
@@ -17,10 +28,16 @@ class DashboardView extends StatefulWidget {
 }
 
 class _DashboardViewState extends State<DashboardView> {
-  List<String> accounts = [
-    "My Daily spending Account",
-    "Big spending Account",
-  ];
+  final GetStorage storage = GetStorage();
+  String? selectedAccount;
+  @override
+  void initState() {
+    context.read<AuthBloc>().add(GetAccountsEvent());
+    context
+        .read<ExpenseBloc>()
+        .add(LoadExpensesEvent(storage.read('selectedAcc') ?? ""));
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -63,53 +80,107 @@ class _DashboardViewState extends State<DashboardView> {
                                   const EdgeInsets.symmetric(horizontal: 80),
                               child: ZoomInDown(
                                 delay: const Duration(milliseconds: 500),
-                                child: Container(
-                                  decoration: BoxDecoration(
-                                      color:
-                                          Theme.of(context).colorScheme.surface,
-                                      border: Border.all(
-                                        color: Theme.of(context)
-                                            .colorScheme
-                                            .inversePrimary
-                                            .withOpacity(0.4),
-                                      ),
-                                      borderRadius: BorderRadius.circular(15)),
-                                  width: 100,
-                                  child: DropdownButton<String>(
-                                    borderRadius: BorderRadius.circular(25),
-                                    hint: Text("Select an account",
-                                        style: TextStyle(
+                                child: BlocBuilder<AuthBloc, AuthState>(
+                                    builder: (context, authState) {
+                                  if (authState is GetAccountsLoaded &&
+                                      authState.accounts.isNotEmpty) {
+                                    final accounts = authState.accounts;
+                                    return Container(
+                                      decoration: BoxDecoration(
+                                          color: Theme.of(context)
+                                              .colorScheme
+                                              .surface,
+                                          border: Border.all(
                                             color: Theme.of(context)
                                                 .colorScheme
-                                                .inversePrimary)),
-                                    items: accounts.map((String account) {
-                                      return DropdownMenuItem<String>(
-                                        value: account,
-                                        child: Row(
-                                          children: [
-                                            Text(
-                                              account,
-                                              style: TextStyle(
-                                                  color: Theme.of(context)
-                                                      .colorScheme
-                                                      .inversePrimary),
-                                            ),
-                                          ],
-                                        ), // Display the category name
-                                      );
-                                    }).toList(),
-                                    isExpanded: true,
-                                    padding: const EdgeInsets.symmetric(
-                                        horizontal: 12),
-                                    underline: Text(
-                                      "",
-                                      style: TextStyle(color: TColor.white),
-                                    ),
-                                    onChanged: (String? val) {
-                                      if (val != null) {}
-                                    },
-                                  ),
-                                ),
+                                                .inversePrimary
+                                                .withOpacity(0.4),
+                                          ),
+                                          borderRadius:
+                                              BorderRadius.circular(15)),
+                                      width: 100,
+                                      child: DropdownButton<String>(
+                                        borderRadius: BorderRadius.circular(25),
+                                        hint: Text(
+                                            storage.read('selectedAcc') ??
+                                                "Select an account",
+                                            style: TextStyle(
+                                                color: Theme.of(context)
+                                                    .colorScheme
+                                                    .inversePrimary)),
+                                        items: accounts.map((account) {
+                                          return DropdownMenuItem<String>(
+                                            value: account.accountName,
+                                            child: Row(
+                                              children: [
+                                                Text(
+                                                  account.accountName,
+                                                  style: TextStyle(
+                                                      color: Theme.of(context)
+                                                          .colorScheme
+                                                          .inversePrimary),
+                                                ),
+                                              ],
+                                            ), // Display the category name
+                                          );
+                                        }).toList(),
+                                        isExpanded: true,
+                                        padding: const EdgeInsets.symmetric(
+                                            horizontal: 12),
+                                        underline: Text(
+                                          "",
+                                          style: TextStyle(color: TColor.white),
+                                        ),
+                                        onChanged: (String? val) {
+                                          if (val != null) {
+                                            setState(() {
+                                              selectedAccount = val;
+                                              print(selectedAccount);
+                                            });
+                                            storage.write(
+                                                'selectedAcc', selectedAccount);
+
+                                            print(
+                                                "====after selecting ${storage.read('selectedAcc')}");
+                                            context
+                                                .read<ExpenseBloc>()
+                                                .add(LoadExpensesEvent(val));
+                                          }
+                                        },
+                                      ),
+                                    );
+                                  } else if (authState is GetAccountsLoaded &&
+                                      authState.accounts.isEmpty) {
+                                    return Container(
+                                      padding: const EdgeInsets.all(10),
+                                      decoration: BoxDecoration(
+                                          color: Theme.of(context)
+                                              .colorScheme
+                                              .surface,
+                                          border: Border.all(
+                                            color: Theme.of(context)
+                                                .colorScheme
+                                                .inversePrimary
+                                                .withOpacity(0.4),
+                                          ),
+                                          borderRadius:
+                                              BorderRadius.circular(15)),
+                                      width: 130,
+                                      child: Text("You don't have any account",
+                                          style: TextStyle(
+                                              color: theme.inversePrimary,
+                                              fontFamily: 'Poppins')),
+                                    );
+                                  } else if (authState is GetAccountsLoading) {
+                                    return Center(
+                                        child: SpinKitWave(
+                                      color: TColor.primary2,
+                                      size: 30,
+                                    ));
+                                  } else {
+                                    return const SizedBox();
+                                  }
+                                }),
                               )),
                         ],
                       ),
@@ -120,79 +191,135 @@ class _DashboardViewState extends State<DashboardView> {
             ),
             //=======
             SliverToBoxAdapter(
-              child: ListView.builder(
-                shrinkWrap: true,
-                physics: const NeverScrollableScrollPhysics(),
-                itemCount: 20,
-                itemBuilder: ((context, index) {
-                  return FadeInDown(
-                    delay: const Duration(milliseconds: 500),
-                    curve: Curves.decelerate,
-                    child: Slidable(
-                      endActionPane:
-                          ActionPane(motion: const StretchMotion(), children: [
-                        SlidableAction(
-                          onPressed: (context) {
-                            showDialog(
-                              context: context,
-                              builder: (context) {
-                                return AlertDialog(
-                                  backgroundColor: theme.primaryContainer,
-                                  content: Text(
-                                    "Are You Sure You Want To Delete This ?",
-                                    style: TextStyle(
-                                        color: theme.inversePrimary,
-                                        fontFamily: 'Poppins'),
+              child: BlocBuilder<ExpenseBloc, ExpenseState>(
+                builder: (context, expState) {
+                  if (expState is ExpenseLoaded) {
+                    if (expState.expenses.isEmpty) {
+                      return Padding(
+                        padding: const EdgeInsets.only(top: 30),
+                        child: Center(
+                            child: Text(
+                                "There are no expenses to be displayed\nAdd an expense first",
+                                textAlign: TextAlign.center,
+                                style: TextStyle(
+                                    color: theme.inversePrimary,
+                                    fontSize: 17,
+                                    fontFamily: 'Poppins'))),
+                      );
+                    }
+                    return ListView.builder(
+                      shrinkWrap: true,
+                      physics: const NeverScrollableScrollPhysics(),
+                      itemCount: expState.expenses.length,
+                      itemBuilder: ((context, index) {
+                        var exp = expState.expenses[index];
+                        return FadeInDown(
+                          delay: const Duration(milliseconds: 500),
+                          curve: Curves.decelerate,
+                          child: Slidable(
+                            endActionPane: ActionPane(
+                                motion: const StretchMotion(),
+                                children: [
+                                  SlidableAction(
+                                    onPressed: (context) {
+                                      showDialog(
+                                        context: context,
+                                        builder: (context) {
+                                          return AlertDialog(
+                                            backgroundColor:
+                                                theme.primaryContainer,
+                                            content: Text(
+                                              "Are You Sure You Want To Delete This ?",
+                                              style: TextStyle(
+                                                  color: theme.inversePrimary,
+                                                  fontFamily: 'Poppins'),
+                                            ),
+                                            actions: [
+                                              TextButton(
+                                                onPressed: () {
+                                                  context
+                                                      .read<ExpenseBloc>()
+                                                      .add(DeleteExpenseEvent(
+                                                          exp.id));
+                                                  context
+                                                      .read<ExpenseBloc>()
+                                                      .add(LoadExpensesEvent(
+                                                          storage.read(
+                                                                  'selectedAcc') ??
+                                                              ""));
+                                                  context.pop();
+                                                },
+                                                child: Text(
+                                                  "Yes",
+                                                  style: TextStyle(
+                                                      color:
+                                                          theme.inversePrimary),
+                                                ),
+                                              ),
+                                              TextButton(
+                                                onPressed: () {
+                                                  context.pop();
+                                                },
+                                                child: Text("No",
+                                                    style: TextStyle(
+                                                        color: theme
+                                                            .inversePrimary)),
+                                              ),
+                                            ],
+                                          );
+                                        },
+                                      );
+                                    },
+                                    icon: Icons.delete,
+                                    backgroundColor: Colors.red,
+                                    label: "Delete",
+                                    borderRadius: BorderRadius.circular(5),
+                                    spacing: 2,
                                   ),
-                                  actions: [
-                                    TextButton(
-                                      onPressed: () {
-                                        context.pop();
-                                      },
-                                      child: Text(
-                                        "Yes",
-                                        style: TextStyle(
-                                            color: theme.inversePrimary),
-                                      ),
-                                    ),
-                                    TextButton(
-                                      onPressed: () {
-                                        context.pop();
-                                      },
-                                      child: Text("No",
-                                          style: TextStyle(
-                                              color: theme.inversePrimary)),
-                                    ),
-                                  ],
-                                );
-                              },
-                            );
-                          },
-                          icon: Icons.delete,
-                          backgroundColor: Colors.red,
-                          label: "Delete",
-                          borderRadius: BorderRadius.circular(5),
-                          spacing: 2,
-                        ),
-                        SlidableAction(
-                          onPressed: (context) {
-                            context.pushNamed('editExpense');
-                          },
-                          icon: Icons.edit,
-                          label: "Edit",
-                          backgroundColor: Colors.green,
-                          borderRadius: BorderRadius.circular(5),
-                          spacing: 2,
-                        ),
-                      ]),
-                      child: MyListTile(
-                          type: "HealthCare",
-                          title: "Meat",
-                          price: "1500",
-                          date: DateTime.now()),
-                    ),
-                  );
-                }),
+                                  SlidableAction(
+                                    onPressed: (context) {
+                                      context.pushNamed('editExpense',
+                                          extra: ExpenseModel(
+                                            name: exp.name,
+                                            quantity: exp.quantity,
+                                            price: exp.price,
+                                            accountId: exp.accountId,
+                                            category: exp.category,
+                                            id: exp.id,
+                                            subCategory: exp.subCategory,
+                                            userId: FirebaseAuth
+                                                .instance.currentUser!.uid,
+                                          ));
+                                    },
+                                    icon: Icons.edit,
+                                    label: "Edit",
+                                    backgroundColor: Colors.green,
+                                    borderRadius: BorderRadius.circular(5),
+                                    spacing: 2,
+                                  ),
+                                ]),
+                            child: MyListTile(
+                              type: exp.category,
+                              title: exp.name,
+                              price: exp.price.toString(),
+                              date: DateTime.now(),
+                            ),
+                          ),
+                        );
+                      }),
+                    );
+                  } else if (expState is ExpenseError) {
+                    return Center(
+                      child: Text(expState.message,
+                          style: TextStyle(
+                              color: theme.inversePrimary,
+                              fontSize: 17,
+                              fontFamily: 'Poppins')),
+                    );
+                  } else {
+                    return const SizedBox();
+                  }
+                },
               ),
             ),
           ],

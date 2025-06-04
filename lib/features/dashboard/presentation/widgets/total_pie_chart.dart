@@ -13,13 +13,13 @@ class _InteractivePieChartState extends State<InteractivePieChart> {
   int touchedIndex = -1;
 
   final Map<String, double> categoryData = {
-    'Transportation': 350,
-    'Food': 200,
-    'Utilities': 120,
-    'Housing': 180,
-    'Shopping': 100,
-    'HealthCare': 150,
-    'Education': 90,
+    'Transportation': 3500,
+    'Food': 8000,
+    'Utilities': 1200,
+    'Housing': 1800,
+    'Shopping': 1000,
+    'HealthCare': 1550,
+    'Education': 3900,
   };
 
   final List<Color> categoryColors = [

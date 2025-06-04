@@ -45,3 +45,29 @@ class AccountCreatingFailed extends AuthState {
   @override
   List<Object> get props => [message];
 }
+
+class GetAccountsLoading extends AuthState {}
+
+class GetAccountsLoaded extends AuthState {
+  final List<AccountEntity> accounts;
+
+  const GetAccountsLoaded({required this.accounts});
+  @override
+  List<Object> get props => [accounts];
+}
+
+class GetAccountIdState extends AuthState {
+  final String selectedAccount;
+
+  const GetAccountIdState({required this.selectedAccount});
+  @override
+  List<Object> get props => [selectedAccount];
+}
+
+class GetAccountsError extends AuthState {
+  final String message;
+
+  const GetAccountsError({required this.message});
+  @override
+  List<Object> get props => [message];
+}

@@ -97,7 +97,8 @@ class _UpcomingExpenseViewState extends State<UpcomingExpenseView> {
                           type: "Food",
                           title: "Meat",
                           price: "1500",
-                          date: DateTime.now()),
+                          date: DateTime.now()
+                          ),
                     ),
                   );
                 },

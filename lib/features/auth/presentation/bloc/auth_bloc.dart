@@ -6,7 +6,9 @@ import 'package:equatable/equatable.dart';
 import 'package:trackme/core/failure.dart';
 import '../../domain/entity/account_entity.dart';
 import '../../domain/entity/user_entity.dart';
-import '../../domain/repository/get_current_user_use_case.dart';
+import '../../domain/usecases/delete_account_usecase.dart';
+import '../../domain/usecases/get_accounts_usecase.dart';
+import '../../domain/usecases/get_current_user_use_case.dart';
 import '../../domain/usecases/create_account_usercase.dart';
 import '../../domain/usecases/reset_password_usecase.dart';
 import '../../domain/usecases/sign_in_usecase.dart';
@@ -23,6 +25,8 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   final SignOutUsecase signOut;
   final GetCurrentUserUseCase getCurrentUser;
   final CreateAccountUsercase createAccountUsercase;
+  final GetAccountsUsecase getAccountsUsecase;
+  final DeleteAccountUsecase deleteAccountsUsecase;
 
   AuthBloc(
     this.signIn,
@@ -31,6 +35,8 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     this.signOut,
     this.getCurrentUser,
     this.createAccountUsercase,
+    this.getAccountsUsecase,
+    this.deleteAccountsUsecase,
   ) : super(AuthInitial()) {
     on<AppStarted>((event, emit) async {
       emit(AuthLoading());
@@ -98,6 +104,33 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       } on FirebaseAuthException catch (e) {
         print('error from bloc acc $e');
         emit(AccountCreatingFailed(message: e.toString()));
+      }
+    });
+    //---
+    on<GetAccountsEvent>(
+      (event, emit) async {
+        emit(GetAccountsLoading());
+        try {
+          print("from bloc getacc 1 ");
+          final accounts = await getAccountsUsecase();
+          print("from bloc getacc 2 ");
+
+          emit(GetAccountsLoaded(accounts: accounts));
+          print("from bloc getacc 3 ");
+        } on FirebaseAuthException catch (e) {
+          print('error from bloc acc $e');
+          emit(AccountCreatingFailed(message: e.toString()));
+        }
+      },
+    );
+    on<DeleteAccountEvent>((event, emit) async {
+      
+      await deleteAccountsUsecase(event.id);
+    });
+    on<GetAccountId>((event, emit) async {
+      final currentState = state;
+      if (currentState is GetAccountIdState) {
+        emit(GetAccountIdState(selectedAccount: event.id));
       }
     });
   }

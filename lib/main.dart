@@ -1,7 +1,9 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:get_storage/get_storage.dart';
 import 'package:trackme/features/auth/presentation/bloc/auth_bloc.dart';
+import 'package:trackme/features/expenses/presentation/bloc/expense_bloc.dart';
 import 'package:trackme/firebase_options.dart';
 import 'core/services/injection_container.dart';
 import 'core/services/route/route_main.dart';
@@ -14,6 +16,7 @@ void main() async {
     options: DefaultFirebaseOptions.currentPlatform,
   );
   await init();
+  await GetStorage.init();
   runApp(const MyApp());
 }
 
@@ -31,6 +34,8 @@ class MyApp extends StatelessWidget {
         BlocProvider(create: (context) => ConfirmPasswordVisibilityCubit()),
         BlocProvider<AuthBloc>(
             create: (context) => sl<AuthBloc>()..add(AppStarted())),
+        BlocProvider<ExpenseBloc>(create: (context) => sl<ExpenseBloc>()),
+
       ],
       child: BlocBuilder<ThemeBloc, ThemeData>(
         builder: (context, theme) {

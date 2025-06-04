@@ -71,17 +71,40 @@ class AuthRepositoryImp implements AuthRepository {
   Future<void> createAccount(AccountEntity account) async {
     try {
       print("from auth repo of data acc");
-    final model = AccountModel(
-        accountName: account.accountName,
-        currency: account.currency,
-        budget: account.budget);
-    print("from auth repo of data acc after declare");
-    await remote.createAccount(model);
+      // final model = AccountModel(
+      //   id: ,
+      //     accountName: account.accountName,
+      //     currency: account.currency,
+      //     budget: account.budget);
+      print("from auth repo of data acc after declare");
+      await remote.createAccount(account);
     } on FirebaseAuthException catch (e) {
       print('error from imp repo acc $e');
       rethrow;
     }
-    
+  }
+
+  @override
+  Future<List<AccountEntity>> getAccounts() async {
+    try {
+      print('from imprepo getacc 1');
+      final models = remote.getAccounts();
+      print('from imprepo getacc 2');
+      return models;
+    } on FirebaseAuthException catch (e) {
+      print('error from imp repo getacc $e');
+      rethrow;
+    }
+  }
+
+  @override
+  Future<void> deleteAccount(String id) async {
+    try {
+      remote.deleteAccount(id);
+    } on FirebaseException catch (e) {
+      print(e);
+      rethrow;
+    }
   }
 
   Failure _handleFirebaseException(FirebaseAuthException e) {

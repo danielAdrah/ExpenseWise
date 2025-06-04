@@ -1,13 +1,19 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+
 import '../../domain/entity/account_entity.dart';
 
 class AccountModel extends AccountEntity {
   AccountModel(
-      {required super.accountName,
+      {
+      required super.id,  
+      required super.accountName,
       required super.currency,
       required super.budget});
 
-  factory AccountModel.fromJson(Map<String, dynamic> json) {
+  factory AccountModel.fromDocument(DocumentSnapshot doc) {
+    final json = doc.data() as Map<String, dynamic>;
     return AccountModel(
+      id: doc.id,
       accountName: json['accountName'],
       currency: json['currency'],
       budget: json['budget'],

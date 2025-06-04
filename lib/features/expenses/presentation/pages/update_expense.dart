@@ -1,17 +1,29 @@
 // ignore_for_file: unused_local_variable
 
 import 'package:animate_do/animate_do.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
+import 'package:get_storage/get_storage.dart';
 
 import '../../../../core/components/custom_button.dart';
 import '../../../../core/components/gradient_icon.dart';
 import '../../../../core/components/gradient_text.dart';
 import '../../../../core/components/inline_nav_bar.dart';
+import '../../../../core/components/methods.dart';
 import '../../../../core/components/rounded_textField.dart';
+import '../../../../core/theme/app_color.dart';
+import '../../data/models/expense_model.dart';
+import '../../domain/entities/expense_entity.dart';
+import '../bloc/expense_bloc.dart';
+import '../bloc/expense_event.dart';
+import '../bloc/expense_state.dart';
 
 class EditExpense extends StatefulWidget {
-  const EditExpense({super.key});
+  final ExpenseModel expense;
+  const EditExpense({super.key, required this.expense});
 
   @override
   State<EditExpense> createState() => _EditExpenseState();
@@ -22,6 +34,10 @@ class _EditExpenseState extends State<EditExpense> {
   String? selectedCategory;
   String? selectedSubcategory;
   bool showSubcategories = false;
+
+  final newName = TextEditingController();
+  final newQuan = TextEditingController();
+  final newPrice = TextEditingController();
 
   final Map<String, List<String>> categoryData = {
     "Transportation": ["Car", "Train", "Plane"],
@@ -135,6 +151,48 @@ class _EditExpenseState extends State<EditExpense> {
     });
   }
 
+  void clearField() {
+    newName.clear();
+    newQuan.clear();
+    newPrice.clear();
+  }
+
+  final GetStorage storage = GetStorage();
+
+  void updateExp() {
+    if (selectedCategory == null ||
+        selectedSubcategory == null ||
+        newName.text.isEmpty ||
+        newQuan.text.isEmpty ||
+        newPrice.text.isEmpty) {
+      final Snackbar = Methods().infoSnackBar(
+          'Please make sure not to leave any of the fields empty');
+      ScaffoldMessenger.of(context).showSnackBar(Snackbar);
+    }
+    print('================$selectedCategory ,,,,,,,$selectedSubcategory');
+    final expense = ExpenseEntity(
+      id: widget.expense.id,
+      category: selectedCategory ?? 'try again',
+      subCategory: selectedSubcategory ?? 'again',
+      name: newName.text,
+      quantity: int.parse(newQuan.text),
+      price: double.parse(newPrice.text),
+      // date: DateTime.now(),
+      accountId: storage.read('selectedAcc'),
+      userId: FirebaseAuth.instance.currentUser!.uid,
+    );
+    context.read<ExpenseBloc>().add(UpdateExpenseEvent(expense));
+    clearField();
+  }
+
+  @override
+  void initState() {
+    newName.text = widget.expense.name;
+    newQuan.text = widget.expense.quantity.toString();
+    newPrice.text = widget.expense.price.toString();
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context).colorScheme;
@@ -149,147 +207,185 @@ class _EditExpenseState extends State<EditExpense> {
       backgroundColor: theme.surface,
       body: SafeArea(
         child: SingleChildScrollView(
-          child: Column(
-            children: [
-              const SizedBox(height: 20),
-              const InlineNavBar(title: "Edit Expense"),
-              Padding(
-                padding: const EdgeInsets.only(left: 20),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const SizedBox(height: 40),
-                    FadeInDown(
-                      duration: const Duration(milliseconds: 500),
-                      curve: Curves.decelerate,
-                      child: Text(
-                        "Selcet New Category",
-                        style: TextStyle(
-                          color: theme.inversePrimary,
-                          fontFamily: 'Poppins',
-                          fontSize: 19,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                    ),
-                    const SizedBox(height: 10),
-                    SingleChildScrollView(
-                      scrollDirection: Axis.horizontal,
-                      physics: const BouncingScrollPhysics(),
-                      child: Wrap(
-                        spacing: 8,
-                        children: categoryData.keys.map((category) {
-                          final gradient = categoryGradients[category]!;
-                          final icons = categoryIcon[category]!;
-                          return ZoomInDown(
-                            duration: const Duration(milliseconds: 700),
-                            child: buildGradientChip(
-                              label: category,
-                              icon: icons,
-                              gradientColors: gradient,
-                              selected: selectedCategory == category,
-                              onTap: () => _onCategorySelected(category),
+          child: BlocConsumer<ExpenseBloc, ExpenseState>(
+            listener: (context, state) {
+              if (state is UpdateExpenseDone) {
+                final Snackbar = Methods()
+                    .successSnackBar('Your expense is updateed successfuly');
+                ScaffoldMessenger.of(context).showSnackBar(Snackbar);
+              } else if (state is UpdateExpenseError) {
+                final Snackbar = Methods().errorSnackBar(state.message);
+                ScaffoldMessenger.of(context).showSnackBar(Snackbar);
+              }
+            },
+            builder: (context, state) {
+              return Column(
+                children: [
+                  const SizedBox(height: 20),
+                  const InlineNavBar(title: "Edit Expense"),
+                  Padding(
+                    padding: const EdgeInsets.only(left: 20),
+                    child: BlocBuilder<ExpenseBloc, ExpenseState>(
+                      builder: (context, state) {
+                        return Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            const SizedBox(height: 40),
+                            FadeInDown(
+                              duration: const Duration(milliseconds: 500),
+                              curve: Curves.decelerate,
+                              child: Text(
+                                "Selcet New Category",
+                                style: TextStyle(
+                                  color: theme.inversePrimary,
+                                  fontFamily: 'Poppins',
+                                  fontSize: 19,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
                             ),
-                          );
-                        }).toList(),
-                      ),
-                    ),
-                    const SizedBox(height: 20),
-                    AnimatedOpacity(
-                      duration: const Duration(milliseconds: 400),
-                      opacity: showSubcategories ? 1.0 : 0.0,
-                      child: showSubcategories
-                          ? Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  "Select Subcategory",
-                                  style: TextStyle(
-                                    color: theme.inversePrimary,
-                                    fontFamily: 'Poppins',
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.w600,
+                            const SizedBox(height: 10),
+                            SingleChildScrollView(
+                              scrollDirection: Axis.horizontal,
+                              physics: const BouncingScrollPhysics(),
+                              child: Wrap(
+                                spacing: 8,
+                                children: categoryData.keys.map((category) {
+                                  final gradient = categoryGradients[category]!;
+                                  final icons = categoryIcon[category]!;
+                                  return ZoomInDown(
+                                    duration: const Duration(milliseconds: 700),
+                                    child: buildGradientChip(
+                                      label: category,
+                                      icon: icons,
+                                      gradientColors: gradient,
+                                      selected: selectedCategory == category,
+                                      onTap: () =>
+                                          _onCategorySelected(category),
+                                    ),
+                                  );
+                                }).toList(),
+                              ),
+                            ),
+                            const SizedBox(height: 20),
+                            AnimatedOpacity(
+                              duration: const Duration(milliseconds: 400),
+                              opacity: showSubcategories ? 1.0 : 0.0,
+                              child: showSubcategories
+                                  ? Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          "Select Subcategory",
+                                          style: TextStyle(
+                                            color: theme.inversePrimary,
+                                            fontFamily: 'Poppins',
+                                            fontSize: 16,
+                                            fontWeight: FontWeight.w600,
+                                          ),
+                                        ),
+                                        SingleChildScrollView(
+                                          scrollDirection: Axis.horizontal,
+                                          physics:
+                                              const BouncingScrollPhysics(),
+                                          child: Wrap(
+                                            spacing: 8,
+                                            children: subcategories
+                                                .map((subcategory) {
+                                              final icons = subcategoryIcon[
+                                                      subcategory] ??
+                                                  Icons.add;
+                                              final gradient =
+                                                  subcategoryGradients[
+                                                          subcategory] ??
+                                                      [
+                                                        Colors.grey,
+                                                        Colors.grey.shade700
+                                                      ];
+                                              return buildGradientChip(
+                                                label: subcategory,
+                                                gradientColors: gradient,
+                                                icon: icons,
+                                                selected: selectedSubcategory ==
+                                                    subcategory,
+                                                onTap: () =>
+                                                    _onSubcategorySelected(
+                                                        subcategory),
+                                              );
+                                            }).toList(),
+                                          ),
+                                        ),
+                                      ],
+                                    )
+                                  : const SizedBox(),
+                            ),
+                            const SizedBox(height: 50),
+                            Padding(
+                              padding: const EdgeInsets.only(right: 20),
+                              child: Column(
+                                children: [
+                                  FadeInDown(
+                                    duration: const Duration(milliseconds: 800),
+                                    curve: Curves.decelerate,
+                                    child: RoundedTextField(
+                                        title: "Expense Title",
+                                        controller: newName,
+                                        onIconPressed: () {},
+                                        preIcon: Icons.view_headline_sharp),
                                   ),
-                                ),
-                                SingleChildScrollView(
-                                  scrollDirection: Axis.horizontal,
-                                  physics: const BouncingScrollPhysics(),
-                                  child: Wrap(
-                                    spacing: 8,
-                                    children: subcategories.map((subcategory) {
-                                      final icons =
-                                          subcategoryIcon[subcategory] ??
-                                              Icons.add;
-                                      final gradient =
-                                          subcategoryGradients[subcategory] ??
-                                              [
-                                                Colors.grey,
-                                                Colors.grey.shade700
-                                              ];
-                                      return buildGradientChip(
-                                        label: subcategory,
-                                        gradientColors: gradient,
-                                        icon: icons,
-                                        selected:
-                                            selectedSubcategory == subcategory,
-                                        onTap: () =>
-                                            _onSubcategorySelected(subcategory),
-                                      );
-                                    }).toList(),
+                                  const SizedBox(height: 25),
+                                  FadeInDown(
+                                    duration: const Duration(milliseconds: 900),
+                                    curve: Curves.decelerate,
+                                    child: RoundedTextField(
+                                        title: "Expense Quantity",
+                                        controller: newQuan,
+                                        keyboardType: TextInputType.number,
+                                        onIconPressed: () {},
+                                        preIcon:
+                                            CupertinoIcons.bag_fill_badge_plus),
                                   ),
-                                ),
-                              ],
-                            )
-                          : const SizedBox(),
+                                  const SizedBox(height: 25),
+                                  FadeInDown(
+                                    duration: const Duration(milliseconds: 900),
+                                    curve: Curves.decelerate,
+                                    child: RoundedTextField(
+                                        title: "Expense Price",
+                                        controller: newPrice,
+                                        keyboardType: TextInputType.number,
+                                        onIconPressed: () {},
+                                        preIcon: Icons.attach_money_outlined),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            const SizedBox(height: 60),
+                            state is UpdateExpenseInProgress
+                                ? SpinKitSpinningLines(
+                                    color: TColor.primary2,
+                                    size: 40,
+                                  )
+                                : Padding(
+                                    padding: const EdgeInsets.symmetric(
+                                        horizontal: 40),
+                                    child: ZoomInDown(
+                                        duration:
+                                            const Duration(milliseconds: 1000),
+                                        child: CustomButton(
+                                            title: "Edit",
+                                            onPressed: () {
+                                              updateExp();
+                                            })),
+                                  ),
+                          ],
+                        );
+                      },
                     ),
-                    const SizedBox(height: 50),
-                    Padding(
-                      padding: const EdgeInsets.only(right: 20),
-                      child: Column(
-                        children: [
-                          FadeInDown(
-                            duration: const Duration(milliseconds: 800),
-                            curve: Curves.decelerate,
-                            child: RoundedTextField(
-                                title: "Expense Title",
-                                onIconPressed: () {},
-                                preIcon: Icons.view_headline_sharp),
-                          ),
-                          const SizedBox(height: 25),
-                          FadeInDown(
-                            duration: const Duration(milliseconds: 900),
-                            curve: Curves.decelerate,
-                            child: RoundedTextField(
-                                title: "Expense Quantity",
-                                keyboardType: TextInputType.number,
-                                onIconPressed: () {},
-                                preIcon: CupertinoIcons.bag_fill_badge_plus),
-                          ),
-                          const SizedBox(height: 25),
-                          FadeInDown(
-                            duration: const Duration(milliseconds: 900),
-                            curve: Curves.decelerate,
-                            child: RoundedTextField(
-                                title: "Expense Price",
-                                keyboardType: TextInputType.number,
-                                onIconPressed: () {},
-                                preIcon: Icons.attach_money_outlined),
-                          ),
-                        ],
-                      ),
-                    ),
-                    const SizedBox(height: 60),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 40),
-                      child: ZoomInDown(
-                          duration: const Duration(milliseconds: 1000),
-                          child:
-                              CustomButton(title: "Create", onPressed: () {})),
-                    ),
-                  ],
-                ),
-              ),
-            ],
+                  ),
+                ],
+              );
+            },
           ),
         ),
       ),

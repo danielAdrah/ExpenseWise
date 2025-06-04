@@ -1,8 +1,12 @@
 import 'package:animate_do/animate_do.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../../core/theme/app_color.dart';
+import '../../../auth/presentation/bloc/auth_bloc.dart';
 import '../widgets/account_tile.dart';
 
 class AccountsView extends StatefulWidget {
@@ -13,6 +17,12 @@ class AccountsView extends StatefulWidget {
 }
 
 class _AccountsViewState extends State<AccountsView> {
+  @override
+  void initState() {
+    context.read<AuthBloc>().add(GetAccountsEvent());
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context).colorScheme;
@@ -77,66 +87,95 @@ class _AccountsViewState extends State<AccountsView> {
       body: SafeArea(
           child: Padding(
         padding: const EdgeInsets.only(left: 15, right: 15, top: 20),
-        child: ListView.builder(
-            itemCount: 2,
-            itemBuilder: (context, index) {
-              return Slidable(
-                endActionPane:
-                    ActionPane(motion: const StretchMotion(), children: [
-                  SlidableAction(
-                    onPressed: (context) {
-                      showDialog(
-                        context: context,
-                        builder: (context) {
-                          return AlertDialog(
-                            backgroundColor: theme.primaryContainer,
-                            content: Text(
-                              "Are You Sure You Want To Delete This ?",
-                              style: TextStyle(
-                                  color: theme.inversePrimary,
-                                  fontFamily: 'Poppins'),
-                            ),
-                            actions: [
-                              TextButton(
-                                onPressed: () {
-                                  context.pop();
-                                },
-                                child: Text(
-                                  "Yes",
-                                  style: TextStyle(color: theme.inversePrimary),
-                                ),
-                              ),
-                              TextButton(
-                                onPressed: () {
-                                  context.pop();
-                                },
-                                child: Text("No",
-                                    style:
-                                        TextStyle(color: theme.inversePrimary)),
-                              ),
-                            ],
-                          );
-                        },
-                      );
-                    },
-                    icon: Icons.delete,
-                    backgroundColor: Colors.red,
-                    borderRadius: BorderRadius.circular(5),
-                    spacing: 2,
-                  ),
-                ]),
-                child: FadeInUp(
-                  delay: const Duration(milliseconds: 200),
-                  curve: Curves.decelerate,
-                  child: const AccountTile(
-                    icon: Icons.account_box,
-                    currency: "Syrian Bound",
-                    title: "Daily Account",
-                    budget: "200000",
-                  ),
-                ),
-              );
-            }),
+        child: BlocBuilder<AuthBloc, AuthState>(
+          builder: (context, authState) {
+            if (authState is GetAccountsLoaded &&
+                authState.accounts.isNotEmpty) {
+              return ListView.builder(
+                  itemCount: authState.accounts.length,
+                  itemBuilder: (context, index) {
+                    final account = authState.accounts[index];
+                    return Slidable(
+                      endActionPane:
+                          ActionPane(motion: const StretchMotion(), children: [
+                        SlidableAction(
+                          onPressed: (context) {
+                            showDialog(
+                              context: context,
+                              builder: (context) {
+                                return AlertDialog(
+                                  backgroundColor: theme.primaryContainer,
+                                  content: Text(
+                                    "Are You Sure You Want To Delete This ?",
+                                    style: TextStyle(
+                                        color: theme.inversePrimary,
+                                        fontFamily: 'Poppins'),
+                                  ),
+                                  actions: [
+                                    TextButton(
+                                      onPressed: () {
+                                        context.read<AuthBloc>().add(
+                                            DeleteAccountEvent(account.id));
+                                        context.goNamed('settingsView');
+                                      },
+                                      child: Text(
+                                        "Yes",
+                                        style: TextStyle(
+                                            color: theme.inversePrimary),
+                                      ),
+                                    ),
+                                    TextButton(
+                                      onPressed: () {
+                                        context.pop();
+                                      },
+                                      child: Text("No",
+                                          style: TextStyle(
+                                              color: theme.inversePrimary)),
+                                    ),
+                                  ],
+                                );
+                              },
+                            );
+                          },
+                          icon: Icons.delete,
+                          backgroundColor: Colors.red,
+                          borderRadius: BorderRadius.circular(5),
+                          spacing: 2,
+                        ),
+                      ]),
+                      child: FadeInUp(
+                        delay: const Duration(milliseconds: 200),
+                        curve: Curves.decelerate,
+                        child: AccountTile(
+                          icon: Icons.account_box,
+                          currency: account.currency,
+                          title: account.accountName,
+                          budget: account.budget.toString(),
+                        ),
+                      ),
+                    );
+                  });
+            } else if (authState is GetAccountsLoaded &&
+                authState.accounts.isEmpty) {
+              return Center(
+                  child: Text("You don't have any accounts yet!!",
+                      style: TextStyle(
+                        color: theme.inversePrimary,
+                        fontFamily: 'Poppins',
+                        fontWeight: FontWeight.w600,
+                        fontSize: 18,
+                      )));
+            } else if (authState is GetAccountsLoading) {
+              return Center(
+                  child: SpinKitWave(
+                color: TColor.primary2,
+                size: 30,
+              ));
+            } else {
+              return const SizedBox();
+            }
+          },
+        ),
       )),
     );
   }

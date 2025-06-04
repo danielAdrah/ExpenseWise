@@ -5,12 +5,19 @@ import 'package:trackme/features/auth/domain/usecases/create_account_usercase.da
 import '../../features/auth/data/datasources/auth_remote_data_source.dart';
 import '../../features/auth/data/repository/auth_repository_imp.dart';
 import '../../features/auth/domain/repository/auth_repository.dart';
-import '../../features/auth/domain/repository/get_current_user_use_case.dart';
+import '../../features/auth/domain/usecases/delete_account_usecase.dart';
+import '../../features/auth/domain/usecases/get_accounts_usecase.dart';
+import '../../features/auth/domain/usecases/get_current_user_use_case.dart';
 import '../../features/auth/domain/usecases/reset_password_usecase.dart';
 import '../../features/auth/domain/usecases/sign_in_usecase.dart';
 import '../../features/auth/domain/usecases/sign_out_usecase.dart';
 import '../../features/auth/domain/usecases/sign_up_usecase.dart';
 import '../../features/auth/presentation/bloc/auth_bloc.dart';
+import '../../features/expenses/data/datasources/expense_remote_datasource.dart';
+import '../../features/expenses/data/repositories/expense_repository_impl.dart';
+import '../../features/expenses/domain/repositories/expense_repository.dart';
+import '../../features/expenses/domain/usecases/usecases.dart';
+import '../../features/expenses/presentation/bloc/expense_bloc.dart';
 import '../../features/settings/data/datasources/user_remote_data_source.dart';
 import '../../features/settings/data/repository/user_repository_imp.dart';
 import '../../features/settings/domain/repository/user_repository.dart';
@@ -25,7 +32,7 @@ Future<void> init() async {
   // External
   sl.registerLazySingleton(() => FirebaseAuth.instance);
   sl.registerLazySingleton(() => FirebaseFirestore.instance);
-
+//===============================================================================
   //Data sources
   sl.registerLazySingleton<AuthRemoteDataSource>(
     () => AuthRemoteDataSourceImp(auth: sl(), firestore: sl()),
@@ -34,7 +41,11 @@ Future<void> init() async {
   sl.registerLazySingleton<UserRemoteDataSource>(
     () => UserRemoteDataSourceImp(auth: sl(), firestore: sl()),
   );
-
+  //---
+  sl.registerLazySingleton<ExpenseRemoteDataSource>(
+    () => ExpenseRemoteDataSourceImpl(sl()),
+  );
+//=================================================================================
   // Repositories
   sl.registerLazySingleton<AuthRepository>(
     () => AuthRepositoryImp(remote: sl()),
@@ -43,7 +54,11 @@ Future<void> init() async {
   sl.registerLazySingleton<UserRepository>(
     () => UserRepositoryImp(remote: sl()),
   );
-
+  //---
+  sl.registerLazySingleton<ExpenseRepository>(
+    () => ExpenseRepositoryImpl(remoteDataSource: sl()),
+  );
+//=================================================================================
   // Use cases
   sl.registerLazySingleton(() => SignInUsecase(repo: sl()));
   sl.registerLazySingleton(() => SignUpUsecase(repo: sl()));
@@ -51,27 +66,32 @@ Future<void> init() async {
   sl.registerLazySingleton(() => SignOutUsecase(repo: sl()));
   sl.registerLazySingleton(() => GetCurrentUserUseCase(repo: sl()));
   sl.registerLazySingleton(() => CreateAccountUsercase(repo: sl()));
+  sl.registerLazySingleton(() => DeleteAccountUsecase(repo: sl()));
+  sl.registerLazySingleton(() => GetAccountsUsecase(repo: sl()));
   //---
   sl.registerLazySingleton(() => GetUserDataUsecase(repo: sl()));
   sl.registerLazySingleton(() => UpdateUserDataUsecase(repo: sl()));
+  //---
+  sl.registerLazySingleton(() => AddExpenseUseCase(repository: sl()));
+  sl.registerLazySingleton(() => UpdateExpenseUseCase(repository: sl()));
+  sl.registerLazySingleton(() => DeleteExpenseUseCase(repository: sl()));
+  sl.registerLazySingleton(() => GetExpensesUseCase(repository: sl()));
+  //---
+//=================================================================================
 
   // BLoC
-  sl.registerFactory(() => AuthBloc(
-        // signIn: sl(),
-        // signUp: sl(),
-        // resetPassword: sl(),
-        // signOut: sl(),
-        // getCurrentUser: sl(),
-        sl(),
-        sl(),
-        sl(),
-        sl(),
-        sl(),
-        sl(),
-      ));
-  sl.registerFactory(() => UserInfoBloc(
-        getInfoUseecase: sl(),
-      ));
+  sl.registerFactory(() => AuthBloc(sl(), sl(), sl(), sl(), sl(), sl(),sl(),sl()));
+  //---
+  sl.registerFactory(() => UserInfoBloc(getInfoUseecase: sl()));
+  //---
+  sl.registerFactory(
+    () => ExpenseBloc(
+        addExpense: sl(),
+        deleteExpense: sl(),
+        updateExpense: sl(),
+        getExpenses: sl()),
+  );
+  //---
 
-  //==========================
+//=================================================================================
 }

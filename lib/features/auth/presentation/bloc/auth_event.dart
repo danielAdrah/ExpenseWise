@@ -51,3 +51,20 @@ class CreateAccountEvent extends AuthEvent {
   @override
   List<Object> get props => [account];
 }
+
+class GetAccountsEvent extends AuthEvent {}
+
+class GetAccountId extends AuthEvent {
+  final String id;
+
+  const GetAccountId({required this.id});
+  @override
+  List<Object> get props => [id];
+}
+
+class DeleteAccountEvent extends AuthEvent {
+  final String id;
+  const DeleteAccountEvent(this.id);
+  @override
+  List<Object> get props => [id];
+}
