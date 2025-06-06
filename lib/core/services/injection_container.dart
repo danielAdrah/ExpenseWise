@@ -77,19 +77,32 @@ Future<void> init() async {
   sl.registerLazySingleton(() => DeleteExpenseUseCase(repository: sl()));
   sl.registerLazySingleton(() => GetExpensesUseCase(repository: sl()));
   //---
+  sl.registerLazySingleton(() => AddUpcomingExpenseUseCase(repository: sl()));
+  sl.registerLazySingleton(
+      () => UpdateUpcomingExpenseUseCase(repository: sl()));
+  sl.registerLazySingleton(
+      () => DeleteUpcomingExpenseUseCase(repository: sl()));
+  sl.registerLazySingleton(() => GetUpcomingExpensesUseCase(repository: sl()));
+
 //=================================================================================
 
   // BLoC
-  sl.registerFactory(() => AuthBloc(sl(), sl(), sl(), sl(), sl(), sl(),sl(),sl()));
+  sl.registerFactory(
+      () => AuthBloc(sl(), sl(), sl(), sl(), sl(), sl(), sl(), sl()));
   //---
   sl.registerFactory(() => UserInfoBloc(getInfoUseecase: sl()));
   //---
   sl.registerFactory(
     () => ExpenseBloc(
-        addExpense: sl(),
-        deleteExpense: sl(),
-        updateExpense: sl(),
-        getExpenses: sl()),
+      addExpense: sl(),
+      deleteExpense: sl(),
+      updateExpense: sl(),
+      getExpenses: sl(),
+      addUpcomingExpense: sl(),
+      updateUpcomingExpense: sl(),
+      deleteUpcomingExpense: sl(),
+      getUpcomingExpense: sl(),
+    ),
   );
   //---
 

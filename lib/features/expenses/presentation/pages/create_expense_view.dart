@@ -1,4 +1,4 @@
-// ignore_for_file: unused_local_variable, avoid_print
+// ignore_for_file: unused_local_variable, avoid_print, non_constant_identifier_names
 
 import 'package:animate_do/animate_do.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -161,7 +161,7 @@ class _CreateExpenseViewState extends State<CreateExpenseView> {
         expTitle.text.isEmpty ||
         expQuan.text.isEmpty ||
         expPrice.text.isEmpty) {
-     final Snackbar = Methods().infoSnackBar(
+      final Snackbar = Methods().infoSnackBar(
           'Please make sure not to leave any of the fields empty');
       ScaffoldMessenger.of(context).showSnackBar(Snackbar);
     }
@@ -177,6 +177,14 @@ class _CreateExpenseViewState extends State<CreateExpenseView> {
       accountId: storage.read('selectedAcc'),
       userId: FirebaseAuth.instance.currentUser!.uid,
     );
+    print(expense.name);
+    print(expense.category);
+    print(expense.subCategory);
+    print(expense.quantity);
+    print(expense.price);
+    // print(expense.date);
+    print(expense.accountId);
+    print(expense.id);
     context.read<ExpenseBloc>().add(AddExpenseEvent(expense));
     clearField();
   }
@@ -358,9 +366,6 @@ class _CreateExpenseViewState extends State<CreateExpenseView> {
                                     child: CustomButton(
                                         title: "Create",
                                         onPressed: () {
-                                          print(expTitle.text);
-                                          print(expQuan.text);
-                                          print(expPrice.text);
                                           expenseSumbimt();
                                           // context.read<ExpenseBloc>().add();
                                         })),

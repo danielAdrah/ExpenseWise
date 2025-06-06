@@ -145,6 +145,8 @@ class _DashboardViewState extends State<DashboardView> {
                                             context
                                                 .read<ExpenseBloc>()
                                                 .add(LoadExpensesEvent(val));
+                                            context.read<ExpenseBloc>().add(
+                                                LoadUpcomingExpensesEvent(val));
                                           }
                                         },
                                       ),
@@ -193,6 +195,7 @@ class _DashboardViewState extends State<DashboardView> {
             SliverToBoxAdapter(
               child: BlocBuilder<ExpenseBloc, ExpenseState>(
                 builder: (context, expState) {
+                  print("state in dashboard $expState");
                   if (expState is ExpenseLoaded) {
                     if (expState.expenses.isEmpty) {
                       return Padding(
@@ -213,9 +216,8 @@ class _DashboardViewState extends State<DashboardView> {
                       itemCount: expState.expenses.length,
                       itemBuilder: ((context, index) {
                         var exp = expState.expenses[index];
-                        return FadeInDown(
+                        return ZoomInDown(
                           delay: const Duration(milliseconds: 500),
-                          curve: Curves.decelerate,
                           child: Slidable(
                             endActionPane: ActionPane(
                                 motion: const StretchMotion(),
@@ -315,6 +317,28 @@ class _DashboardViewState extends State<DashboardView> {
                               color: theme.inversePrimary,
                               fontSize: 17,
                               fontFamily: 'Poppins')),
+                    );
+                  } else if (expState is ExpenseLoading) {
+                    return Padding(
+                      padding: const EdgeInsets.only(top: 50),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Image.asset(
+                            'assets/img/wait.png',
+                            width: 90,
+                            height: 90,
+                          ),
+                          const SizedBox(height: 15),
+                          Text("Please wait ...",
+                              style: TextStyle(
+                                  color: theme.inversePrimary,
+                                  fontFamily: 'Poppins',
+                                  fontWeight: FontWeight.w500,
+                                  fontSize: 16)),
+                        ],
+                      ),
                     );
                   } else {
                     return const SizedBox();

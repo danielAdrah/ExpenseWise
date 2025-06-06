@@ -1,4 +1,5 @@
 import '../entities/expense_entity.dart';
+import '../entities/upcoming_expense_entity.dart';
 import '../repositories/expense_repository.dart';
 
 class AddExpenseUseCase {
@@ -30,14 +31,14 @@ class GetExpensesUseCase {
 class AddUpcomingExpenseUseCase {
   final ExpenseRepository repository;
   AddUpcomingExpenseUseCase({required this.repository});
-  Future<void> call(ExpenseEntity expense) =>
+  Future<void> call(UpcomingExpenseEntity expense) =>
       repository.addUpcomingExpense(expense);
 }
 
 class UpdateUpcomingExpenseUseCase {
   final ExpenseRepository repository;
   UpdateUpcomingExpenseUseCase({required this.repository});
-  Future<void> call(ExpenseEntity expense) =>
+  Future<void> call(UpcomingExpenseEntity expense) =>
       repository.updateUpcomingExpense(expense);
 }
 
@@ -50,6 +51,6 @@ class DeleteUpcomingExpenseUseCase {
 class GetUpcomingExpensesUseCase {
   final ExpenseRepository repository;
   GetUpcomingExpensesUseCase({required this.repository});
-  Future<List<ExpenseEntity>> call(String accountId) =>
+  Future<List<UpcomingExpenseEntity>> call(String accountId) =>
       repository.getUpcomingExpenses(accountId);
 }
