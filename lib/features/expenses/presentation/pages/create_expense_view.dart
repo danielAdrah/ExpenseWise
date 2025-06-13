@@ -27,7 +27,7 @@ class CreateExpenseView extends StatefulWidget {
   State<CreateExpenseView> createState() => _CreateExpenseViewState();
 }
 
-class _CreateExpenseViewState extends State<CreateExpenseView> {
+class _CreateExpenseViewState extends State<CreateExpenseView>  {
   // DateTime date = DateTime.now();
   String? selectedCategory;
   String? selectedSubcategory;
@@ -35,6 +35,7 @@ class _CreateExpenseViewState extends State<CreateExpenseView> {
   final expTitle = TextEditingController();
   final expQuan = TextEditingController();
   final expPrice = TextEditingController();
+  
   void clearField() {
     expTitle.clear();
     expQuan.clear();

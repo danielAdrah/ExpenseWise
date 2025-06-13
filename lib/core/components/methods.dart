@@ -16,6 +16,7 @@ class Methods {
 
   SnackBar successSnackBar(String msg) {
     return SnackBar(
+   
         elevation: 0,
         behavior: SnackBarBehavior.floating,
         backgroundColor: Colors.transparent,

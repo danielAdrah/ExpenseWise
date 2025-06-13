@@ -7,6 +7,7 @@ import '../../../features/auth/presentation/pages/sign_up_view.dart';
 import '../../../features/charts/presentation/pages/chart_view.dart';
 import '../../../features/expenses/data/models/edit_expense_model.dart';
 import '../../../features/expenses/data/models/expense_model.dart';
+import '../../../features/expenses/data/models/upcoming_expense_model.dart';
 import '../../../features/expenses/presentation/pages/create_expense_view.dart';
 import '../../../features/expenses/presentation/pages/create_upcoming.dart';
 import '../../../features/expenses/presentation/pages/update_expense.dart';
@@ -90,7 +91,10 @@ final GoRouter router = GoRouter(
     GoRoute(
       path: '/editUpcoming',
       name: 'editUpcoming',
-      builder: (context, state) => const EditUpcomingExpense(),
+      builder: (context, state) {
+        final expense = state.extra as UpcomingExpenseModel;
+        return  EditUpcomingExpense(expense: expense);
+      },
     ),
     //======
     GoRoute(

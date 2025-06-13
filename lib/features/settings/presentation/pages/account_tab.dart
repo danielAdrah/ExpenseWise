@@ -6,6 +6,7 @@ import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../../core/theme/app_color.dart';
+import '../../../auth/domain/entity/account_entity.dart';
 import '../../../auth/presentation/bloc/auth_bloc.dart';
 import '../widgets/account_tile.dart';
 
@@ -17,6 +18,11 @@ class AccountsView extends StatefulWidget {
 }
 
 class _AccountsViewState extends State<AccountsView> {
+  void deleteAccount(AccountEntity account) async {
+    context.read<AuthBloc>().add(DeleteAccountEvent(account.id));
+    context.read<AuthBloc>().add(GetAccountsEvent());
+  }
+
   @override
   void initState() {
     context.read<AuthBloc>().add(GetAccountsEvent());
@@ -114,9 +120,11 @@ class _AccountsViewState extends State<AccountsView> {
                                   actions: [
                                     TextButton(
                                       onPressed: () {
-                                        context.read<AuthBloc>().add(
-                                            DeleteAccountEvent(account.id));
-                                        context.goNamed('settingsView');
+                                        deleteAccount(account);
+                                        context.pop();
+                                        // context.read<AuthBloc>().add(
+                                        //     DeleteAccountEvent(account.id));
+                                        // context.goNamed('settingsView');
                                       },
                                       child: Text(
                                         "Yes",

@@ -131,7 +131,15 @@ class _CreateSecAccountState extends State<CreateSecAccount> {
                             child: CustomButton(
                                 title: "Create",
                                 onPressed: () {
-                                  context.read<AuthBloc>().add(
+                                  if (accName.text.isEmpty ||
+                                      accCurrency.text.isEmpty ||
+                                      accBudget.text.isEmpty) {
+                                    final Snackbar = Methods().infoSnackBar(
+                                        'Please make sure not to leave any of the fields empty');
+                                    ScaffoldMessenger.of(context)
+                                        .showSnackBar(Snackbar);
+                                  }else{
+                                     context.read<AuthBloc>().add(
                                         CreateAccountEvent(
                                           account: AccountEntity(
                                             id: '',
@@ -142,8 +150,10 @@ class _CreateSecAccountState extends State<CreateSecAccount> {
                                           ),
                                         ),
                                       );
+                                  context.goNamed('mainBar');
                                   clear();
-                           
+                                  }
+                                 
                                 })),
                   ],
                 ),

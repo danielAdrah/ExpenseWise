@@ -142,6 +142,7 @@ class _DashboardViewState extends State<DashboardView> {
 
                                             print(
                                                 "====after selecting ${storage.read('selectedAcc')}");
+
                                             context
                                                 .read<ExpenseBloc>()
                                                 .add(LoadExpensesEvent(val));
@@ -191,7 +192,7 @@ class _DashboardViewState extends State<DashboardView> {
                 ),
               ),
             ),
-            //=======
+            //=======================================
             SliverToBoxAdapter(
               child: BlocBuilder<ExpenseBloc, ExpenseState>(
                 builder: (context, expState) {
@@ -209,107 +210,108 @@ class _DashboardViewState extends State<DashboardView> {
                                     fontSize: 17,
                                     fontFamily: 'Poppins'))),
                       );
-                    }
-                    return ListView.builder(
-                      shrinkWrap: true,
-                      physics: const NeverScrollableScrollPhysics(),
-                      itemCount: expState.expenses.length,
-                      itemBuilder: ((context, index) {
-                        var exp = expState.expenses[index];
-                        return ZoomInDown(
-                          delay: const Duration(milliseconds: 500),
-                          child: Slidable(
-                            endActionPane: ActionPane(
-                                motion: const StretchMotion(),
-                                children: [
-                                  SlidableAction(
-                                    onPressed: (context) {
-                                      showDialog(
-                                        context: context,
-                                        builder: (context) {
-                                          return AlertDialog(
-                                            backgroundColor:
-                                                theme.primaryContainer,
-                                            content: Text(
-                                              "Are You Sure You Want To Delete This ?",
-                                              style: TextStyle(
-                                                  color: theme.inversePrimary,
-                                                  fontFamily: 'Poppins'),
-                                            ),
-                                            actions: [
-                                              TextButton(
-                                                onPressed: () {
-                                                  context
-                                                      .read<ExpenseBloc>()
-                                                      .add(DeleteExpenseEvent(
-                                                          exp.id));
-                                                  context
-                                                      .read<ExpenseBloc>()
-                                                      .add(LoadExpensesEvent(
-                                                          storage.read(
-                                                                  'selectedAcc') ??
-                                                              ""));
-                                                  context.pop();
-                                                },
-                                                child: Text(
-                                                  "Yes",
-                                                  style: TextStyle(
-                                                      color:
-                                                          theme.inversePrimary),
-                                                ),
+                    } else {
+                      return ListView.builder(
+                        shrinkWrap: true,
+                        physics: const NeverScrollableScrollPhysics(),
+                        itemCount: expState.expenses.length,
+                        itemBuilder: ((context, index) {
+                          var exp = expState.expenses[index];
+                          return ZoomInDown(
+                            delay: const Duration(milliseconds: 500),
+                            child: Slidable(
+                              endActionPane: ActionPane(
+                                  motion: const StretchMotion(),
+                                  children: [
+                                    SlidableAction(
+                                      onPressed: (context) {
+                                        showDialog(
+                                          context: context,
+                                          builder: (context) {
+                                            return AlertDialog(
+                                              backgroundColor:
+                                                  theme.primaryContainer,
+                                              content: Text(
+                                                "Are You Sure You Want To Delete This ?",
+                                                style: TextStyle(
+                                                    color: theme.inversePrimary,
+                                                    fontFamily: 'Poppins'),
                                               ),
-                                              TextButton(
-                                                onPressed: () {
-                                                  context.pop();
-                                                },
-                                                child: Text("No",
+                                              actions: [
+                                                TextButton(
+                                                  onPressed: () {
+                                                    context
+                                                        .read<ExpenseBloc>()
+                                                        .add(DeleteExpenseEvent(
+                                                            exp.id));
+                                                    context
+                                                        .read<ExpenseBloc>()
+                                                        .add(LoadExpensesEvent(
+                                                            storage.read(
+                                                                    'selectedAcc') ??
+                                                                ""));
+                                                    context.pop();
+                                                  },
+                                                  child: Text(
+                                                    "Yes",
                                                     style: TextStyle(
                                                         color: theme
-                                                            .inversePrimary)),
-                                              ),
-                                            ],
-                                          );
-                                        },
-                                      );
-                                    },
-                                    icon: Icons.delete,
-                                    backgroundColor: Colors.red,
-                                    label: "Delete",
-                                    borderRadius: BorderRadius.circular(5),
-                                    spacing: 2,
-                                  ),
-                                  SlidableAction(
-                                    onPressed: (context) {
-                                      context.pushNamed('editExpense',
-                                          extra: ExpenseModel(
-                                            name: exp.name,
-                                            quantity: exp.quantity,
-                                            price: exp.price,
-                                            accountId: exp.accountId,
-                                            category: exp.category,
-                                            id: exp.id,
-                                            subCategory: exp.subCategory,
-                                            userId: FirebaseAuth
-                                                .instance.currentUser!.uid,
-                                          ));
-                                    },
-                                    icon: Icons.edit,
-                                    label: "Edit",
-                                    backgroundColor: Colors.green,
-                                    borderRadius: BorderRadius.circular(5),
-                                    spacing: 2,
-                                  ),
-                                ]),
-                            child: MyListTile(
-                              type: exp.category,
-                              title: exp.name,
-                              price: exp.price.toString(),
-                              date: DateTime.now(),
+                                                            .inversePrimary),
+                                                  ),
+                                                ),
+                                                TextButton(
+                                                  onPressed: () {
+                                                    context.pop();
+                                                  },
+                                                  child: Text("No",
+                                                      style: TextStyle(
+                                                          color: theme
+                                                              .inversePrimary)),
+                                                ),
+                                              ],
+                                            );
+                                          },
+                                        );
+                                      },
+                                      icon: Icons.delete,
+                                      backgroundColor: Colors.red,
+                                      label: "Delete",
+                                      borderRadius: BorderRadius.circular(5),
+                                      spacing: 2,
+                                    ),
+                                    SlidableAction(
+                                      onPressed: (context) {
+                                        context.pushNamed('editExpense',
+                                            extra: ExpenseModel(
+                                              name: exp.name,
+                                              quantity: exp.quantity,
+                                              price: exp.price,
+                                              accountId: exp.accountId,
+                                              category: exp.category,
+                                              id: exp.id,
+                                              subCategory: exp.subCategory,
+                                              userId: FirebaseAuth
+                                                  .instance.currentUser!.uid,
+                                            ));
+                                      },
+                                      icon: Icons.edit,
+                                      label: "Edit",
+                                      backgroundColor: Colors.green,
+                                      borderRadius: BorderRadius.circular(5),
+                                      spacing: 2,
+                                    ),
+                                  ]),
+                              child: MyListTile(
+                                type: exp.category,
+                                title: exp.name,
+                                price: exp.price.toString(),
+                                date: DateTime.now(),
+                              ),
                             ),
-                          ),
-                        );
-                      }),
-                    );
+                          );
+                        }),
+                      );
+                    }
                   } else if (expState is ExpenseError) {
                     return Center(
                       child: Text(expState.message,
@@ -341,7 +343,7 @@ class _DashboardViewState extends State<DashboardView> {
                       ),
                     );
                   } else {
-                    return const SizedBox();
+                    return const Center(child: Text("nooooooooo"));
                   }
                 },
               ),

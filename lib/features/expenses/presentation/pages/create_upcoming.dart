@@ -26,7 +26,8 @@ class CreateUpcomingExpense extends StatefulWidget {
   State<CreateUpcomingExpense> createState() => _CreateUpcomingExpenseState();
 }
 
-class _CreateUpcomingExpenseState extends State<CreateUpcomingExpense> {
+class _CreateUpcomingExpenseState extends State<CreateUpcomingExpense>
+    with TickerProviderStateMixin {
   // DateTime date = DateTime.now();
   String? selectedCategory;
   String? selectedSubcategory;
@@ -36,6 +37,8 @@ class _CreateUpcomingExpenseState extends State<CreateUpcomingExpense> {
   final expQuan = TextEditingController();
   final expPrice = TextEditingController();
   final date = TextEditingController();
+  
+
   void clearField() {
     expTitle.clear();
     expQuan.clear();
@@ -161,7 +164,8 @@ class _CreateUpcomingExpenseState extends State<CreateUpcomingExpense> {
         expQuan.text.isEmpty ||
         expPrice.text.isEmpty) {
       final Snackbar = Methods().infoSnackBar(
-          'Please make sure not to leave any of the fields empty');
+          'Please make sure not to leave any of the fields empty'
+          );
       ScaffoldMessenger.of(context).showSnackBar(Snackbar);
     } else {
       print('================$selectedCategory ,,,,,,,$selectedSubcategory');

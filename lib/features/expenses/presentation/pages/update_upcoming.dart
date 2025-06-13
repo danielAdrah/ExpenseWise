@@ -1,29 +1,48 @@
-// ignore_for_file: unused_local_variable
+// ignore_for_file: unused_local_variable, avoid_print
 
 import 'package:animate_do/animate_do.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:get_storage/get_storage.dart';
 
 import '../../../../core/components/custom_button.dart';
 import '../../../../core/components/date_text_field.dart';
 import '../../../../core/components/gradient_icon.dart';
 import '../../../../core/components/gradient_text.dart';
 import '../../../../core/components/inline_nav_bar.dart';
+import '../../../../core/components/methods.dart';
 import '../../../../core/components/rounded_textField.dart';
 import '../../../../core/theme/app_color.dart';
+import '../../domain/entities/upcoming_expense_entity.dart';
+import '../bloc/expense_bloc.dart';
+import '../bloc/expense_event.dart';
 
 class EditUpcomingExpense extends StatefulWidget {
-  const EditUpcomingExpense({super.key});
+  const EditUpcomingExpense({super.key, required this.expense});
+  final UpcomingExpenseEntity expense;
 
   @override
   State<EditUpcomingExpense> createState() => _EditUpcomingExpenseState();
 }
 
 class _EditUpcomingExpenseState extends State<EditUpcomingExpense> {
-  final TextEditingController date = TextEditingController();
   String? selectedCategory;
   String? selectedSubcategory;
   bool showSubcategories = false;
+  final newName = TextEditingController();
+  final newQuan = TextEditingController();
+  final newPrice = TextEditingController();
+  final newDate = TextEditingController();
+  void clearField() {
+    newName.clear();
+    newQuan.clear();
+    newPrice.clear();
+    newDate.clear();
+  }
+
+  final GetStorage storage = GetStorage();
 
   final Map<String, List<String>> categoryData = {
     "Transportation": ["Car", "Train", "Plane"],
@@ -135,6 +154,41 @@ class _EditUpcomingExpenseState extends State<EditUpcomingExpense> {
     setState(() {
       selectedSubcategory = subcategory;
     });
+  }
+
+  void updateUpcomingExpense() {
+    if (selectedCategory == null ||
+        selectedSubcategory == null ||
+        newName.text.isEmpty ||
+        newQuan.text.isEmpty ||
+        newPrice.text.isEmpty) {
+      final Snackbar = Methods().infoSnackBar(
+          'Please make sure not to leave any of the fields empty');
+      ScaffoldMessenger.of(context).showSnackBar(Snackbar);
+    }
+    print('================$selectedCategory ,,,,,,,$selectedSubcategory');
+    final expense = UpcomingExpenseEntity(
+      id: widget.expense.id,
+      category: selectedCategory ?? 'try again',
+      subCategory: selectedSubcategory ?? 'again',
+      name: newName.text,
+      quantity: int.parse(newQuan.text),
+      price: double.parse(newPrice.text),
+      accountId: storage.read('selectedAcc'),
+      userId: FirebaseAuth.instance.currentUser!.uid,
+      date: widget.expense.date,
+    );
+    context.read<ExpenseBloc>().add(UpdateUpcomingExpenseEvent(expense));
+    clearField();
+  }
+
+  @override
+  void initState() {
+    newName.text = widget.expense.name;
+    newQuan.text = widget.expense.quantity.toString();
+    newPrice.text = widget.expense.price.toString();
+    print("====================== ${widget.expense.id}");
+    super.initState();
   }
 
   @override
@@ -254,6 +308,7 @@ class _EditUpcomingExpenseState extends State<EditUpcomingExpense> {
                             curve: Curves.decelerate,
                             child: RoundedTextField(
                                 title: "Expense Title",
+                                controller: newName,
                                 onIconPressed: () {},
                                 preIcon: Icons.view_headline_sharp),
                           ),
@@ -263,6 +318,7 @@ class _EditUpcomingExpenseState extends State<EditUpcomingExpense> {
                             curve: Curves.decelerate,
                             child: RoundedTextField(
                                 title: "Expense Quantity",
+                                controller: newQuan,
                                 keyboardType: TextInputType.number,
                                 onIconPressed: () {},
                                 preIcon: CupertinoIcons.bag_fill_badge_plus),
@@ -273,6 +329,7 @@ class _EditUpcomingExpenseState extends State<EditUpcomingExpense> {
                             curve: Curves.decelerate,
                             child: RoundedTextField(
                                 title: "Expense Price",
+                                controller: newPrice,
                                 keyboardType: TextInputType.number,
                                 onIconPressed: () {},
                                 preIcon: Icons.attach_money_outlined),
@@ -284,7 +341,7 @@ class _EditUpcomingExpenseState extends State<EditUpcomingExpense> {
                             child: DateTextField(
                               onTap: showDate,
                               title: "Expense Date",
-                              controller: date,
+                              controller: newDate,
                               keyboardType: TextInputType.number,
                               icon: Icons.date_range_rounded,
                               onIconPressed: () {},
@@ -298,8 +355,11 @@ class _EditUpcomingExpenseState extends State<EditUpcomingExpense> {
                       padding: const EdgeInsets.symmetric(horizontal: 40),
                       child: ZoomInDown(
                           duration: const Duration(milliseconds: 1000),
-                          child:
-                              CustomButton(title: "Create", onPressed: () {})),
+                          child: CustomButton(
+                              title: "Edit",
+                              onPressed: () {
+                                updateUpcomingExpense();
+                              })),
                     ),
                   ],
                 ),
@@ -321,7 +381,7 @@ class _EditUpcomingExpenseState extends State<EditUpcomingExpense> {
     );
     if (picked != null) {
       // controller.startDate.text = picked.toString().substring(0, 10);
-      date.text = picked.toString().substring(0, 10);
+      newDate.text = picked.toString().substring(0, 10);
     }
   }
 

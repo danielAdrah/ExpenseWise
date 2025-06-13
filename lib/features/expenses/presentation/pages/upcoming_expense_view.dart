@@ -1,4 +1,5 @@
 import 'package:animate_do/animate_do.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
@@ -9,6 +10,8 @@ import 'package:go_router/go_router.dart';
 import '../../../../core/components/main_app_bar.dart';
 import '../../../../core/components/my_list_tile.dart';
 import '../../../../core/theme/app_color.dart';
+import '../../data/models/upcoming_expense_model.dart';
+import '../../domain/entities/upcoming_expense_entity.dart';
 import '../bloc/expense_bloc.dart';
 import '../bloc/expense_event.dart';
 import '../bloc/expense_state.dart';
@@ -22,6 +25,18 @@ class UpcomingExpenseView extends StatefulWidget {
 
 class _UpcomingExpenseViewState extends State<UpcomingExpenseView> {
   final GetStorage storage = GetStorage();
+
+  void refreshList() {
+    context
+        .read<ExpenseBloc>()
+        .add(LoadUpcomingExpensesEvent(storage.read('selectedAcc') ?? ""));
+  }
+
+  void deleteAccount(UpcomingExpenseEntity exp) async {
+    context.read<ExpenseBloc>().add(DeleteUpcomingExpenseEvent(exp.id));
+    refreshList();
+  }
+
   @override
   void initState() {
     context
@@ -48,7 +63,14 @@ class _UpcomingExpenseViewState extends State<UpcomingExpenseView> {
               ),
             ),
             SliverToBoxAdapter(
-              child: BlocBuilder<ExpenseBloc, ExpenseState>(
+              child: BlocConsumer<ExpenseBloc, ExpenseState>(
+                listener: (context, state) {
+                  if (state is DeleteUpcomingExpenseDone ||
+                      state is AddUpcomingExpenseDone ||
+                      state is UpdateUpcomingExpenseDone) {
+                    refreshList();
+                  }
+                },
                 builder: (context, expState) {
                   if (expState is UpcomingExpenseLoaded) {
                     if (expState.expenses.isEmpty) {
@@ -67,7 +89,7 @@ class _UpcomingExpenseViewState extends State<UpcomingExpenseView> {
                               ),
                               const SizedBox(height: 10),
                               Text(
-                                  "There are no upcoming expenses to be displayed Add one first",
+                                  "There are no upcoming expenses to be displayed. Add one first",
                                   textAlign: TextAlign.center,
                                   style: TextStyle(
                                       color: theme.inversePrimary,
@@ -104,7 +126,10 @@ class _UpcomingExpenseViewState extends State<UpcomingExpenseView> {
                                           ),
                                           actions: [
                                             TextButton(
-                                              onPressed: () {},
+                                              onPressed: () {
+                                                deleteAccount(exp);
+                                                context.pop();
+                                              },
                                               child: Text(
                                                 "Yes",
                                                 style: TextStyle(
@@ -133,7 +158,21 @@ class _UpcomingExpenseViewState extends State<UpcomingExpenseView> {
                                   spacing: 2,
                                 ),
                                 SlidableAction(
-                                  onPressed: (context) {},
+                                  onPressed: (context) {
+                                    context.pushNamed('editUpcoming',
+                                        extra: UpcomingExpenseModel(
+                                          date: exp.date,
+                                          name: exp.name,
+                                          quantity: exp.quantity,
+                                          price: exp.price,
+                                          accountId: exp.accountId,
+                                          category: exp.category,
+                                          id: exp.id,
+                                          subCategory: exp.subCategory,
+                                          userId: FirebaseAuth
+                                              .instance.currentUser!.uid,
+                                        ));
+                                  },
                                   icon: Icons.edit,
                                   label: "Edit",
                                   backgroundColor: Colors.green,
@@ -174,8 +213,18 @@ class _UpcomingExpenseViewState extends State<UpcomingExpenseView> {
                         size: 40,
                       )),
                     );
+                  } else if (expState is DeleteUpcomingExpenseInProgress) {
+                    return Padding(
+                      padding: EdgeInsets.only(top: height * 0.3),
+                      child: Center(
+                        child: SpinKitWave(
+                          color: TColor.primary2,
+                          size: 40,
+                        ),
+                      ),
+                    );
                   } else {
-                    return const SizedBox();
+                    return const Center(child: Text("sdsdsd"));
                   }
                 },
               ),

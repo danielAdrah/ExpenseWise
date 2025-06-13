@@ -1,4 +1,4 @@
-// ignore_for_file: unused_local_variable
+// ignore_for_file: unused_local_variable, avoid_print, non_constant_identifier_names
 
 import 'package:animate_do/animate_do.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -29,7 +29,8 @@ class EditExpense extends StatefulWidget {
   State<EditExpense> createState() => _EditExpenseState();
 }
 
-class _EditExpenseState extends State<EditExpense> {
+class _EditExpenseState extends State<EditExpense>
+    with TickerProviderStateMixin {
   DateTime date = DateTime.now();
   String? selectedCategory;
   String? selectedSubcategory;
@@ -190,6 +191,7 @@ class _EditExpenseState extends State<EditExpense> {
     newName.text = widget.expense.name;
     newQuan.text = widget.expense.quantity.toString();
     newPrice.text = widget.expense.price.toString();
+
     super.initState();
   }
 

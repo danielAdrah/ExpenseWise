@@ -83,6 +83,7 @@ class _MyListTileState extends State<MyListTile> {
               ),
             ),
             trailing: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 const SizedBox(height: 10),
                 Text(

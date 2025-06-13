@@ -44,6 +44,7 @@ class ExpenseBloc extends Bloc<ExpenseEvent, ExpenseState> {
       final expenses = await getExpenses(event.accountId);
       print("from exp bloc 2");
       emit(ExpenseLoaded(expenses));
+      print("from exp bloc 3");
     } catch (e) {
       print("error in fetch exp bloc $e");
       emit(ExpenseError(e.toString()));
@@ -60,6 +61,7 @@ class ExpenseBloc extends Bloc<ExpenseEvent, ExpenseState> {
       final expenses = await getUpcomingExpense(event.accountId);
       print("from upexp bloc 2");
       emit(UpcomingExpenseLoaded(expenses));
+      print("from upexp bloc 3");
     } catch (e) {
       print("error in fetch upexp bloc $e");
       emit(UpcomingExpenseError(e.toString()));
