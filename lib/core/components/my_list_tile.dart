@@ -72,7 +72,8 @@ class _MyListTileState extends State<MyListTile> {
               style: TextStyle(
                   color: Theme.of(context).colorScheme.onPrimary,
                   fontFamily: 'Poppins',
-                  fontWeight: FontWeight.bold),
+                  fontWeight: FontWeight.bold,
+                  fontSize: 14),
             ),
             subtitle: Text(
               '${widget.date.day}/${widget.date.month}/${widget.date.year}',

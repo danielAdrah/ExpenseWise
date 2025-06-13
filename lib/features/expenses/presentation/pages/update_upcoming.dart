@@ -1,4 +1,4 @@
-// ignore_for_file: unused_local_variable, avoid_print
+// ignore_for_file: unused_local_variable, avoid_print, non_constant_identifier_names
 
 import 'package:animate_do/animate_do.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -18,6 +18,7 @@ import '../../../../core/theme/app_color.dart';
 import '../../domain/entities/upcoming_expense_entity.dart';
 import '../bloc/expense_bloc.dart';
 import '../bloc/expense_event.dart';
+import '../bloc/expense_state.dart';
 
 class EditUpcomingExpense extends StatefulWidget {
   const EditUpcomingExpense({super.key, required this.expense});
@@ -205,166 +206,182 @@ class _EditUpcomingExpenseState extends State<EditUpcomingExpense> {
       backgroundColor: theme.surface,
       body: SafeArea(
         child: SingleChildScrollView(
-          child: Column(
-            children: [
-              const SizedBox(height: 20),
-              const InlineNavBar(title: "Edit Upcoming"),
-              Padding(
-                padding: const EdgeInsets.only(left: 20),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const SizedBox(height: 40),
-                    FadeInDown(
-                      duration: const Duration(milliseconds: 500),
-                      curve: Curves.decelerate,
-                      child: Text(
-                        "Selcet New Category",
-                        style: TextStyle(
-                          color: theme.inversePrimary,
-                          fontFamily: 'Poppins',
-                          fontSize: 19,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                    ),
-                    const SizedBox(height: 10),
-                    SingleChildScrollView(
-                      scrollDirection: Axis.horizontal,
-                      physics: const BouncingScrollPhysics(),
-                      child: Wrap(
-                        spacing: 8,
-                        children: categoryData.keys.map((category) {
-                          final gradient = categoryGradients[category]!;
-                          final icons = categoryIcon[category]!;
-                          return ZoomInDown(
-                            duration: const Duration(milliseconds: 700),
-                            child: buildGradientChip(
-                              label: category,
-                              icon: icons,
-                              gradientColors: gradient,
-                              selected: selectedCategory == category,
-                              onTap: () => _onCategorySelected(category),
+          child: BlocConsumer<ExpenseBloc, ExpenseState>(
+            listener: (context, state) {
+              if (state is UpdateUpcomingExpenseDone) {
+                final Snackbar = Methods()
+                    .successSnackBar('Your expense is updateed successfuly');
+                ScaffoldMessenger.of(context).showSnackBar(Snackbar);
+              } else if (state is UpcomingExpenseError) {
+                final Snackbar = Methods().errorSnackBar(state.message);
+                ScaffoldMessenger.of(context).showSnackBar(Snackbar);
+              }
+            },
+            builder: (context, state) {
+              return Column(
+                children: [
+                  const SizedBox(height: 20),
+                  const InlineNavBar(title: "Edit Upcoming"),
+                  Padding(
+                    padding: const EdgeInsets.only(left: 20),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const SizedBox(height: 40),
+                        FadeInDown(
+                          duration: const Duration(milliseconds: 500),
+                          curve: Curves.decelerate,
+                          child: Text(
+                            "Selcet New Category",
+                            style: TextStyle(
+                              color: theme.inversePrimary,
+                              fontFamily: 'Poppins',
+                              fontSize: 19,
+                              fontWeight: FontWeight.w600,
                             ),
-                          );
-                        }).toList(),
-                      ),
-                    ),
-                    const SizedBox(height: 20),
-                    AnimatedOpacity(
-                      duration: const Duration(milliseconds: 400),
-                      opacity: showSubcategories ? 1.0 : 0.0,
-                      child: showSubcategories
-                          ? Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  "Select Subcategory",
-                                  style: TextStyle(
-                                    color: theme.inversePrimary,
-                                    fontFamily: 'Poppins',
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.w600,
-                                  ),
+                          ),
+                        ),
+                        const SizedBox(height: 10),
+                        SingleChildScrollView(
+                          scrollDirection: Axis.horizontal,
+                          physics: const BouncingScrollPhysics(),
+                          child: Wrap(
+                            spacing: 8,
+                            children: categoryData.keys.map((category) {
+                              final gradient = categoryGradients[category]!;
+                              final icons = categoryIcon[category]!;
+                              return ZoomInDown(
+                                duration: const Duration(milliseconds: 700),
+                                child: buildGradientChip(
+                                  label: category,
+                                  icon: icons,
+                                  gradientColors: gradient,
+                                  selected: selectedCategory == category,
+                                  onTap: () => _onCategorySelected(category),
                                 ),
-                                SingleChildScrollView(
-                                  scrollDirection: Axis.horizontal,
-                                  physics: const BouncingScrollPhysics(),
-                                  child: Wrap(
-                                    spacing: 8,
-                                    children: subcategories.map((subcategory) {
-                                      final icons =
-                                          subcategoryIcon[subcategory] ??
-                                              Icons.add;
-                                      final gradient =
-                                          subcategoryGradients[subcategory] ??
+                              );
+                            }).toList(),
+                          ),
+                        ),
+                        const SizedBox(height: 20),
+                        AnimatedOpacity(
+                          duration: const Duration(milliseconds: 400),
+                          opacity: showSubcategories ? 1.0 : 0.0,
+                          child: showSubcategories
+                              ? Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      "Select Subcategory",
+                                      style: TextStyle(
+                                        color: theme.inversePrimary,
+                                        fontFamily: 'Poppins',
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.w600,
+                                      ),
+                                    ),
+                                    SingleChildScrollView(
+                                      scrollDirection: Axis.horizontal,
+                                      physics: const BouncingScrollPhysics(),
+                                      child: Wrap(
+                                        spacing: 8,
+                                        children:
+                                            subcategories.map((subcategory) {
+                                          final icons =
+                                              subcategoryIcon[subcategory] ??
+                                                  Icons.add;
+                                          final gradient = subcategoryGradients[
+                                                  subcategory] ??
                                               [
                                                 Colors.grey,
                                                 Colors.grey.shade700
                                               ];
-                                      return buildGradientChip(
-                                        label: subcategory,
-                                        gradientColors: gradient,
-                                        icon: icons,
-                                        selected:
-                                            selectedSubcategory == subcategory,
-                                        onTap: () =>
-                                            _onSubcategorySelected(subcategory),
-                                      );
-                                    }).toList(),
-                                  ),
+                                          return buildGradientChip(
+                                            label: subcategory,
+                                            gradientColors: gradient,
+                                            icon: icons,
+                                            selected: selectedSubcategory ==
+                                                subcategory,
+                                            onTap: () => _onSubcategorySelected(
+                                                subcategory),
+                                          );
+                                        }).toList(),
+                                      ),
+                                    ),
+                                  ],
+                                )
+                              : const SizedBox(),
+                        ),
+                        const SizedBox(height: 50),
+                        Padding(
+                          padding: const EdgeInsets.only(right: 20),
+                          child: Column(
+                            children: [
+                              FadeInDown(
+                                duration: const Duration(milliseconds: 800),
+                                curve: Curves.decelerate,
+                                child: RoundedTextField(
+                                    title: "Expense Title",
+                                    controller: newName,
+                                    onIconPressed: () {},
+                                    preIcon: Icons.view_headline_sharp),
+                              ),
+                              const SizedBox(height: 25),
+                              FadeInDown(
+                                duration: const Duration(milliseconds: 900),
+                                curve: Curves.decelerate,
+                                child: RoundedTextField(
+                                    title: "Expense Quantity",
+                                    controller: newQuan,
+                                    keyboardType: TextInputType.number,
+                                    onIconPressed: () {},
+                                    preIcon:
+                                        CupertinoIcons.bag_fill_badge_plus),
+                              ),
+                              const SizedBox(height: 25),
+                              FadeInDown(
+                                duration: const Duration(milliseconds: 900),
+                                curve: Curves.decelerate,
+                                child: RoundedTextField(
+                                    title: "Expense Price",
+                                    controller: newPrice,
+                                    keyboardType: TextInputType.number,
+                                    onIconPressed: () {},
+                                    preIcon: Icons.attach_money_outlined),
+                              ),
+                              const SizedBox(height: 25),
+                              FadeInDown(
+                                duration: const Duration(milliseconds: 1000),
+                                curve: Curves.decelerate,
+                                child: DateTextField(
+                                  onTap: showDate,
+                                  title: "Expense Date",
+                                  controller: newDate,
+                                  keyboardType: TextInputType.number,
+                                  icon: Icons.date_range_rounded,
+                                  onIconPressed: () {},
                                 ),
-                              ],
-                            )
-                          : const SizedBox(),
+                              ),
+                            ],
+                          ),
+                        ),
+                        const SizedBox(height: 60),
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 40),
+                          child: ZoomInDown(
+                              duration: const Duration(milliseconds: 1000),
+                              child: CustomButton(
+                                  title: "Edit",
+                                  onPressed: () {
+                                    updateUpcomingExpense();
+                                  })),
+                        ),
+                      ],
                     ),
-                    const SizedBox(height: 50),
-                    Padding(
-                      padding: const EdgeInsets.only(right: 20),
-                      child: Column(
-                        children: [
-                          FadeInDown(
-                            duration: const Duration(milliseconds: 800),
-                            curve: Curves.decelerate,
-                            child: RoundedTextField(
-                                title: "Expense Title",
-                                controller: newName,
-                                onIconPressed: () {},
-                                preIcon: Icons.view_headline_sharp),
-                          ),
-                          const SizedBox(height: 25),
-                          FadeInDown(
-                            duration: const Duration(milliseconds: 900),
-                            curve: Curves.decelerate,
-                            child: RoundedTextField(
-                                title: "Expense Quantity",
-                                controller: newQuan,
-                                keyboardType: TextInputType.number,
-                                onIconPressed: () {},
-                                preIcon: CupertinoIcons.bag_fill_badge_plus),
-                          ),
-                          const SizedBox(height: 25),
-                          FadeInDown(
-                            duration: const Duration(milliseconds: 900),
-                            curve: Curves.decelerate,
-                            child: RoundedTextField(
-                                title: "Expense Price",
-                                controller: newPrice,
-                                keyboardType: TextInputType.number,
-                                onIconPressed: () {},
-                                preIcon: Icons.attach_money_outlined),
-                          ),
-                          const SizedBox(height: 25),
-                          FadeInDown(
-                            duration: const Duration(milliseconds: 1000),
-                            curve: Curves.decelerate,
-                            child: DateTextField(
-                              onTap: showDate,
-                              title: "Expense Date",
-                              controller: newDate,
-                              keyboardType: TextInputType.number,
-                              icon: Icons.date_range_rounded,
-                              onIconPressed: () {},
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    const SizedBox(height: 60),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 40),
-                      child: ZoomInDown(
-                          duration: const Duration(milliseconds: 1000),
-                          child: CustomButton(
-                              title: "Edit",
-                              onPressed: () {
-                                updateUpcomingExpense();
-                              })),
-                    ),
-                  ],
-                ),
-              ),
-            ],
+                  ),
+                ],
+              );
+            },
           ),
         ),
       ),
