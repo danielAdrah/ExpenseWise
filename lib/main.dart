@@ -9,6 +9,8 @@ import 'core/services/injection_container.dart';
 import 'core/services/route/route_main.dart';
 import 'core/theme/bloc/theme_bloc.dart';
 import 'features/auth/presentation/bloc/password_cubit.dart';
+import 'features/expenses/presentation/bloc/upcoming_expense_bloc.dart';
+import 'features/settings/presentation/bloc/income_bloc.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -35,7 +37,8 @@ class MyApp extends StatelessWidget {
         BlocProvider<AuthBloc>(
             create: (context) => sl<AuthBloc>()..add(AppStarted())),
         BlocProvider<ExpenseBloc>(create: (context) => sl<ExpenseBloc>()),
-
+        BlocProvider<UpcomingExpenseBloc>(create: (context) => sl<UpcomingExpenseBloc>()),
+        BlocProvider<IncomeBloc>(create: (context) => sl<IncomeBloc>()),
       ],
       child: BlocBuilder<ThemeBloc, ThemeData>(
         builder: (context, theme) {

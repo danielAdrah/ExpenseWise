@@ -15,9 +15,9 @@ import '../../../../core/components/methods.dart';
 import '../../../../core/components/rounded_textField.dart';
 import '../../../../core/theme/app_color.dart';
 import '../../domain/entities/upcoming_expense_entity.dart';
-import '../bloc/expense_bloc.dart';
-import '../bloc/expense_event.dart';
-import '../bloc/expense_state.dart';
+import '../bloc/upcoming_expense_bloc.dart';
+import '../bloc/upcoming_expense_event.dart';
+import '../bloc/upcoming_expense_state.dart';
 
 class CreateUpcomingExpense extends StatefulWidget {
   const CreateUpcomingExpense({super.key});
@@ -189,7 +189,7 @@ class _CreateUpcomingExpenseState extends State<CreateUpcomingExpense>
       print(expense.accountId);
       print(expense.id);
 
-      context.read<ExpenseBloc>().add(AddUpcomingExpenseEvent(expense));
+      context.read<UpcomingExpenseBloc>().add(AddUpcomingExpenseEvent(expense));
       clearField();
     }
   }
@@ -208,7 +208,7 @@ class _CreateUpcomingExpenseState extends State<CreateUpcomingExpense>
       backgroundColor: theme.surface,
       body: SafeArea(
         child: SingleChildScrollView(
-          child: BlocConsumer<ExpenseBloc, ExpenseState>(
+          child: BlocConsumer<UpcomingExpenseBloc, UpcomingExpenseState>(
             listener: (context, state) {
               if (state is AddUpcomingExpenseDone) {
                 final Snackbar = Methods().successSnackBar(
@@ -458,3 +458,4 @@ class _CreateUpcomingExpenseState extends State<CreateUpcomingExpense>
     );
   }
 }
+

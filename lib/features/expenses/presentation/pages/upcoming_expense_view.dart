@@ -12,9 +12,9 @@ import '../../../../core/components/my_list_tile.dart';
 import '../../../../core/theme/app_color.dart';
 import '../../data/models/upcoming_expense_model.dart';
 import '../../domain/entities/upcoming_expense_entity.dart';
-import '../bloc/expense_bloc.dart';
-import '../bloc/expense_event.dart';
-import '../bloc/expense_state.dart';
+import '../bloc/upcoming_expense_bloc.dart';
+import '../bloc/upcoming_expense_event.dart';
+import '../bloc/upcoming_expense_state.dart';
 
 class UpcomingExpenseView extends StatefulWidget {
   const UpcomingExpenseView({super.key});
@@ -28,19 +28,19 @@ class _UpcomingExpenseViewState extends State<UpcomingExpenseView> {
 
   void refreshList() {
     context
-        .read<ExpenseBloc>()
+        .read<UpcomingExpenseBloc>()
         .add(LoadUpcomingExpensesEvent(storage.read('selectedAcc') ?? ""));
   }
 
   void deleteAccount(UpcomingExpenseEntity exp) async {
-    context.read<ExpenseBloc>().add(DeleteUpcomingExpenseEvent(exp.id));
+    context.read<UpcomingExpenseBloc>().add(DeleteUpcomingExpenseEvent(exp.id));
     refreshList();
   }
 
   @override
   void initState() {
     context
-        .read<ExpenseBloc>()
+        .read<UpcomingExpenseBloc>()
         .add(LoadUpcomingExpensesEvent(storage.read('selectedAcc') ?? ""));
     super.initState();
   }
@@ -63,7 +63,7 @@ class _UpcomingExpenseViewState extends State<UpcomingExpenseView> {
               ),
             ),
             SliverToBoxAdapter(
-              child: BlocConsumer<ExpenseBloc, ExpenseState>(
+              child: BlocConsumer<UpcomingExpenseBloc, UpcomingExpenseState>(
                 listener: (context, state) {
                   if (state is DeleteUpcomingExpenseDone ||
                       state is AddUpcomingExpenseDone ||
@@ -71,9 +71,11 @@ class _UpcomingExpenseViewState extends State<UpcomingExpenseView> {
                     refreshList();
                   }
                 },
-                builder: (context, expState) {
-                  if (expState is UpcomingExpenseLoaded) {
-                    if (expState.expenses.isEmpty) {
+                builder: (context, state) {
+                  if (state is UpcomingExpenseLoading) {
+                    return const Center(child: CircularProgressIndicator());
+                  } else if (state is UpcomingExpenseLoaded) {
+                    if (state.expenses.isEmpty) {
                       return Padding(
                         padding: const EdgeInsets.only(top: 30),
                         child: Padding(
@@ -103,9 +105,9 @@ class _UpcomingExpenseViewState extends State<UpcomingExpenseView> {
                     return ListView.builder(
                       shrinkWrap: true,
                       physics: const NeverScrollableScrollPhysics(),
-                      itemCount: expState.expenses.length,
+                      itemCount: state.expenses.length,
                       itemBuilder: ((context, index) {
-                        var exp = expState.expenses[index];
+                        var exp = state.expenses[index];
                         return Slidable(
                           endActionPane: ActionPane(
                               motion: const StretchMotion(),
@@ -196,36 +198,16 @@ class _UpcomingExpenseViewState extends State<UpcomingExpenseView> {
                         );
                       }),
                     );
-                  } else if (expState is UpcomingExpenseError) {
+                  } else if (state is UpcomingExpenseError) {
                     return Center(
-                      child: Text(expState.message,
+                      child: Text(state.message,
                           style: TextStyle(
                               color: theme.inversePrimary,
                               fontSize: 17,
                               fontFamily: 'Poppins')),
                     );
-                  } else if (expState is UpcomingExpenseLoading) {
-                    return Padding(
-                      padding: EdgeInsets.only(top: height * 0.3),
-                      child: Center(
-                          child: SpinKitWave(
-                        color: TColor.primary2,
-                        size: 40,
-                      )),
-                    );
-                  } else if (expState is DeleteUpcomingExpenseInProgress) {
-                    return Padding(
-                      padding: EdgeInsets.only(top: height * 0.3),
-                      child: Center(
-                        child: SpinKitWave(
-                          color: TColor.primary2,
-                          size: 40,
-                        ),
-                      ),
-                    );
-                  } else {
-                    return const Center(child: Text("sdsdsd"));
                   }
+                  return const SizedBox.shrink();
                 },
               ),
             ),

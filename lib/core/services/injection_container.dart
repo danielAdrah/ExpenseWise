@@ -18,11 +18,17 @@ import '../../features/expenses/data/repositories/expense_repository_impl.dart';
 import '../../features/expenses/domain/repositories/expense_repository.dart';
 import '../../features/expenses/domain/usecases/usecases.dart';
 import '../../features/expenses/presentation/bloc/expense_bloc.dart';
+import '../../features/expenses/presentation/bloc/upcoming_expense_bloc.dart';
+import '../../features/settings/data/datasources/income_remote_data_source.dart';
 import '../../features/settings/data/datasources/user_remote_data_source.dart';
+import '../../features/settings/data/repository/income_repository_imp.dart';
 import '../../features/settings/data/repository/user_repository_imp.dart';
+import '../../features/settings/domain/repository/income_repository.dart';
 import '../../features/settings/domain/repository/user_repository.dart';
 import '../../features/settings/domain/usecases/get_user_data_usecase.dart';
+import '../../features/settings/domain/usecases/income_usecases.dart';
 import '../../features/settings/domain/usecases/update_user_data_usecase.dart';
+import '../../features/settings/presentation/bloc/income_bloc.dart';
 import '../../features/settings/presentation/bloc/user_info_bloc.dart';
 // import 'presentation/bloc/auth_bloc.dart';
 
@@ -45,6 +51,10 @@ Future<void> init() async {
   sl.registerLazySingleton<ExpenseRemoteDataSource>(
     () => ExpenseRemoteDataSourceImpl(sl()),
   );
+  //---
+  sl.registerLazySingleton<IncomeRemoteDataSource>(
+    () => IncomeRemoteDataSourceImpl(sl()),
+  );
 //=================================================================================
   // Repositories
   sl.registerLazySingleton<AuthRepository>(
@@ -57,6 +67,10 @@ Future<void> init() async {
   //---
   sl.registerLazySingleton<ExpenseRepository>(
     () => ExpenseRepositoryImpl(remoteDataSource: sl()),
+  );
+  //---
+  sl.registerLazySingleton<IncomeRepository>(
+    () => IncomeRepositoryImp(remoteDataSource: sl()),
   );
 //=================================================================================
   // Use cases
@@ -83,6 +97,10 @@ Future<void> init() async {
   sl.registerLazySingleton(
       () => DeleteUpcomingExpenseUseCase(repository: sl()));
   sl.registerLazySingleton(() => GetUpcomingExpensesUseCase(repository: sl()));
+  //---
+  sl.registerLazySingleton(() => AddIncomeUsecases(repo: sl()));
+  sl.registerLazySingleton(() => GetIncomeUsecases(repo: sl()));
+  sl.registerLazySingleton(() => DeleteIncomeUsecases(repo: sl()));
 
 //=================================================================================
 
@@ -98,13 +116,21 @@ Future<void> init() async {
       deleteExpense: sl(),
       updateExpense: sl(),
       getExpenses: sl(),
-      addUpcomingExpense: sl(),
-      updateUpcomingExpense: sl(),
-      deleteUpcomingExpense: sl(),
-      getUpcomingExpense: sl(),
     ),
   );
   //---
+  sl.registerFactory(
+    () => UpcomingExpenseBloc(
+      addUpcomingExpense: sl(),
+      updateUpcomingExpense: sl(),
+      deleteUpcomingExpense: sl(),
+      getUpcomingExpenses: sl(),
+    ),
+  );
+  //---
+  sl.registerFactory(
+    () => IncomeBloc(addIncome: sl(), deleteIncome: sl(), getIncomes: sl()),
+  );
 
 //=================================================================================
 }

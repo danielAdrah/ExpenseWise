@@ -84,7 +84,7 @@ final GoRouter router = GoRouter(
       name: 'editExpense',
       builder: (context, state) {
         final expense = state.extra as ExpenseModel;
-        return  EditExpense(expense: expense);
+        return EditExpense(expense: expense);
       },
     ),
     //======
@@ -93,7 +93,7 @@ final GoRouter router = GoRouter(
       name: 'editUpcoming',
       builder: (context, state) {
         final expense = state.extra as UpcomingExpenseModel;
-        return  EditUpcomingExpense(expense: expense);
+        return EditUpcomingExpense(expense: expense);
       },
     ),
     //======

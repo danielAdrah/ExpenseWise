@@ -29,7 +29,6 @@ class ExpenseModel extends ExpenseEntity {
       userId: data['userId'],
     );
   }
-
   Map<String, dynamic> toJson() {
     return {
       'name': name,

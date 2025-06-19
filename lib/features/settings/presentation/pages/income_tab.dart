@@ -1,11 +1,15 @@
-// ignore_for_file: unused_local_variable
+// ignore_for_file: unused_local_variable, avoid_print
 
 import 'package:animate_do/animate_do.dart';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
+import 'package:get_storage/get_storage.dart';
 import 'package:go_router/go_router.dart';
 import '../../../../core/theme/app_color.dart';
+import '../bloc/income_bloc.dart';
 import '../widgets/income_card.dart';
 
 class IncomeTabView extends StatefulWidget {
@@ -16,11 +20,14 @@ class IncomeTabView extends StatefulWidget {
 }
 
 class _IncomeTabViewState extends State<IncomeTabView> {
-  // @override
-  // void initState() {
-  //   super.initState();
-  //   controller.displayLimits();
-  // }
+  final GetStorage storage = GetStorage();
+  @override
+  void initState() {
+    context
+        .read<IncomeBloc>()
+        .add(LoadIncomeEvent(accountID: storage.read('selectedAcc') ?? ""));
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -85,73 +92,108 @@ class _IncomeTabViewState extends State<IncomeTabView> {
       body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.only(top: 10),
-          child: ListView.separated(
-            separatorBuilder: (_, __) => const SizedBox(height: 16),
-            physics: const BouncingScrollPhysics(),
-            itemCount: 15,
-            itemBuilder: ((context, index) {
-              return Slidable(
-                endActionPane:
-                    ActionPane(motion: const StretchMotion(), children: [
-                  SlidableAction(
-                    onPressed: (context) {
-                      showDialog(
-                        context: context,
-                        builder: (context) {
-                          return AlertDialog(
-                            backgroundColor: theme.primaryContainer,
-                            content: Text(
-                              "Are You Sure You Want To Delete This ?",
-                              style: TextStyle(
-                                  color: theme.inversePrimary,
-                                  fontFamily: 'Poppins'),
-                            ),
-                            actions: [
-                              TextButton(
-                                onPressed: () {
-                                  context.pop();
-                                },
-                                child: Text(
-                                  "Yes",
-                                  style: TextStyle(color: theme.inversePrimary),
-                                ),
-                              ),
-                              TextButton(
-                                onPressed: () {
-                                  context.pop();
-                                },
-                                child: Text("No",
-                                    style:
-                                        TextStyle(color: theme.inversePrimary)),
-                              ),
-                            ],
-                          );
-                        },
-                      );
-                    },
-                    icon: Icons.delete,
-                    backgroundColor: Colors.red,
-                    label: 'Delete',
-                    borderRadius: BorderRadius.circular(5),
-                    spacing: 2,
-                  ),
-                ]),
-                child: FadeInUp(
-                  delay: const Duration(milliseconds: 150),
-                  curve: Curves.decelerate,
-                  child: InkWell(
-                    onTap: () {
-                      // context.pushNamed('limitDetail');
-                    },
-                    child: IncomeCard(
-                      title: "Investment",
-                      price: "1500",
-                      date: DateTime.now(),
-                    ),
-                  ),
-                ),
-              );
-            }),
+          child: BlocConsumer<IncomeBloc, IncomeState>(
+            listener: (context, state) {
+              if (state is IncomeDeleteSuccess || state is IncomeAddSuccess) {
+                context.read<IncomeBloc>().add(LoadIncomeEvent(
+                    accountID: storage.read('selectedAcc') ?? ""));
+              }
+            },
+            builder: (context, state) {
+              print(state);
+              if (state is IncomeLoaded) {
+                print("Income data: ${state.income.length}");
+                return ListView.separated(
+                  separatorBuilder: (_, __) => const SizedBox(height: 16),
+                  physics: const BouncingScrollPhysics(),
+                  itemCount: state.income.length,
+                  itemBuilder: ((context, index) {
+                    var income = state.income[index];
+                    return Slidable(
+                      endActionPane:
+                          ActionPane(motion: const StretchMotion(), children: [
+                        SlidableAction(
+                          onPressed: (context) {
+                            showDialog(
+                              context: context,
+                              builder: (context) {
+                                return AlertDialog(
+                                  backgroundColor: theme.primaryContainer,
+                                  content: Text(
+                                    "Are You Sure You Want To Delete This ?",
+                                    style: TextStyle(
+                                        color: theme.inversePrimary,
+                                        fontFamily: 'Poppins'),
+                                  ),
+                                  actions: [
+                                    TextButton(
+                                      onPressed: () {
+                                        context.pop();
+                                      },
+                                      child: Text(
+                                        "Yes",
+                                        style: TextStyle(
+                                            color: theme.inversePrimary),
+                                      ),
+                                    ),
+                                    TextButton(
+                                      onPressed: () {
+                                        context.pop();
+                                      },
+                                      child: Text("No",
+                                          style: TextStyle(
+                                              color: theme.inversePrimary)),
+                                    ),
+                                  ],
+                                );
+                              },
+                            );
+                          },
+                          icon: Icons.delete,
+                          backgroundColor: Colors.red,
+                          label: 'Delete',
+                          borderRadius: BorderRadius.circular(5),
+                          spacing: 2,
+                        ),
+                      ]),
+                      child: FadeInUp(
+                        delay: const Duration(milliseconds: 150),
+                        curve: Curves.decelerate,
+                        child: InkWell(
+                          onTap: () {
+                            // context.pushNamed('limitDetail');
+                          },
+                          child: IncomeCard(
+                            title: income.category,
+                            price: income.amount.toString(),
+                            date: DateTime.parse(income.date),
+                          ),
+                        ),
+                      ),
+                    );
+                  }),
+                );
+              } else if (state is IncomeLoading) {
+                return Padding(
+                  padding: EdgeInsets.only(top: 0, bottom: height * 0.2),
+                  child: Center(
+                      child: SpinKitWave(
+                    color: TColor.primary2,
+                    size: 40,
+                  )),
+                );
+              } else if (state is IncomeError) {
+                return Center(
+                  child: Text(state.message,
+                      style: TextStyle(
+                          color: theme.inversePrimary,
+                          fontSize: 17,
+                          fontFamily: 'Poppins')),
+                );
+              } else {
+                return Center(child: Text("dfdfd"));
+              }
+            },
           ),
         ),
       ),

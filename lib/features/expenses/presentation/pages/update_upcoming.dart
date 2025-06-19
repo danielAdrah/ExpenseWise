@@ -16,9 +16,9 @@ import '../../../../core/components/methods.dart';
 import '../../../../core/components/rounded_textField.dart';
 import '../../../../core/theme/app_color.dart';
 import '../../domain/entities/upcoming_expense_entity.dart';
-import '../bloc/expense_bloc.dart';
-import '../bloc/expense_event.dart';
-import '../bloc/expense_state.dart';
+import '../bloc/upcoming_expense_bloc.dart';
+import '../bloc/upcoming_expense_event.dart';
+import '../bloc/upcoming_expense_state.dart';
 
 class EditUpcomingExpense extends StatefulWidget {
   const EditUpcomingExpense({super.key, required this.expense});
@@ -179,7 +179,7 @@ class _EditUpcomingExpenseState extends State<EditUpcomingExpense> {
       userId: FirebaseAuth.instance.currentUser!.uid,
       date: widget.expense.date,
     );
-    context.read<ExpenseBloc>().add(UpdateUpcomingExpenseEvent(expense));
+    context.read<UpcomingExpenseBloc>().add(UpdateUpcomingExpenseEvent(expense));
     clearField();
   }
 
@@ -206,11 +206,11 @@ class _EditUpcomingExpenseState extends State<EditUpcomingExpense> {
       backgroundColor: theme.surface,
       body: SafeArea(
         child: SingleChildScrollView(
-          child: BlocConsumer<ExpenseBloc, ExpenseState>(
+          child: BlocConsumer<UpcomingExpenseBloc, UpcomingExpenseState>(
             listener: (context, state) {
               if (state is UpdateUpcomingExpenseDone) {
                 final Snackbar = Methods()
-                    .successSnackBar('Your expense is updateed successfuly');
+                    .successSnackBar('Your expense is updated successfully');
                 ScaffoldMessenger.of(context).showSnackBar(Snackbar);
               } else if (state is UpcomingExpenseError) {
                 final Snackbar = Methods().errorSnackBar(state.message);
@@ -459,3 +459,4 @@ class _EditUpcomingExpenseState extends State<EditUpcomingExpense> {
     );
   }
 }
+
