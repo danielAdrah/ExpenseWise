@@ -27,7 +27,7 @@ class CreateExpenseView extends StatefulWidget {
   State<CreateExpenseView> createState() => _CreateExpenseViewState();
 }
 
-class _CreateExpenseViewState extends State<CreateExpenseView>  {
+class _CreateExpenseViewState extends State<CreateExpenseView> {
   // DateTime date = DateTime.now();
   String? selectedCategory;
   String? selectedSubcategory;
@@ -35,7 +35,7 @@ class _CreateExpenseViewState extends State<CreateExpenseView>  {
   final expTitle = TextEditingController();
   final expQuan = TextEditingController();
   final expPrice = TextEditingController();
-  
+
   void clearField() {
     expTitle.clear();
     expQuan.clear();
@@ -165,6 +165,7 @@ class _CreateExpenseViewState extends State<CreateExpenseView>  {
       final Snackbar = Methods().infoSnackBar(
           'Please make sure not to leave any of the fields empty');
       ScaffoldMessenger.of(context).showSnackBar(Snackbar);
+      return;
     }
     print('================$selectedCategory ,,,,,,,$selectedSubcategory');
     final expense = ExpenseEntity(

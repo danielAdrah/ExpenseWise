@@ -64,11 +64,16 @@ class IncomeBloc extends Bloc<IncomeEvent, IncomeState> {
       print("from delincome bloc 1");
       await deleteIncome(event.accountID);
       emit(IncomeDeleteSuccess());
-
+      
+      // FIXED: Reload incomes after deletion
+      final accountId = event.accountID;
+      add(LoadIncomeEvent(accountID: accountId));
+      
       print("from delincome bloc 2");
     } catch (e) {
       print("error in bloc $e");
-      // emit(DeleteExpenseError('Failed to delete this expense'));
+      emit(IncomeDeleteError(e.toString()));  // FIXED: Added proper error state
     }
   }
 }
+

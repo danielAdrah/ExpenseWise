@@ -73,32 +73,51 @@ class _UpcomingExpenseViewState extends State<UpcomingExpenseView> {
                 },
                 builder: (context, state) {
                   if (state is UpcomingExpenseLoading) {
-                    return const Center(child: CircularProgressIndicator());
+                    return Center(
+                      child: Padding(
+                        padding: EdgeInsets.only(top: height * 0.3),
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            SpinKitWave(
+                              color: TColor.primary2,
+                              size: 40,
+                            ),
+                            const SizedBox(height: 16),
+                            Text(
+                              "Loading your upcoming expenses...",
+                              style: TextStyle(
+                                color: theme.inversePrimary,
+                                fontFamily: 'Poppins',
+                                fontSize: 16,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    );
                   } else if (state is UpcomingExpenseLoaded) {
                     if (state.expenses.isEmpty) {
                       return Padding(
-                        padding: const EdgeInsets.only(top: 30),
-                        child: Padding(
-                          padding: EdgeInsets.only(top: height * 0.1),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Image.asset(
-                                "assets/img/search.png",
-                                width: height * 0.2,
-                                height: height * 0.2,
-                              ),
-                              const SizedBox(height: 10),
-                              Text(
-                                  "There are no upcoming expenses to be displayed. Add one first",
-                                  textAlign: TextAlign.center,
-                                  style: TextStyle(
-                                      color: theme.inversePrimary,
-                                      fontSize: 15,
-                                      fontFamily: 'Poppins')),
-                            ],
-                          ),
+                        padding: EdgeInsets.only(top: height * 0.2),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Image.asset(
+                              "assets/img/search.png",
+                              width: height * 0.2,
+                              height: height * 0.2,
+                            ),
+                            const SizedBox(height: 10),
+                            Text(
+                                "There are no upcoming expenses to be displayed. Add one first",
+                                textAlign: TextAlign.center,
+                                style: TextStyle(
+                                    color: theme.inversePrimary,
+                                    fontSize: 15,
+                                    fontFamily: 'Poppins')),
+                          ],
                         ),
                       );
                     }
@@ -185,16 +204,172 @@ class _UpcomingExpenseViewState extends State<UpcomingExpenseView> {
                           child: FadeInDown(
                             delay: const Duration(milliseconds: 500),
                             curve: Curves.decelerate,
-                            child: SizedBox(
-                              width: double.infinity,
-                              child: MyListTile(
-                                type: exp.category,
-                                title: exp.name,
-                                price: exp.price.toString(),
-                                date: DateTime.parse(exp.date),
+                            child: InkWell(
+                              onTap: () {
+                                // Show expense details in a modal bottom sheet
+                                showModalBottomSheet(
+                                  context: context,
+                                  backgroundColor: theme.primaryContainer,
+                                  shape: const RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.vertical(
+                                      top: Radius.circular(20),
+                                    ),
+                                  ),
+                                  builder: (context) => Padding(
+                                    padding: const EdgeInsets.all(16.0),
+                                    child: Column(
+                                      mainAxisSize: MainAxisSize.min,
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          "Upcoming Expense Details",
+                                          style: TextStyle(
+                                            color: theme.inversePrimary,
+                                            fontFamily: 'Arvo',
+                                            fontSize: 20,
+                                            fontWeight: FontWeight.bold,
+                                          ),
+                                        ),
+                                        const SizedBox(height: 16),
+                                        _buildDetailRow(
+                                            "Category", exp.category, theme),
+                                        _buildDetailRow("Subcategory",
+                                            exp.subCategory, theme),
+                                        _buildDetailRow(
+                                            "Name", exp.name, theme),
+                                        _buildDetailRow("Quantity",
+                                            exp.quantity.toString(), theme),
+                                        _buildDetailRow(
+                                            "Price",
+                                            "\$${exp.price.toStringAsFixed(2)}",
+                                            theme),
+                                        _buildDetailRow(
+                                            "Date", exp.date, theme),
+                                        const SizedBox(height: 16),
+                                        Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.spaceEvenly,
+                                          children: [
+                                            Expanded(
+                                              child: ElevatedButton.icon(
+                                                onPressed: () {
+                                                  context.pop();
+                                                  context.pushNamed(
+                                                      'editUpcoming',
+                                                      extra:
+                                                          UpcomingExpenseModel(
+                                                        date: exp.date,
+                                                        name: exp.name,
+                                                        quantity: exp.quantity,
+                                                        price: exp.price,
+                                                        accountId:
+                                                            exp.accountId,
+                                                        category: exp.category,
+                                                        id: exp.id,
+                                                        subCategory:
+                                                            exp.subCategory,
+                                                        userId: FirebaseAuth
+                                                            .instance
+                                                            .currentUser!
+                                                            .uid,
+                                                      ));
+                                                },
+                                                icon: const Icon(Icons.edit),
+                                                label: const Text("Edit"),
+                                                style: ElevatedButton.styleFrom(
+                                                  backgroundColor: Colors.green,
+                                                  foregroundColor: Colors.white,
+                                                  shape: RoundedRectangleBorder(
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                            10),
+                                                  ),
+                                                ),
+                                              ),
+                                            ),
+                                            const SizedBox(width: 12),
+                                            Expanded(
+                                              child: ElevatedButton.icon(
+                                                onPressed: () {
+                                                  context.pop();
+                                                  showDialog(
+                                                    context: context,
+                                                    builder: (context) {
+                                                      return AlertDialog(
+                                                        backgroundColor: theme
+                                                            .primaryContainer,
+                                                        content: Text(
+                                                          "Are You Sure You Want To Delete This?",
+                                                          style: TextStyle(
+                                                              color: theme
+                                                                  .inversePrimary,
+                                                              fontFamily:
+                                                                  'Poppins'),
+                                                        ),
+                                                        actions: [
+                                                          TextButton(
+                                                            onPressed: () {
+                                                              deleteAccount(
+                                                                  exp);
+                                                              context.pop();
+                                                            },
+                                                            child: Text(
+                                                              "Yes",
+                                                              style: TextStyle(
+                                                                  color: theme
+                                                                      .inversePrimary),
+                                                            ),
+                                                          ),
+                                                          TextButton(
+                                                            onPressed: () {
+                                                              context.pop();
+                                                            },
+                                                            child: Text(
+                                                              "No",
+                                                              style: TextStyle(
+                                                                  color: theme
+                                                                      .inversePrimary),
+                                                            ),
+                                                          ),
+                                                        ],
+                                                      );
+                                                    },
+                                                  );
+                                                },
+                                                icon: const Icon(Icons.delete),
+                                                label: const Text("Delete"),
+                                                style: ElevatedButton.styleFrom(
+                                                  backgroundColor: Colors.red,
+                                                  foregroundColor: Colors.white,
+                                                  shape: RoundedRectangleBorder(
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                            10),
+                                                  ),
+                                                ),
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                );
+                              },
+                              child: SizedBox(
+                                width: double.infinity,
+                                child: MyListTile(
+                                  type: exp.category,
+                                  title: exp.name,
+                                  price: exp.price.toString(),
+                                  date: DateTime.parse(exp.date),
+                                ),
                               ),
                             ),
                           ),
+
+// Add this helper method at the end of the class
                         );
                       }),
                     );
@@ -216,4 +391,32 @@ class _UpcomingExpenseViewState extends State<UpcomingExpenseView> {
       ),
     );
   }
+}
+
+Widget _buildDetailRow(String label, String value, ColorScheme theme) {
+  return Padding(
+    padding: const EdgeInsets.only(bottom: 8.0),
+    child: Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        Text(
+          label,
+          style: TextStyle(
+            color: theme.inversePrimary.withOpacity(0.7),
+            fontFamily: 'Poppins',
+            fontSize: 14,
+          ),
+        ),
+        Text(
+          value,
+          style: TextStyle(
+            color: theme.inversePrimary,
+            fontFamily: 'Poppins',
+            fontWeight: FontWeight.w500,
+            fontSize: 16,
+          ),
+        ),
+      ],
+    ),
+  );
 }

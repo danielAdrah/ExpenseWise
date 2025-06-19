@@ -5,6 +5,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:get_storage/get_storage.dart';
 import '../../../../core/components/custom_button.dart';
 import '../../../../core/components/date_text_field.dart';
@@ -37,7 +38,6 @@ class _CreateUpcomingExpenseState extends State<CreateUpcomingExpense>
   final expQuan = TextEditingController();
   final expPrice = TextEditingController();
   final date = TextEditingController();
-  
 
   void clearField() {
     expTitle.clear();
@@ -164,9 +164,9 @@ class _CreateUpcomingExpenseState extends State<CreateUpcomingExpense>
         expQuan.text.isEmpty ||
         expPrice.text.isEmpty) {
       final Snackbar = Methods().infoSnackBar(
-          'Please make sure not to leave any of the fields empty'
-          );
+          'Please make sure not to leave any of the fields empty');
       ScaffoldMessenger.of(context).showSnackBar(Snackbar);
+      return;
     } else {
       print('================$selectedCategory ,,,,,,,$selectedSubcategory');
       final expense = UpcomingExpenseEntity(
@@ -180,14 +180,6 @@ class _CreateUpcomingExpenseState extends State<CreateUpcomingExpense>
         accountId: storage.read('selectedAcc'),
         userId: FirebaseAuth.instance.currentUser!.uid,
       );
-      print(expense.name);
-      print(expense.category);
-      print(expense.subCategory);
-      print(expense.quantity);
-      print(expense.price);
-      print(expense.date);
-      print(expense.accountId);
-      print(expense.id);
 
       context.read<UpcomingExpenseBloc>().add(AddUpcomingExpenseEvent(expense));
       clearField();
@@ -211,12 +203,23 @@ class _CreateUpcomingExpenseState extends State<CreateUpcomingExpense>
           child: BlocConsumer<UpcomingExpenseBloc, UpcomingExpenseState>(
             listener: (context, state) {
               if (state is AddUpcomingExpenseDone) {
-                final Snackbar = Methods().successSnackBar(
-                    'Your upcoming expense is created successfuly');
-                ScaffoldMessenger.of(context).showSnackBar(Snackbar);
+                // Show success message when upcoming expense is created
+                final snackBar = Methods().successSnackBar(
+                    'Your upcoming expense has been created successfully');
+                ScaffoldMessenger.of(context).showSnackBar(snackBar);
+
+                // Navigate back to the upcoming expenses list after successful creation
+              } else if (state is AddUpcomingExpenseError) {
+                // Show error message when upcoming expense creation fails
+                final snackBar = Methods().errorSnackBar(
+                    'Failed to create upcoming expense: ${state.message}');
+                ScaffoldMessenger.of(context).showSnackBar(snackBar);
               }
             },
             builder: (context, state) {
+              // Debug the current state
+              print("Current upcoming expense creation state: $state");
+
               return Column(
                 children: [
                   const SizedBox(height: 20),
@@ -231,7 +234,7 @@ class _CreateUpcomingExpenseState extends State<CreateUpcomingExpense>
                           duration: const Duration(milliseconds: 500),
                           curve: Curves.decelerate,
                           child: Text(
-                            "Selcet Category",
+                            "Select Category",
                             style: TextStyle(
                               color: theme.inversePrimary,
                               fontFamily: 'Poppins',
@@ -320,33 +323,35 @@ class _CreateUpcomingExpenseState extends State<CreateUpcomingExpense>
                                 duration: const Duration(milliseconds: 800),
                                 curve: Curves.decelerate,
                                 child: RoundedTextField(
-                                    title: "Expense Title",
-                                    controller: expTitle,
-                                    onIconPressed: () {},
-                                    preIcon: Icons.view_headline_sharp),
+                                  title: "Expense Title",
+                                  controller: expTitle,
+                                  onIconPressed: () {},
+                                  preIcon: Icons.view_headline_sharp,
+                                ),
                               ),
                               const SizedBox(height: 25),
                               FadeInDown(
                                 duration: const Duration(milliseconds: 900),
                                 curve: Curves.decelerate,
                                 child: RoundedTextField(
-                                    title: "Expense Quantity",
-                                    controller: expQuan,
-                                    keyboardType: TextInputType.number,
-                                    onIconPressed: () {},
-                                    preIcon:
-                                        CupertinoIcons.bag_fill_badge_plus),
+                                  title: "Expense Quantity",
+                                  controller: expQuan,
+                                  keyboardType: TextInputType.number,
+                                  onIconPressed: () {},
+                                  preIcon: CupertinoIcons.bag_fill_badge_plus,
+                                ),
                               ),
                               const SizedBox(height: 25),
                               FadeInDown(
                                 duration: const Duration(milliseconds: 900),
                                 curve: Curves.decelerate,
                                 child: RoundedTextField(
-                                    title: "Expense Price",
-                                    controller: expPrice,
-                                    keyboardType: TextInputType.number,
-                                    onIconPressed: () {},
-                                    preIcon: Icons.attach_money_outlined),
+                                  title: "Expense Price",
+                                  controller: expPrice,
+                                  keyboardType: TextInputType.number,
+                                  onIconPressed: () {},
+                                  preIcon: Icons.attach_money_outlined,
+                                ),
                               ),
                               const SizedBox(height: 25),
                               FadeInDown(
@@ -367,14 +372,119 @@ class _CreateUpcomingExpenseState extends State<CreateUpcomingExpense>
                         const SizedBox(height: 60),
                         Padding(
                           padding: const EdgeInsets.symmetric(horizontal: 40),
-                          child: ZoomInDown(
-                              duration: const Duration(milliseconds: 1000),
-                              child: CustomButton(
-                                  title: "Create",
-                                  onPressed: () {
-                                    upcomingExpenseSumbimt();
-                                  })),
+                          child: state is AddUpcomingExpenseInProgress
+                              ? Center(
+                                  child: Column(
+                                    children: [
+                                      SpinKitWave(
+                                        color: TColor.primary2,
+                                        size: 40,
+                                      ),
+                                      const SizedBox(height: 16),
+                                      Text(
+                                        "Creating upcoming expense...",
+                                        style: TextStyle(
+                                          color: theme.inversePrimary,
+                                          fontFamily: 'Poppins',
+                                          fontSize: 16,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                )
+                              : ZoomInDown(
+                                  duration: const Duration(milliseconds: 1000),
+                                  child: CustomButton(
+                                    title: "Create",
+                                    onPressed: () {
+                                      // Validate form before submitting
+                                      if (selectedCategory == null) {
+                                        final snackBar = Methods().infoSnackBar(
+                                            'Please select a category');
+                                        ScaffoldMessenger.of(context)
+                                            .showSnackBar(snackBar);
+                                        return;
+                                      }
+
+                                      if (selectedSubcategory == null) {
+                                        final snackBar = Methods().infoSnackBar(
+                                            'Please select a subcategory');
+                                        ScaffoldMessenger.of(context)
+                                            .showSnackBar(snackBar);
+                                        return;
+                                      }
+
+                                      if (expTitle.text.isEmpty) {
+                                        final snackBar = Methods().infoSnackBar(
+                                            'Please enter an expense title');
+                                        ScaffoldMessenger.of(context)
+                                            .showSnackBar(snackBar);
+                                        return;
+                                      }
+
+                                      if (expQuan.text.isEmpty) {
+                                        final snackBar = Methods().infoSnackBar(
+                                            'Please enter the expense quantity');
+                                        ScaffoldMessenger.of(context)
+                                            .showSnackBar(snackBar);
+                                        return;
+                                      }
+
+                                      if (expPrice.text.isEmpty) {
+                                        final snackBar = Methods().infoSnackBar(
+                                            'Please enter the expense price');
+                                        ScaffoldMessenger.of(context)
+                                            .showSnackBar(snackBar);
+                                        return;
+                                      }
+
+                                      if (date.text.isEmpty) {
+                                        final snackBar = Methods().infoSnackBar(
+                                            'Please select the expense date');
+                                        ScaffoldMessenger.of(context)
+                                            .showSnackBar(snackBar);
+                                        return;
+                                      }
+
+                                      // All validations passed, submit the upcoming expense
+                                      upcomingExpenseSumbimt();
+                                    },
+                                  ),
+                                ),
                         ),
+
+                        // Show error message if there's an error
+                        if (state is AddUpcomingExpenseError)
+                          Padding(
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 40, vertical: 20),
+                            child: Container(
+                              padding: const EdgeInsets.all(12),
+                              decoration: BoxDecoration(
+                                color: Colors.red.withOpacity(0.1),
+                                borderRadius: BorderRadius.circular(8),
+                                border: Border.all(
+                                    color: Colors.red.withOpacity(0.3)),
+                              ),
+                              child: Row(
+                                children: [
+                                  const Icon(Icons.error_outline,
+                                      color: Colors.red),
+                                  const SizedBox(width: 8),
+                                  Expanded(
+                                    child: Text(
+                                      state.message,
+                                      style: const TextStyle(
+                                        color: Colors.red,
+                                        fontFamily: 'Poppins',
+                                        fontSize: 14,
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
                       ],
                     ),
                   ),
@@ -458,4 +568,3 @@ class _CreateUpcomingExpenseState extends State<CreateUpcomingExpense>
     );
   }
 }
-

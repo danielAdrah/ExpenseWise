@@ -43,11 +43,23 @@ class IncomeRemoteDataSourceImpl implements IncomeRemoteDataSource {
   @override
   Future<List<IncomeModel>> getIncome(String accountId) async {
     print("from getincome data 1");
-    final snapshot = await firestore
-        .collection('incomes')
-        .where('accountID', isEqualTo: accountId)
-        .get();
-    print("from getincome data 2");
-    return snapshot.docs.map((doc) => IncomeModel.fromDocument(doc)).toList();
+    try {
+      final snapshot = await firestore
+          .collection('incomes')
+          .where('accountID', isEqualTo: accountId)
+          .get();
+      print("from getincome data 2");
+
+      // ADDED: Debug information
+      print("Income documents found: ${snapshot.docs.length}");
+      if (snapshot.docs.isNotEmpty) {
+        print("First income document data: ${snapshot.docs.first.data()}");
+      }
+
+      return snapshot.docs.map((doc) => IncomeModel.fromDocument(doc)).toList();
+    } catch (e) {
+      print("Error fetching incomes: $e");
+      rethrow;
+    }
   }
 }

@@ -169,6 +169,7 @@ class _EditExpenseState extends State<EditExpense>
       final Snackbar = Methods().infoSnackBar(
           'Please make sure not to leave any of the fields empty');
       ScaffoldMessenger.of(context).showSnackBar(Snackbar);
+      return;
     }
     print('================$selectedCategory ,,,,,,,$selectedSubcategory');
     final expense = ExpenseEntity(

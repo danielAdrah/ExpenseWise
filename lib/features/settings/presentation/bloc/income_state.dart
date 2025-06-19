@@ -42,3 +42,11 @@ final class IncomeAddError extends IncomeState {
 final class IncomeDeleteSuccess extends IncomeState {}
 
 final class IncomeDeleteInProgress extends IncomeState {}
+
+final class IncomeDeleteError extends IncomeState {
+  final String errormessage;
+  const IncomeDeleteError(this.errormessage);
+  @override
+  List<Object> get props => [errormessage];
+}
+

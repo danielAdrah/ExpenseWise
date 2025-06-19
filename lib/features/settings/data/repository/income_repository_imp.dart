@@ -15,7 +15,7 @@ class IncomeRepositoryImp implements IncomeRepository {
   Future<void> addIncome(IncomeEntity income) async {
     try {
       print("from addincome repo 1");
-      remoteDataSource.addIncome(income);
+      await remoteDataSource.addIncome(income);  // FIXED: Added await
       print("from addincome repo 2");
     } on FirebaseException catch (e) {
       print("error from addincome repo $e");

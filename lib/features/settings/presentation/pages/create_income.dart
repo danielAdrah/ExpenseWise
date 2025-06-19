@@ -5,6 +5,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:trackme/core/components/date_text_field.dart';
 
@@ -79,25 +80,29 @@ class _CreateIncomeState extends State<CreateIncome> {
   void incomeSumbimt() {
     if (selectedCategory == null || amount.text.isEmpty || date.text.isEmpty) {
       final Snackbar = Methods()
-          .infoSnackBar('Please make sure to fell the amount and date fields');
+          .infoSnackBar('Please make sure to fill the amount and date fields');
+      ScaffoldMessenger.of(context).showSnackBar(Snackbar);
+      return;
+    }
+
+    try {
+      final income = IncomeEntity(
+        id: '',
+        category: selectedCategory ?? 'Other',
+        date: date.text,
+        amount: double.tryParse(amount.text) ?? 0.0,
+        note: note.text.isNotEmpty ? note.text : "No notes",
+        accountID: storage.read('selectedAcc') ?? '',
+        userId: FirebaseAuth.instance.currentUser?.uid ?? '',
+      );
+
+      context.read<IncomeBloc>().add(AddIncomeEvent(income: income));
+      clearField();
+    } catch (e) {
+      print("Error creating income: $e");
+      final Snackbar = Methods().errorSnackBar('Failed to create income: $e');
       ScaffoldMessenger.of(context).showSnackBar(Snackbar);
     }
-    print('================$selectedCategory ,,,,,,,');
-    final income = IncomeEntity(
-      id: '',
-      category: selectedCategory ?? 'try again',
-      date: date.text ,
-      amount: double.parse(amount.text),
-      note: "${note.text}",
-      accountID: storage.read('selectedAcc'),
-      userId: FirebaseAuth.instance.currentUser!.uid,
-    );
-
-    context.read<IncomeBloc>().add(AddIncomeEvent(income: income));
-    print(amount.text);
-    print(date.text);
-    print(note.text);
-    clearField();
   }
 
   @override
@@ -107,8 +112,6 @@ class _CreateIncomeState extends State<CreateIncome> {
     // final height = MediaQuery.of(context).size.height;
     final width = MediaQuery.of(context).size.width;
     final media = MediaQuery.of(context).size;
-    // final subcategories =
-    //     selectedCategory != null ? categoryData[selectedCategory] ?? [] : [];
 
     return Scaffold(
       backgroundColor: theme.surface,
@@ -123,12 +126,21 @@ class _CreateIncomeState extends State<CreateIncome> {
                 child: BlocConsumer<IncomeBloc, IncomeState>(
                   listener: (context, state) {
                     if (state is IncomeAddSuccess) {
-                      final Snackbar = Methods().successSnackBar(
-                          'Your income is created successfuly');
-                      ScaffoldMessenger.of(context).showSnackBar(Snackbar);
+                      // Show success message when income is created
+                      final snackBar = Methods().successSnackBar(
+                          'Your income has been created successfully');
+                      ScaffoldMessenger.of(context).showSnackBar(snackBar);
+                    } else if (state is IncomeAddError) {
+                      // Show error message when income creation fails
+                      final snackBar = Methods().errorSnackBar(
+                          'Failed to create income: ${state.errormessage}');
+                      ScaffoldMessenger.of(context).showSnackBar(snackBar);
                     }
                   },
                   builder: (context, state) {
+                    // Debug the current state
+                    print("Current income creation state: $state");
+
                     return Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
@@ -137,7 +149,7 @@ class _CreateIncomeState extends State<CreateIncome> {
                           duration: const Duration(milliseconds: 500),
                           curve: Curves.decelerate,
                           child: Text(
-                            "Selcet Income Source",
+                            "Select Income Source",
                             style: TextStyle(
                               color: theme.inversePrimary,
                               fontFamily: 'Poppins',
@@ -177,11 +189,12 @@ class _CreateIncomeState extends State<CreateIncome> {
                                 duration: const Duration(milliseconds: 800),
                                 curve: Curves.decelerate,
                                 child: RoundedTextField(
-                                    title: "Income Amount",
-                                    controller: amount,
-                                    onIconPressed: () {},
-                                    keyboardType: TextInputType.number,
-                                    preIcon: Icons.attach_money_outlined),
+                                  title: "Income Amount",
+                                  controller: amount,
+                                  onIconPressed: () {},
+                                  keyboardType: TextInputType.number,
+                                  preIcon: Icons.attach_money_outlined,
+                                ),
                               ),
                               const SizedBox(height: 25),
                               FadeInDown(
@@ -207,10 +220,6 @@ class _CreateIncomeState extends State<CreateIncome> {
                                   controller: note,
                                   preIcon: Icons.list,
                                 ),
-                                //  RoundedTextField(
-                                //     title: "Note",
-                                //     onIconPressed: () {},
-                                //     preIcon: Icons.list_outlined),
                               ),
                             ],
                           ),
@@ -218,14 +227,95 @@ class _CreateIncomeState extends State<CreateIncome> {
                         const SizedBox(height: 60),
                         Padding(
                           padding: const EdgeInsets.symmetric(horizontal: 40),
-                          child: ZoomInDown(
-                              duration: const Duration(milliseconds: 1000),
-                              child: CustomButton(
-                                  title: "Create",
-                                  onPressed: () {
-                                    incomeSumbimt();
-                                  })),
+                          child: state is IncomeAddInProgress
+                              ? Center(
+                                  child: Column(
+                                    children: [
+                                      SpinKitWave(
+                                        color: TColor.primary2,
+                                        size: 40,
+                                      ),
+                                      const SizedBox(height: 16),
+                                      Text(
+                                        "Creating income...",
+                                        style: TextStyle(
+                                          color: theme.inversePrimary,
+                                          fontFamily: 'Poppins',
+                                          fontSize: 16,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                )
+                              : ZoomInDown(
+                                  duration: const Duration(milliseconds: 1000),
+                                  child: CustomButton(
+                                    title: "Create",
+                                    onPressed: () {
+                                      // Validate form before submitting
+                                      if (selectedCategory == null) {
+                                        final snackBar = Methods().infoSnackBar(
+                                            'Please select an income category');
+                                        ScaffoldMessenger.of(context)
+                                            .showSnackBar(snackBar);
+                                        return;
+                                      }
+
+                                      if (amount.text.isEmpty) {
+                                        final snackBar = Methods().infoSnackBar(
+                                            'Please enter the income amount');
+                                        ScaffoldMessenger.of(context)
+                                            .showSnackBar(snackBar);
+                                        return;
+                                      }
+
+                                      if (date.text.isEmpty) {
+                                        final snackBar = Methods().infoSnackBar(
+                                            'Please select the income date');
+                                        ScaffoldMessenger.of(context)
+                                            .showSnackBar(snackBar);
+                                        return;
+                                      }
+
+                                      // All validations passed, submit the income
+                                      incomeSumbimt();
+                                    },
+                                  ),
+                                ),
                         ),
+
+                        // Show error message if there's an error
+                        if (state is IncomeAddError)
+                          Padding(
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 40, vertical: 20),
+                            child: Container(
+                              padding: const EdgeInsets.all(12),
+                              decoration: BoxDecoration(
+                                color: Colors.red.withOpacity(0.1),
+                                borderRadius: BorderRadius.circular(8),
+                                border: Border.all(
+                                    color: Colors.red.withOpacity(0.3)),
+                              ),
+                              child: Row(
+                                children: [
+                                  const Icon(Icons.error_outline,
+                                      color: Colors.red),
+                                  const SizedBox(width: 8),
+                                  Expanded(
+                                    child: Text(
+                                      state.errormessage,
+                                      style: const TextStyle(
+                                        color: Colors.red,
+                                        fontFamily: 'Poppins',
+                                        fontSize: 14,
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
                       ],
                     );
                   },
