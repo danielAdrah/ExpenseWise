@@ -1,18 +1,18 @@
-// ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables, unused_local_variable
-
-import 'package:animate_do/animate_do.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
+import 'package:go_router/go_router.dart';
+import 'package:get_storage/get_storage.dart';
+import 'package:animate_do/animate_do.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:intl/intl.dart';
 import '../../../../core/components/custom_button.dart';
-import '../../../../core/components/date_text_field.dart';
-import '../../../../core/components/gradient_icon.dart';
-import '../../../../core/components/gradient_text.dart';
-import '../../../../core/components/inline_nav_bar.dart';
 import '../../../../core/components/rounded_textField.dart';
+import '../../../../core/components/date_text_field.dart';
 import '../../../../core/theme/app_color.dart';
-
-// import 'package:awesome_dialog/awesome_dialog.dart';
+import '../../../../core/components/methods.dart';
+import '../../domain/entities/goal_entity.dart';
+import '../bloc/goal_bloc.dart';
 
 class CreateGoal extends StatefulWidget {
   const CreateGoal({super.key});
@@ -22,161 +22,192 @@ class CreateGoal extends StatefulWidget {
 }
 
 class _CreateGoalState extends State<CreateGoal> {
-  List<String> categories = [
-    "Transportation",
-    "Food",
-    "Utilities",
-    "Housing",
-    "Shopping",
-    "HealthCare",
-    "Education",
-  ];
+  final TextEditingController titleController = TextEditingController();
+  final TextEditingController targetAmountController = TextEditingController();
+  final TextEditingController currentAmountController = TextEditingController();
+  final TextEditingController deadlineController = TextEditingController();
+  final storage = GetStorage();
 
-  final TextEditingController date = TextEditingController();
-  void clearField() {}
+  @override
+  void dispose() {
+    titleController.dispose();
+    targetAmountController.dispose();
+    currentAmountController.dispose();
+    deadlineController.dispose();
+    super.dispose();
+  }
+
+  void showDate() async {
+    final DateTime? picked = await showDatePicker(
+      context: context,
+      initialDate: DateTime.now().add(const Duration(days: 30)),
+      firstDate: DateTime.now(),
+      lastDate: DateTime(2100),
+      builder: (context, child) {
+        return Theme(
+          data: Theme.of(context).copyWith(
+            colorScheme: ColorScheme.dark(
+              primary: TColor.primary,
+              onPrimary: Colors.white,
+              surface: Theme.of(context).colorScheme.surface,
+              onSurface: Theme.of(context).colorScheme.inversePrimary,
+            ),
+          ),
+          child: child!,
+        );
+      },
+    );
+
+    if (picked != null) {
+      setState(() {
+        deadlineController.text = DateFormat('yyyy-MM-dd').format(picked);
+      });
+    }
+  }
+
+  void submitGoal() {
+    if (titleController.text.isEmpty ||
+        targetAmountController.text.isEmpty ||
+        deadlineController.text.isEmpty) {
+      final snackBar = Methods()
+          .infoSnackBar('Please make sure to fill all required fields');
+      ScaffoldMessenger.of(context).showSnackBar(snackBar);
+      return;
+    }
+
+    final accountId = storage.read('selectedAcc');
+    if (accountId == null) {
+      final snackBar = Methods().errorSnackBar('No account selected');
+      ScaffoldMessenger.of(context).showSnackBar(snackBar);
+      return;
+    }
+
+    final goal = GoalEntity(
+      id: '',
+      title: titleController.text,
+      targetAmount: double.parse(targetAmountController.text),
+      currentAmount: currentAmountController.text.isEmpty
+          ? 0.0
+          : double.parse(currentAmountController.text),
+      deadline: deadlineController.text,
+      accountId: accountId,
+      userId: FirebaseAuth.instance.currentUser!.uid,
+      createdAt: DateTime.now().toIso8601String(),
+    );
+
+    context.read<GoalBloc>().add(AddGoalEvent(goal: goal));
+  }
 
   @override
   Widget build(BuildContext context) {
-    final height = MediaQuery.of(context).size.height;
-    final width = MediaQuery.of(context).size.width;
     final theme = Theme.of(context).colorScheme;
+
     return Scaffold(
       backgroundColor: theme.surface,
-      body: SafeArea(
-          child: SingleChildScrollView(
-        child: Column(
-          children: [
-            const SizedBox(height: 20),
-            const InlineNavBar(title: "Create Goal"),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const SizedBox(height: 25),
-                  Center(
-                    child: FadeInDown(
-                      duration: const Duration(milliseconds: 800),
-                      curve: Curves.decelerate,
-                      child: Image.asset("assets/img/money_goal.png",
-                          width: 180, height: 180),
-                    ),
-                  ),
-                  const SizedBox(height: 25),
-                  FadeInDown(
-                    duration: const Duration(milliseconds: 800),
-                    curve: Curves.decelerate,
-                    child: RoundedTextField(
-                        title: "Goal Title",
-                        onIconPressed: () {},
-                        preIcon: Icons.view_headline_sharp),
-                  ),
-                  const SizedBox(height: 25),
-                  FadeInDown(
-                    duration: const Duration(milliseconds: 900),
-                    curve: Curves.decelerate,
-                    child: RoundedTextField(
-                        title: "Goal Budget",
-                        keyboardType: TextInputType.number,
-                        onIconPressed: () {},
-                        preIcon: Icons.attach_money_outlined),
-                  ),
-                  const SizedBox(height: 25),
-                  FadeInDown(
-                    duration: const Duration(milliseconds: 1000),
-                    curve: Curves.decelerate,
-                    child: DateTextField(
-                      onTap: showDate,
-                      title: "Goal Deadline",
-                      controller: date,
-                      keyboardType: TextInputType.number,
-                      icon: Icons.date_range_rounded,
-                      onIconPressed: () {},
-                    ),
-                  ),
-                  const SizedBox(height: 60),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 40),
-                    child: ZoomInDown(
-                        duration: const Duration(milliseconds: 1000),
-                        child: CustomButton(title: "Create", onPressed: () {})),
-                  ),
-                ],
-              ),
-            ),
-          ],
+      appBar: AppBar(
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back, color: theme.inversePrimary),
+          onPressed: () => context.pop(),
         ),
-      )),
-    );
-  }
-
-  //========GRADIENT CHIP
-  Widget buildGradientChip({
-    required String label,
-    required IconData icon,
-    required List<Color> gradientColors,
-    required bool selected,
-    required VoidCallback onTap,
-  }) {
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        margin: const EdgeInsets.symmetric(horizontal: 4, vertical: 6),
-        padding: const EdgeInsets.symmetric(horizontal: 1, vertical: 1),
-        decoration: BoxDecoration(
-          gradient: LinearGradient(colors: gradientColors),
-          borderRadius: BorderRadius.circular(30),
-          boxShadow: selected
-              ? [
-                  BoxShadow(
-                      color: gradientColors.last.withOpacity(0.5),
-                      blurRadius: 11)
-                ]
-              : [],
-        ),
-        child: Container(
-          // margin: EdgeInsets.symmetric(horizontal: 1, vertical: 2),
-          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
-          decoration: BoxDecoration(
-            color: Theme.of(context).colorScheme.surface,
-            // gradient: LinearGradient(colors: gradientColors),
-            borderRadius: BorderRadius.circular(30),
+        title: Text(
+          "Create Goal",
+          style: TextStyle(
+            color: theme.inversePrimary,
+            fontFamily: 'Poppins',
+            fontSize: 20,
+            fontWeight: FontWeight.w600,
           ),
-          child: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              GradientIcon(
-                icon: icon,
-                size: 15,
-                gradient: LinearGradient(colors: gradientColors),
-              ),
-              const SizedBox(width: 5),
-              GradientText(
-                label,
-                gradient: LinearGradient(colors: gradientColors),
-                style: const TextStyle(
-                  color: Colors.white,
-                  fontFamily: "Arvo",
-                  fontWeight: FontWeight.w500,
+        ),
+        centerTitle: true,
+      ),
+      body: BlocConsumer<GoalBloc, GoalState>(
+        listener: (context, state) {
+          if (state is AddGoalSuccess) {
+            final snackBar =
+                Methods().successSnackBar('Goal created successfully');
+            ScaffoldMessenger.of(context).showSnackBar(snackBar);
+          } else if (state is AddGoalError) {
+            final snackBar = Methods().errorSnackBar(state.message);
+            ScaffoldMessenger.of(context).showSnackBar(snackBar);
+          }
+        },
+        builder: (context, state) {
+          return SingleChildScrollView(
+            padding: const EdgeInsets.all(20),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                FadeInDown(
+                  duration: const Duration(milliseconds: 500),
+                  child: Image.asset(
+                    'assets/img/money_goal.png',
+                    height: 150,
+                    width: 150,
+                  ),
                 ),
-              ),
-            ],
-          ),
-        ),
+                const SizedBox(height: 30),
+                FadeInDown(
+                  duration: const Duration(milliseconds: 600),
+                  child: RoundedTextField(
+                    title: "Goal Title",
+                    controller: titleController,
+                    preIcon: Icons.title,
+                    onIconPressed: () {},
+                  ),
+                ),
+                const SizedBox(height: 20),
+                FadeInDown(
+                  duration: const Duration(milliseconds: 700),
+                  child: RoundedTextField(
+                    title: "Target Amount",
+                    controller: targetAmountController,
+                    preIcon: Icons.attach_money,
+                    keyboardType: TextInputType.number,
+                    onIconPressed: () {},
+                  ),
+                ),
+                const SizedBox(height: 20),
+                FadeInDown(
+                  duration: const Duration(milliseconds: 800),
+                  child: RoundedTextField(
+                    title: "Initial Amount (Optional)",
+                    controller: currentAmountController,
+                    preIcon: Icons.savings,
+                    keyboardType: TextInputType.number,
+                    onIconPressed: () {},
+                  ),
+                ),
+                const SizedBox(height: 20),
+                FadeInDown(
+                  duration: const Duration(milliseconds: 900),
+                  child: DateTextField(
+                    title: "Goal Deadline",
+                    controller: deadlineController,
+                    icon: Icons.calendar_today,
+                    onTap: showDate,
+                    onIconPressed: () {},
+                  ),
+                ),
+                const SizedBox(height: 40),
+                state is AddGoalInProgress
+                    ? SpinKitWave(
+                        color: TColor.primary2,
+                        size: 30,
+                      )
+                    : FadeInUp(
+                        duration: const Duration(milliseconds: 1000),
+                        child: CustomButton(
+                          title: "Create Goal",
+                          onPressed: submitGoal,
+                        ),
+                      ),
+              ],
+            ),
+          );
+        },
       ),
     );
-  }
-
-  Future<void> showDate() async {
-    DateTime? picked = await showDatePicker(
-      context: context,
-      initialDate: DateTime.now(),
-      firstDate: DateTime(2000),
-      lastDate: DateTime(3000),
-      barrierColor: TColor.gray30,
-    );
-    if (picked != null) {
-      date.text = picked.toString().substring(0, 10);
-    }
   }
 }

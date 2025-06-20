@@ -12,6 +12,7 @@ import '../../../features/expenses/presentation/pages/create_expense_view.dart';
 import '../../../features/expenses/presentation/pages/create_upcoming.dart';
 import '../../../features/expenses/presentation/pages/update_expense.dart';
 import '../../../features/expenses/presentation/pages/update_upcoming.dart';
+import '../../../features/goals/domain/entities/goal_entity.dart';
 import '../../../features/goals/presentation/pages/create_goal.dart';
 import '../../../features/goals/presentation/pages/goal_detail.dart';
 import '../../../features/goals/presentation/pages/goals_view.dart';
@@ -106,7 +107,10 @@ final GoRouter router = GoRouter(
     GoRoute(
       path: '/goalDetail',
       name: 'goalDetail',
-      builder: (context, state) => const GoalDetail(),
+      builder: (context, state) {
+        final goal = state.extra as GoalEntity;
+        return GoalDetail(goal: goal);
+      },
     ),
     //======
     GoRoute(

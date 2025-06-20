@@ -19,6 +19,15 @@ import '../../features/expenses/domain/repositories/expense_repository.dart';
 import '../../features/expenses/domain/usecases/usecases.dart';
 import '../../features/expenses/presentation/bloc/expense_bloc.dart';
 import '../../features/expenses/presentation/bloc/upcoming_expense_bloc.dart';
+import '../../features/goals/data/datasources/goal_remote_datasource.dart';
+import '../../features/goals/data/repositories/goal_repository_impl.dart';
+import '../../features/goals/domain/repositories/goal_repository.dart';
+import '../../features/goals/domain/usecases/add_goal_usecase.dart';
+import '../../features/goals/domain/usecases/delete_goal_usecase.dart';
+import '../../features/goals/domain/usecases/get_goals_usecase.dart';
+import '../../features/goals/domain/usecases/update_goal_progress_usecase.dart';
+import '../../features/goals/domain/usecases/update_goal_usecase.dart';
+import '../../features/goals/presentation/bloc/goal_bloc.dart';
 import '../../features/settings/data/datasources/income_remote_data_source.dart';
 import '../../features/settings/data/datasources/user_remote_data_source.dart';
 import '../../features/settings/data/repository/income_repository_imp.dart';
@@ -131,6 +140,33 @@ Future<void> init() async {
   sl.registerFactory(
     () => IncomeBloc(addIncome: sl(), deleteIncome: sl(), getIncomes: sl()),
   );
+
+//=================================================================================
+
+  // Goals Feature
+  // BLoC
+  sl.registerFactory(() => GoalBloc(
+        addGoal: sl(),
+        updateGoal: sl(),
+        deleteGoal: sl(),
+        getGoals: sl(),
+        updateGoalProgress: sl(),
+      ));
+
+  // Use Cases
+  sl.registerLazySingleton(() => AddGoalUseCase(repository: sl()));
+  sl.registerLazySingleton(() => UpdateGoalUseCase(repository: sl()));
+  sl.registerLazySingleton(() => DeleteGoalUseCase(repository: sl()));
+  sl.registerLazySingleton(() => GetGoalsUseCase(repository: sl()));
+  sl.registerLazySingleton(() => UpdateGoalProgressUseCase(repository: sl()));
+
+  // Repository
+  sl.registerLazySingleton<GoalRepository>(
+      () => GoalRepositoryImpl(remoteDataSource: sl()));
+
+  // Data Sources
+  sl.registerLazySingleton<GoalRemoteDataSource>(
+      () => GoalRemoteDataSourceImpl(sl()));
 
 //=================================================================================
 }

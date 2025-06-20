@@ -10,6 +10,7 @@ import 'core/services/route/route_main.dart';
 import 'core/theme/bloc/theme_bloc.dart';
 import 'features/auth/presentation/bloc/password_cubit.dart';
 import 'features/expenses/presentation/bloc/upcoming_expense_bloc.dart';
+import 'features/goals/presentation/bloc/goal_bloc.dart';
 import 'features/settings/presentation/bloc/income_bloc.dart';
 
 void main() async {
@@ -39,6 +40,7 @@ class MyApp extends StatelessWidget {
         BlocProvider<ExpenseBloc>(create: (context) => sl<ExpenseBloc>()),
         BlocProvider<UpcomingExpenseBloc>(create: (context) => sl<UpcomingExpenseBloc>()),
         BlocProvider<IncomeBloc>(create: (context) => sl<IncomeBloc>()),
+        BlocProvider<GoalBloc>(create: (context) => sl<GoalBloc>()),
       ],
       child: BlocBuilder<ThemeBloc, ThemeData>(
         builder: (context, theme) {

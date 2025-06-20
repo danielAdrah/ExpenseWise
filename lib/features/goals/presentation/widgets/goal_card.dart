@@ -1,218 +1,149 @@
-// ignore_for_file: prefer_const_constructors, must_be_immutable
-
-import 'package:animate_do/animate_do.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
+// import 'package:percent_indicator/linear_percent_indicator.dart';
+import '../../../../core/theme/app_color.dart';
 
-class GoalCard extends StatefulWidget {
-  GoalCard({
-    super.key,
-    required this.width,
-    required this.height,
-    required this.goalName,
-    required this.current,
-    required this.finalBalance,
-    required this.date,
-    required this.onTap,
-    required this.img,
-  });
-
+class GoalCard extends StatelessWidget {
+  final String img;
   final double width;
   final double height;
   final String goalName;
   final String current;
   final String finalBalance;
   final String date;
-  final String img;
-  void Function()? onTap;
+  final double progress;
+  final VoidCallback onTap;
+  final VoidCallback onDelete;
+  final Object tag;
 
-  @override
-  State<GoalCard> createState() => _GoalCardState();
-}
-
-class _GoalCardState extends State<GoalCard> {
-  void Function()? onTap;
+  const GoalCard({
+    super.key,
+    required this.img,
+    required this.width,
+    required this.height,
+    required this.goalName,
+    required this.current,
+    required this.finalBalance,
+    required this.date,
+    required this.progress,
+    required this.onTap,
+    required this.onDelete, required this.tag,
+  });
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context).colorScheme;
-    final width = MediaQuery.of(context).size.width;
-    return FadeInUp(
-      delay: Duration(milliseconds: 250),
-      curve: Curves.decelerate,
-      child: InkWell(
-        onTap: widget.onTap,
-        child: Container(
-          margin: EdgeInsets.symmetric(
-              horizontal: widget.width * 0.05, vertical: widget.height * 0.015),
-          width: widget.width,
-          height: widget.height * 0.28,
-          decoration: BoxDecoration(
-            color: theme.primaryContainer,
-            borderRadius: BorderRadius.circular(40),
-          ),
-          child: Padding(
-            padding: EdgeInsets.only(left: widget.width * 0.05),
-            child: Column(
+    
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: theme.primaryContainer,
+          borderRadius: BorderRadius.circular(16),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.05),
+              blurRadius: 10,
+              offset: const Offset(0, 5),
+            ),
+          ],
+        ),
+        child: Column(
+          children: [
+            Row(
               children: [
-                const SizedBox(height: 20),
-                Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Image.asset(widget.img, width: 80, height: 80),
-                    // CircleAvatar(
-                    //   backgroundColor: theme.primary,
-                    //   radius: 40,
-                    //   child: const Icon(CupertinoIcons.car_detailed,
-                    //       color: Colors.white, size: 40),
-                    // ),
-                    const SizedBox(width: 20),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
+                Hero(
+                  tag:tag,
+                  child: Image.asset(
+                    img,
+                    width: 50,
+                    height: 50,
+                  ),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          Row(
-                            children: [
-                              Text(
-                                widget.goalName,
-                                style: TextStyle(
-                                  color: theme.inversePrimary,
-                                  fontFamily: 'Poppins',
-                                  fontSize: 22,
-                                  fontWeight: FontWeight.bold,
-                                ),
+                          Expanded(
+                            child: Text(
+                              goalName,
+                              style: TextStyle(
+                                color: theme.inversePrimary,
+                                fontFamily: 'Poppins',
+                                fontSize: 18,
+                                fontWeight: FontWeight.w600,
                               ),
-                              SizedBox(width: width / 5),
-                              IconButton(
-                                onPressed: () {
-                                  showDialog(
-                                    context: context,
-                                    builder: (context) {
-                                      return AlertDialog(
-                                        backgroundColor: theme.primaryContainer,
-                                        content: Text(
-                                          "Are You Sure You Want To Delete This ?",
-                                          style: TextStyle(
-                                              color: theme.inversePrimary,
-                                              fontFamily: 'Poppins'),
-                                        ),
-                                        actions: [
-                                          TextButton(
-                                            onPressed: () {
-                                              context.pop();
-                                            },
-                                            child: Text(
-                                              "Yes",
-                                              style: TextStyle(
-                                                  color: theme.inversePrimary),
-                                            ),
-                                          ),
-                                          TextButton(
-                                            onPressed: () {
-                                              context.pop();
-                                            },
-                                            child: Text("No",
-                                                style: TextStyle(
-                                                    color:
-                                                        theme.inversePrimary)),
-                                          ),
-                                        ],
-                                      );
-                                    },
-                                  );
-                                },
-                                icon: Icon(
-                                  CupertinoIcons.multiply,
-                                  color: theme.inversePrimary,
-                                  size: 30,
-                                ),
-                              ),
-                            ],
-                          ),
-                          SizedBox(height: 15),
-                          Padding(
-                            padding:
-                                EdgeInsets.only(bottom: widget.height * 0.025),
-                            child: Row(
-                              children: [
-                                Text(
-                                  "Current Balacne  : ",
-                                  style: TextStyle(
-                                    fontSize: 14,
-                                    color: theme.inversePrimary,
-                                    fontFamily: 'Arvo',
-                                  ),
-                                ),
-                                Text(
-                                  "\$${widget.current}",
-                                  style: TextStyle(
-                                    fontSize: 13,
-                                    color: theme.inversePrimary,
-                                    fontFamily: 'Arvo',
-                                  ),
-                                ),
-                              ],
+                              overflow: TextOverflow.ellipsis,
                             ),
                           ),
-                          Padding(
-                            padding:
-                                EdgeInsets.only(bottom: widget.height * 0.025),
-                            child: Row(
-                              children: [
-                                Text(
-                                  "Required Balacne  : ",
-                                  style: TextStyle(
-                                    fontSize: 14,
-                                    color: theme.inversePrimary,
-                                    fontFamily: 'Arvo',
-                                  ),
-                                ),
-                                Text(
-                                  "\$${widget.finalBalance}",
-                                  style: TextStyle(
-                                    fontSize: 13,
-                                    color: theme.inversePrimary,
-                                    fontFamily: 'Arvo',
-                                  ),
-                                ),
-                              ],
+                          IconButton(
+                            icon: Icon(
+                              Icons.delete_outline,
+                              color: theme.inversePrimary.withOpacity(0.7),
+                              size: 20,
                             ),
-                          ),
-                          Padding(
-                            padding:
-                                EdgeInsets.only(bottom: widget.height * 0.025),
-                            child: Row(
-                              children: [
-                                Text(
-                                  " Deadline : ",
-                                  style: TextStyle(
-                                    fontSize: 14,
-                                    color: theme.inversePrimary,
-                                    fontFamily: 'Arvo',
-                                  ),
-                                ),
-                                Text(
-                                  widget.date,
-                                  style: TextStyle(
-                                    fontSize: 13,
-                                    color: theme.inversePrimary,
-                                    fontFamily: 'Arvo',
-                                  ),
-                                ),
-                              ],
-                            ),
+                            onPressed: onDelete,
                           ),
                         ],
                       ),
-                    ),
-                  ],
+                      const SizedBox(height: 4),
+                      Text(
+                        "Deadline: $date",
+                        style: TextStyle(
+                          color: theme.inversePrimary.withOpacity(0.7),
+                          fontFamily: 'Poppins',
+                          fontSize: 12,
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
               ],
             ),
-          ),
+            const SizedBox(height: 16),
+            // LinearPercentIndicator(
+            //   lineHeight: 8.0,
+            //   percent: progress,
+            //   backgroundColor: TColor.primary.withOpacity(0.2),
+            //   progressColor: TColor.primary,
+            //   barRadius: const Radius.circular(4),
+            //   padding: EdgeInsets.zero,
+            //   animation: true,
+            //   animationDuration: 1000,
+            // ),
+            // const SizedBox(height: 12),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  "\$$current",
+                  style: TextStyle(
+                    color: theme.inversePrimary,
+                    fontFamily: 'Poppins',
+                    fontSize: 16,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+                Text(
+                  "\$$finalBalance",
+                  style: TextStyle(
+                    color: theme.inversePrimary,
+                    fontFamily: 'Poppins',
+                    fontSize: 16,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ],
+            ),
+          ],
         ),
       ),
     );
   }
 }
+
