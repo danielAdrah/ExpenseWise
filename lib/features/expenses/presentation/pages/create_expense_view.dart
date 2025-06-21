@@ -1,6 +1,7 @@
 // ignore_for_file: unused_local_variable, avoid_print, non_constant_identifier_names
 
 import 'package:animate_do/animate_do.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -15,6 +16,7 @@ import '../../../../core/components/inline_nav_bar.dart';
 import '../../../../core/components/methods.dart';
 import '../../../../core/components/rounded_textField.dart';
 import '../../../../core/theme/app_color.dart';
+import '../../../spendings_limits/presentation/bloc/limit_bloc.dart';
 import '../../domain/entities/expense_entity.dart';
 import '../bloc/expense_bloc.dart';
 import '../bloc/expense_event.dart';
@@ -167,7 +169,7 @@ class _CreateExpenseViewState extends State<CreateExpenseView> {
       ScaffoldMessenger.of(context).showSnackBar(Snackbar);
       return;
     }
-    print('================$selectedCategory ,,,,,,,$selectedSubcategory');
+
     final expense = ExpenseEntity(
       id: '',
       category: selectedCategory ?? 'try again',
@@ -175,20 +177,25 @@ class _CreateExpenseViewState extends State<CreateExpenseView> {
       name: expTitle.text,
       quantity: int.parse(expQuan.text),
       price: double.parse(expPrice.text),
-      // date: DateTime.now(),
+      createdAt: DateTime.now().toIso8601String(),
       accountId: storage.read('selectedAcc'),
       userId: FirebaseAuth.instance.currentUser!.uid,
     );
-    print(expense.name);
-    print(expense.category);
-    print(expense.subCategory);
-    print(expense.quantity);
-    print(expense.price);
-    // print(expense.date);
-    print(expense.accountId);
-    print(expense.id);
+
+    // Add the expense - the limit update will happen in the bloc
     context.read<ExpenseBloc>().add(AddExpenseEvent(expense));
-    clearField();
+
+    // Remove the listener that was updating the limit again
+    // context.read<ExpenseBloc>().stream.listen((state) {
+    //   if (state is AddExpenseDone) {
+    //     _updateMatchingSpendingLimit(expense);
+    //   }
+    // });
+  }
+
+  // Keep this method for reference but don't call it
+  void _updateMatchingSpendingLimit(ExpenseEntity expense) async {
+    // Method implementation remains the same but is not used
   }
 
   @override
@@ -211,6 +218,7 @@ class _CreateExpenseViewState extends State<CreateExpenseView> {
                 final Snackbar = Methods()
                     .successSnackBar('Your expense is created successfuly');
                 ScaffoldMessenger.of(context).showSnackBar(Snackbar);
+                clearField();
               } else if (state is AddExpenseError) {
                 final Snackbar = Methods().errorSnackBar(state.message);
                 ScaffoldMessenger.of(context).showSnackBar(Snackbar);
@@ -355,7 +363,7 @@ class _CreateExpenseViewState extends State<CreateExpenseView> {
                         const SizedBox(height: 60),
                         state is AddExpenseInProgress
                             ? Center(
-                                child: SpinKitSpinningLines(
+                                child: SpinKitWave(
                                 color: TColor.primary2,
                                 size: 40,
                               ))

@@ -16,6 +16,7 @@ import '../../features/auth/presentation/bloc/auth_bloc.dart';
 import '../../features/expenses/data/datasources/expense_remote_datasource.dart';
 import '../../features/expenses/data/repositories/expense_repository_impl.dart';
 import '../../features/expenses/domain/repositories/expense_repository.dart';
+import '../../features/expenses/domain/services/limit_update_service.dart';
 import '../../features/expenses/domain/usecases/usecases.dart';
 import '../../features/expenses/presentation/bloc/expense_bloc.dart';
 import '../../features/expenses/presentation/bloc/upcoming_expense_bloc.dart';
@@ -39,6 +40,15 @@ import '../../features/settings/domain/usecases/income_usecases.dart';
 import '../../features/settings/domain/usecases/update_user_data_usecase.dart';
 import '../../features/settings/presentation/bloc/income_bloc.dart';
 import '../../features/settings/presentation/bloc/user_info_bloc.dart';
+import '../../features/spendings_limits/data/datasources/limit_remote_datasource.dart';
+import '../../features/spendings_limits/data/repositories/limit_repository_impl.dart';
+import '../../features/spendings_limits/domain/repositories/limit_repository.dart';
+import '../../features/spendings_limits/domain/usecases/add_limit_usecase.dart';
+import '../../features/spendings_limits/domain/usecases/delete_limit_usecase.dart';
+import '../../features/spendings_limits/domain/usecases/get_limits_usecase.dart';
+import '../../features/spendings_limits/domain/usecases/update_limit_usecase.dart';
+import '../../features/spendings_limits/domain/usecases/update_limit_spending_usecase.dart';
+import '../../features/spendings_limits/presentation/bloc/limit_bloc.dart';
 // import 'presentation/bloc/auth_bloc.dart';
 
 final sl = GetIt.instance;
@@ -47,6 +57,7 @@ Future<void> init() async {
   // External
   sl.registerLazySingleton(() => FirebaseAuth.instance);
   sl.registerLazySingleton(() => FirebaseFirestore.instance);
+  sl.registerLazySingleton(() => LimitUpdateService(firestore: sl()));
 //===============================================================================
   //Data sources
   sl.registerLazySingleton<AuthRemoteDataSource>(
@@ -125,6 +136,8 @@ Future<void> init() async {
       deleteExpense: sl(),
       updateExpense: sl(),
       getExpenses: sl(),
+      limitUpdateService: sl(),
+      limitBloc: sl(),
     ),
   );
   //---
@@ -168,5 +181,28 @@ Future<void> init() async {
   sl.registerLazySingleton<GoalRemoteDataSource>(
       () => GoalRemoteDataSourceImpl(sl()));
 
-//=================================================================================
+  // Spending Limits Feature
+  // BLoC
+  sl.registerFactory(() => LimitBloc(
+        addLimit: sl(),
+        updateLimit: sl(),
+        deleteLimit: sl(),
+        getLimits: sl(),
+        updateLimitSpending: sl(),
+      ));
+
+  // Use Cases
+  sl.registerLazySingleton(() => AddLimitUseCase(repository: sl()));
+  sl.registerLazySingleton(() => UpdateLimitUseCase(repository: sl()));
+  sl.registerLazySingleton(() => DeleteLimitUseCase(repository: sl()));
+  sl.registerLazySingleton(() => GetLimitsUseCase(repository: sl()));
+  sl.registerLazySingleton(() => UpdateLimitSpendingUseCase(repository: sl()));
+
+  // Repository
+  sl.registerLazySingleton<LimitRepository>(
+      () => LimitRepositoryImpl(remoteDataSource: sl()));
+
+  // Data Sources
+  sl.registerLazySingleton<LimitRemoteDataSource>(
+      () => LimitRemoteDataSourceImpl(sl()));
 }

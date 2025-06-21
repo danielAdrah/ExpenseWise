@@ -28,6 +28,13 @@ class _CreateGoalState extends State<CreateGoal> {
   final TextEditingController deadlineController = TextEditingController();
   final storage = GetStorage();
 
+  void clearFields() {
+    titleController.clear();
+    targetAmountController.clear();
+    currentAmountController.clear();
+    deadlineController.clear();
+  }
+
   @override
   void dispose() {
     titleController.dispose();
@@ -108,7 +115,7 @@ class _CreateGoalState extends State<CreateGoal> {
         backgroundColor: Colors.transparent,
         elevation: 0,
         leading: IconButton(
-          icon: Icon(Icons.arrow_back, color: theme.inversePrimary),
+          icon: Icon(Icons.arrow_back_ios, color: theme.inversePrimary),
           onPressed: () => context.pop(),
         ),
         title: Text(
@@ -128,6 +135,7 @@ class _CreateGoalState extends State<CreateGoal> {
             final snackBar =
                 Methods().successSnackBar('Goal created successfully');
             ScaffoldMessenger.of(context).showSnackBar(snackBar);
+            clearFields();
           } else if (state is AddGoalError) {
             final snackBar = Methods().errorSnackBar(state.message);
             ScaffoldMessenger.of(context).showSnackBar(snackBar);

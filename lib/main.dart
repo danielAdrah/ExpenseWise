@@ -12,6 +12,7 @@ import 'features/auth/presentation/bloc/password_cubit.dart';
 import 'features/expenses/presentation/bloc/upcoming_expense_bloc.dart';
 import 'features/goals/presentation/bloc/goal_bloc.dart';
 import 'features/settings/presentation/bloc/income_bloc.dart';
+import 'features/spendings_limits/presentation/bloc/limit_bloc.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -41,6 +42,7 @@ class MyApp extends StatelessWidget {
         BlocProvider<UpcomingExpenseBloc>(create: (context) => sl<UpcomingExpenseBloc>()),
         BlocProvider<IncomeBloc>(create: (context) => sl<IncomeBloc>()),
         BlocProvider<GoalBloc>(create: (context) => sl<GoalBloc>()),
+        BlocProvider<LimitBloc>(create: (context) => sl<LimitBloc>()),
       ],
       child: BlocBuilder<ThemeBloc, ThemeData>(
         builder: (context, theme) {

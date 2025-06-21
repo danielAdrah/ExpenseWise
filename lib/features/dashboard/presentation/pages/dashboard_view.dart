@@ -161,7 +161,11 @@ class _DashboardViewState extends State<DashboardView> {
                                               context
                                                   .read<ExpenseBloc>()
                                                   .add(LoadExpensesEvent(val));
-                                              context.read<UpcomingExpenseBloc>().add(LoadUpcomingExpensesEvent(val));
+                                              context
+                                                  .read<UpcomingExpenseBloc>()
+                                                  .add(
+                                                      LoadUpcomingExpensesEvent(
+                                                          val));
                                               context.read<IncomeBloc>().add(
                                                   LoadIncomeEvent(
                                                       accountID: val));
@@ -314,6 +318,8 @@ class _DashboardViewState extends State<DashboardView> {
                                                 category: exp.category,
                                                 id: exp.id,
                                                 subCategory: exp.subCategory,
+                                                createdAt: DateTime.now()
+                                                    .toIso8601String(),
                                                 userId: FirebaseAuth
                                                     .instance.currentUser!.uid,
                                               ));
@@ -329,7 +335,7 @@ class _DashboardViewState extends State<DashboardView> {
                                   type: exp.category,
                                   title: exp.name,
                                   price: exp.price.toString(),
-                                  date: DateTime.now(),
+                                  date: DateTime.parse(exp.createdAt),
                                 ),
                               ),
                             );

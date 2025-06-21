@@ -101,7 +101,8 @@ class _OnboardingState extends State<Onboarding> {
                       child: CustomButton(
                         title: "Get Started",
                         onPressed: () {
-                          context.goNamed('signUp');
+                          // Navigate to the sign up page
+                          context.go('/'); // Go to root which will show AuthGate
                         },
                       ),
                     ),
@@ -149,3 +150,4 @@ class _OnboardingState extends State<Onboarding> {
     );
   }
 }
+

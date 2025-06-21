@@ -79,8 +79,107 @@ class _GoalDetailState extends State<GoalDetail> {
 
                 final amount = double.parse(amountController.text);
 
-                // Close dialog first
-                context.pop();
+                // Check if goal is already fulfilled
+                if (goal.currentAmount >= goal.targetAmount) {
+                  context.pop(); // Close dialog
+                  final snackBar = Methods().infoSnackBar(
+                      'Goal already reached! No need to add more funds.');
+                  ScaffoldMessenger.of(context).showSnackBar(snackBar);
+                  return;
+                }
+
+                // Check if adding this amount would exceed the target
+                final remainingAmount = goal.targetAmount - goal.currentAmount;
+                if (amount > remainingAmount) {
+                  // Show warning dialog
+                  showDialog(
+                    context: context,
+                    builder: (context) => AlertDialog(
+                      backgroundColor:
+                          Theme.of(context).colorScheme.primaryContainer,
+                      title: Text(
+                        "Exceeds Target",
+                        style: TextStyle(
+                          color: Theme.of(context).colorScheme.inversePrimary,
+                          fontFamily: 'Poppins',
+                        ),
+                      ),
+                      content: Text(
+                        "Adding \$${amount.toStringAsFixed(2)} would exceed your goal target by \$${(amount - remainingAmount).toStringAsFixed(2)}. Would you like to add the exact remaining amount (\$${remainingAmount.toStringAsFixed(2)}) or continue with your entered amount?",
+                        style: TextStyle(
+                          color: Theme.of(context).colorScheme.inversePrimary,
+                          fontFamily: 'Poppins',
+                        ),
+                      ),
+                      actions: [
+                        TextButton(
+                          onPressed: () {
+                            context.pop(); // Close this dialog
+                            context.pop(); // Close the amount dialog
+
+                            // Update with exact remaining amount
+                            setState(() {
+                              goal = goal.copyWith(
+                                currentAmount:
+                                    goal.targetAmount, // Set to exact target
+                              );
+                            });
+
+                            // Send update to backend
+                            context.read<GoalBloc>().add(
+                                  UpdateGoalProgressEvent(
+                                    id: goal.id,
+                                    amount: remainingAmount,
+                                  ),
+                                );
+
+                            amountController.clear();
+                          },
+                          child: Text(
+                            "Add Exact Amount",
+                            style: TextStyle(
+                              color: Theme.of(context).colorScheme.primary,
+                            ),
+                          ),
+                        ),
+                        TextButton(
+                          onPressed: () {
+                            context.pop(); // Close this dialog
+                            context.pop(); // Close the amount dialog
+
+                            // Update with full amount as entered
+                            setState(() {
+                              goal = goal.copyWith(
+                                currentAmount: goal.currentAmount + amount,
+                              );
+                            });
+
+                            // Send update to backend
+                            context.read<GoalBloc>().add(
+                                  UpdateGoalProgressEvent(
+                                    id: goal.id,
+                                    amount: amount,
+                                  ),
+                                );
+
+                            amountController.clear();
+                          },
+                          child: Text(
+                            "Add Full Amount",
+                            style: TextStyle(
+                              color: Theme.of(context).colorScheme.primary,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  );
+                  return;
+                }
+
+                // Normal case - amount doesn't exceed target
+                context.pop(); // Close dialog
 
                 // Update the goal locally immediately for instant UI feedback
                 setState(() {

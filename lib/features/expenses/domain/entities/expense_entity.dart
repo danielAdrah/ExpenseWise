@@ -9,7 +9,7 @@ class ExpenseEntity {
   // final DateTime date;
   final String accountId;
   final String userId;
-
+  final String createdAt;
   ExpenseEntity({
     required this.id,
     required this.name,
@@ -20,5 +20,6 @@ class ExpenseEntity {
     // required this.date,
     required this.accountId,
     required this.userId,
+    required this.createdAt,
   });
 }

@@ -1,3 +1,4 @@
+import 'package:get_storage/get_storage.dart';
 import 'package:go_router/go_router.dart';
 import 'package:trackme/features/auth/presentation/pages/sign_in_view.dart';
 import 'package:trackme/main_navbar.dart';
@@ -5,7 +6,6 @@ import '../../../features/auth/presentation/pages/auth_gate.dart';
 import '../../../features/auth/presentation/pages/create_account.dart';
 import '../../../features/auth/presentation/pages/sign_up_view.dart';
 import '../../../features/charts/presentation/pages/chart_view.dart';
-import '../../../features/expenses/data/models/edit_expense_model.dart';
 import '../../../features/expenses/data/models/expense_model.dart';
 import '../../../features/expenses/data/models/upcoming_expense_model.dart';
 import '../../../features/expenses/presentation/pages/create_expense_view.dart';
@@ -23,19 +23,51 @@ import '../../../features/settings/presentation/pages/create_sec_account.dart';
 import '../../../features/settings/presentation/pages/income_tab.dart';
 import '../../../features/settings/presentation/pages/settings_view.dart';
 import '../../../features/settings/presentation/pages/statistics.dart';
+import '../../../features/spendings_limits/domain/entities/limit_entity.dart';
 import '../../../features/spendings_limits/presentation/pages/create_limit.dart';
 import '../../../features/spendings_limits/presentation/pages/edit_limit.dart';
 import '../../../features/spendings_limits/presentation/pages/limit_detail.dart';
 import '../../../features/spendings_limits/presentation/pages/spending_limit_view.dart';
 
+// Check if it's the first time launching the app
+bool isFirstLaunch() {
+  final box = GetStorage();
+  return box.read<bool>('isFirstTime') ?? true;
+}
+
+// Mark that the app has been launched before
+void markAppAsLaunched() {
+  final box = GetStorage();
+  box.write('isFirstTime', false);
+}
+
 final GoRouter router = GoRouter(
   debugLogDiagnostics: true,
   initialLocation: '/',
+  redirect: (context, state) {
+    // If the current path is '/' (initial route), check if it's first launch
+    if (state.uri.path == '/') {
+      if (isFirstLaunch()) {
+        // Mark the app as launched and redirect to onboarding
+        markAppAsLaunched();
+        return '/onboarding';
+      }
+      // Not first launch, continue to AuthGate
+      return null;
+    }
+    return null;
+  },
   routes: [
     GoRoute(
       path: '/',
-      name: 'onboarding',
+      name: 'root',
       builder: (context, state) => const AuthGate(),
+    ),
+    //======
+    GoRoute(
+      path: '/onboarding',
+      name: 'onboarding',
+      builder: (context, state) => const Onboarding(),
     ),
     //======
     GoRoute(
@@ -134,13 +166,19 @@ final GoRouter router = GoRouter(
     GoRoute(
       path: '/editLimit',
       name: 'editLimit',
-      builder: (context, state) => const EditLimit(),
+      builder: (context, state){
+        final limit = state.extra as LimitEntity;
+        return  EditLimit(limit:limit);
+      },
     ),
     //======
     GoRoute(
       path: '/limitDetail',
       name: 'limitDetail',
-      builder: (context, state) => const LimitDetail(),
+      builder: (context, state){
+        final limit = state.extra as LimitEntity;
+        return LimitDetail(limit: limit);
+      }
     ),
     //======
     GoRoute(

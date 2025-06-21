@@ -179,7 +179,7 @@ class _EditExpenseState extends State<EditExpense>
       name: newName.text,
       quantity: int.parse(newQuan.text),
       price: double.parse(newPrice.text),
-      // date: DateTime.now(),
+      createdAt: DateTime.now().toIso8601String(),
       accountId: storage.read('selectedAcc'),
       userId: FirebaseAuth.instance.currentUser!.uid,
     );

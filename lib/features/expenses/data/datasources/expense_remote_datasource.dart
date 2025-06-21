@@ -29,6 +29,13 @@ class ExpenseRemoteDataSourceImpl implements ExpenseRemoteDataSource {
     print("from addexp data 1");
     final docRef = firestore.collection('expenses').doc();
     print("from addexp data 2");
+    
+    // Ensure createdAt is a string, not a function
+    String createdAt = expense.createdAt;
+    if (createdAt.isEmpty) {
+      createdAt = DateTime.now().toIso8601String();
+    }
+    
     final model = ExpenseModel(
       id: docRef.id,
       name: expense.name,
@@ -37,8 +44,8 @@ class ExpenseRemoteDataSourceImpl implements ExpenseRemoteDataSource {
       price: expense.price,
       quantity: expense.quantity,
       accountId: expense.accountId,
-      // date: DateTime.now(),
       userId: FirebaseAuth.instance.currentUser!.uid,
+      createdAt: createdAt,
     );
     print("from addexp data 3");
     await docRef.set(model.toJson());
@@ -82,7 +89,7 @@ class ExpenseRemoteDataSourceImpl implements ExpenseRemoteDataSource {
           subCategory: expense.subCategory,
           price: expense.price,
           quantity: expense.quantity,
-          // date: expense.date,
+          createdAt: DateTime.now().toIso8601String(),
           accountId: expense.accountId,
           userId: FirebaseAuth.instance.currentUser!.uid,
         ).toJson());
@@ -148,3 +155,4 @@ class ExpenseRemoteDataSourceImpl implements ExpenseRemoteDataSource {
     return snapshot.docs.map((doc) => UpcomingExpenseModel.fromDocument(doc)).toList();
   }
 }
+
