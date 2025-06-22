@@ -85,8 +85,74 @@ class ExpenseBloc extends Bloc<ExpenseEvent, ExpenseState> {
       UpdateExpenseEvent event, Emitter<ExpenseState> emit) async {
     emit(UpdateExpenseInProgress());
     try {
-      await updateExpense(event.expense);
-      add(LoadExpensesEvent(event.expense.accountId));
+      final newExpense = event.expense;
+      final originalExpense = event.originalExpense;
+      
+      // Update the expense in the database
+      await updateExpense(newExpense);
+      
+      // If we have the original expense, handle limit updates
+      if (originalExpense != null) {
+        // Calculate original and new expense amounts
+        final originalAmount = originalExpense.price * originalExpense.quantity;
+        final newAmount = newExpense.price * newExpense.quantity;
+        
+        // Check if category changed
+        final categoryChanged = originalExpense.category != newExpense.category;
+        
+        // Case 1: Category changed - update both old and new category limits
+        if (categoryChanged) {
+          print("Category changed from ${originalExpense.category} to ${newExpense.category}");
+          
+          // Step 1: Find and update the original category's limit (subtract amount)
+          final originalLimitId = await limitUpdateService.findMatchingLimitId(originalExpense);
+          if (originalLimitId != null) {
+            print("Updating original limit $originalLimitId by subtracting $originalAmount");
+            limitBloc.add(
+              UpdateLimitSpendingEvent(
+                id: originalLimitId,
+                amount: -originalAmount, // Subtract the original amount
+                accountId: originalExpense.accountId,
+              ),
+            );
+          }
+          
+          // Step 2: Find and update the new category's limit (add amount)
+          final newLimitId = await limitUpdateService.findMatchingLimitId(newExpense);
+          if (newLimitId != null) {
+            print("Updating new limit $newLimitId by adding $newAmount");
+            limitBloc.add(
+              UpdateLimitSpendingEvent(
+                id: newLimitId,
+                amount: newAmount, // Add the new amount
+                accountId: newExpense.accountId,
+              ),
+            );
+          }
+        } 
+        // Case 2: Same category but amount changed
+        else if (originalAmount != newAmount) {
+          print("Amount changed from $originalAmount to $newAmount in category ${newExpense.category}");
+          
+          // Find the limit for this category
+          final limitId = await limitUpdateService.findMatchingLimitId(newExpense);
+          if (limitId != null) {
+            // Calculate the difference to add or subtract
+            final amountDifference = newAmount - originalAmount;
+            print("Updating limit $limitId by adjusting amount by $amountDifference");
+            
+            limitBloc.add(
+              UpdateLimitSpendingEvent(
+                id: limitId,
+                amount: amountDifference, // Add the difference (can be negative)
+                accountId: newExpense.accountId,
+              ),
+            );
+          }
+        }
+      }
+      
+      add(LoadExpensesEvent(newExpense.accountId));
       emit(UpdateExpenseDone());
     } catch (e) {
       print("Error in update expense: $e");
@@ -98,7 +164,32 @@ class ExpenseBloc extends Bloc<ExpenseEvent, ExpenseState> {
       DeleteExpenseEvent event, Emitter<ExpenseState> emit) async {
     emit(DeleteExpenseInProgress());
     try {
+      // Get the expense details before deleting it
+      final expense = event.expense;
+      
+      // Delete the expense
       await deleteExpense(event.id);
+      
+      // If we have expense details, update any matching spending limit
+      if (expense != null) {
+        // Find matching limit ID
+        final limitId = await limitUpdateService.findMatchingLimitId(expense);
+        
+        // If a matching limit was found, update it by subtracting the expense amount
+        if (limitId != null) {
+          final expenseAmount = expense.price * expense.quantity;
+          print("Updating limit $limitId by subtracting amount $expenseAmount");
+          
+          limitBloc.add(
+            UpdateLimitSpendingEvent(
+              id: limitId,
+              amount: -expenseAmount, // Negative amount to subtract
+              accountId: expense.accountId,
+            ),
+          );
+        }
+      }
+      
       emit(DeleteExpenseDone());
     } catch (e) {
       print("Error in delete expense: $e");
@@ -144,6 +235,9 @@ class ExpenseBloc extends Bloc<ExpenseEvent, ExpenseState> {
     }
   }
 }
+
+
+
 
 
 

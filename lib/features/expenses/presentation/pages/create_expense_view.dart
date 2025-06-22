@@ -1,7 +1,6 @@
 // ignore_for_file: unused_local_variable, avoid_print, non_constant_identifier_names
 
 import 'package:animate_do/animate_do.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -16,7 +15,6 @@ import '../../../../core/components/inline_nav_bar.dart';
 import '../../../../core/components/methods.dart';
 import '../../../../core/components/rounded_textField.dart';
 import '../../../../core/theme/app_color.dart';
-import '../../../spendings_limits/presentation/bloc/limit_bloc.dart';
 import '../../domain/entities/expense_entity.dart';
 import '../bloc/expense_bloc.dart';
 import '../bloc/expense_event.dart';
@@ -47,7 +45,7 @@ class _CreateExpenseViewState extends State<CreateExpenseView> {
   final GetStorage storage = GetStorage();
 
   final Map<String, List<String>> categoryData = {
-    "Transportation": ["Car", "Train", "Plane"],
+    "Transport": ["Car", "Train", "Plane"],
     "Food": ["Groceries", "Restaurant", "Snacks", "Drinks"],
     "Utilities": ["Electricity", "Water", "Internet"],
     "Housing": ["Rent", "House Fixing", "Furniture"],
@@ -57,7 +55,7 @@ class _CreateExpenseViewState extends State<CreateExpenseView> {
   };
 
   final Map<String, List<Color>> categoryGradients = {
-    "Transportation": const [Color(0xFF17a2b8), Color(0xFF0d9488)],
+    "Transport": const [Color(0xFF17a2b8), Color(0xFF0d9488)],
     "Food": [const Color(0xFFFF416C), const Color(0xFFFF4B2B)],
     "Utilities": const [Color(0xFFFFC107), Color(0xFFFF8F00)],
     "Housing": const [Color(0xFFFF6B6B), Color(0xFFFFA17F)],
@@ -70,13 +68,13 @@ class _CreateExpenseViewState extends State<CreateExpenseView> {
   };
 
   final Map<String, IconData> categoryIcon = {
-    "Transportation": CupertinoIcons.car_detailed,
+    "Transport": CupertinoIcons.car_detailed,
     "Food": CupertinoIcons.cart,
-    "Utilities": CupertinoIcons.wrench,
+    "Utilities": Icons.power,
     "Housing": CupertinoIcons.house,
     "Shopping": CupertinoIcons.bag_fill,
     "HealthCare": Icons.monitor_heart,
-    "Education": CupertinoIcons.lab_flask,
+    "Education": Icons.school,
   };
 
   final Map<String, IconData> subcategoryIcon = {

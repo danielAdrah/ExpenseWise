@@ -22,14 +22,27 @@ class AddExpenseEvent extends ExpenseEvent {
 
 class UpdateExpenseEvent extends ExpenseEvent {
   final ExpenseEntity expense;
-  UpdateExpenseEvent(this.expense);
+  final ExpenseEntity originalExpense; // Add the original expense for comparison
+
+   UpdateExpenseEvent({
+    required this.expense, 
+    required this.originalExpense,
+  });
+
   @override
-  List<Object> get props => [expense];
+  List<Object> get props => [expense, originalExpense];
 }
 
 class DeleteExpenseEvent extends ExpenseEvent {
   final String id;
-  DeleteExpenseEvent(this.id);
+  final ExpenseEntity expense; // Add the expense entity
+
+   DeleteExpenseEvent({
+    required this.id, 
+    required this.expense, // Optional but needed for limit updates
+  });
+
   @override
-  List<Object> get props => [id];
+  List<Object> get props => [id, expense];
 }
+

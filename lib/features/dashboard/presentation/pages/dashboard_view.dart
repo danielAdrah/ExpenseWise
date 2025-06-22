@@ -33,6 +33,8 @@ class DashboardView extends StatefulWidget {
 class _DashboardViewState extends State<DashboardView> {
   final GetStorage storage = GetStorage();
   String? selectedAccount;
+  String? selectedCategory; // Track selected category for filtering
+
   @override
   void initState() {
     context.read<AuthBloc>().add(GetAccountsEvent());
@@ -40,6 +42,13 @@ class _DashboardViewState extends State<DashboardView> {
         .read<ExpenseBloc>()
         .add(LoadExpensesEvent(storage.read('selectedAcc') ?? ""));
     super.initState();
+  }
+
+  // Method to handle category selection from pie chart
+  void _onCategorySelected(String? category) {
+    setState(() {
+      selectedCategory = category;
+    });
   }
 
   @override
@@ -54,9 +63,6 @@ class _DashboardViewState extends State<DashboardView> {
             if (state is ExpenseLoaded) {
               // Only load upcoming expenses after expenses are loaded
               final accountId = storage.read('selectedAcc') ?? "";
-              // context
-              //     .read<ExpenseBloc>()
-              //     .add(LoadUpcomingExpensesEvent(accountId));
               context
                   .read<IncomeBloc>()
                   .add(LoadIncomeEvent(accountID: accountId));
@@ -89,7 +95,36 @@ class _DashboardViewState extends State<DashboardView> {
                               child: const MainAppBar(),
                             ),
                             const SizedBox(height: 8),
-                            const InteractivePieChart(),
+
+                            // Use BlocBuilder to get expense data for pie chart
+                            BlocBuilder<ExpenseBloc, ExpenseState>(
+                              builder: (context, state) {
+                                if (state is ExpenseLoaded) {
+                                  // Convert ExpenseEntity to Map for the pie chart
+                                  final expenseData = state.expenses
+                                      .map((exp) => {
+                                            'category': exp.category,
+                                            'price': exp.price,
+                                            'quantity': exp.quantity,
+                                          })
+                                      .toList();
+
+                                  return InteractivePieChart(
+                                    expenseData: expenseData,
+                                    onCategorySelected: _onCategorySelected,
+                                    selectedCategory: selectedCategory,
+                                  );
+                                } else {
+                                  // Show loading or placeholder
+                                  return InteractivePieChart(
+                                    expenseData: const [],
+                                    onCategorySelected:
+                                        (_) {},
+                                  );
+                                }
+                              },
+                            ),
+
                             const SizedBox(height: 30),
                             Padding(
                                 padding:
@@ -138,7 +173,7 @@ class _DashboardViewState extends State<DashboardView> {
                                                             .inversePrimary),
                                                   ),
                                                 ],
-                                              ), // Display the category name
+                                              ),
                                             );
                                           }).toList(),
                                           isExpanded: true,
@@ -153,6 +188,8 @@ class _DashboardViewState extends State<DashboardView> {
                                             if (val != null) {
                                               setState(() {
                                                 selectedAccount = val;
+                                                selectedCategory =
+                                                    null; // Reset category filter when changing account
                                               });
                                               storage.write('selectedAcc',
                                                   selectedAccount);
@@ -173,38 +210,8 @@ class _DashboardViewState extends State<DashboardView> {
                                           },
                                         ),
                                       );
-                                    } else if (authState is GetAccountsLoaded &&
-                                        authState.accounts.isEmpty) {
-                                      return Container(
-                                        padding: const EdgeInsets.all(10),
-                                        decoration: BoxDecoration(
-                                            color: Theme.of(context)
-                                                .colorScheme
-                                                .surface,
-                                            border: Border.all(
-                                              color: Theme.of(context)
-                                                  .colorScheme
-                                                  .inversePrimary
-                                                  .withOpacity(0.4),
-                                            ),
-                                            borderRadius:
-                                                BorderRadius.circular(15)),
-                                        width: 130,
-                                        child: Text(
-                                            "You don't have any account",
-                                            style: TextStyle(
-                                                color: theme.inversePrimary,
-                                                fontFamily: 'Poppins')),
-                                      );
-                                    } else if (authState
-                                        is GetAccountsLoading) {
-                                      return Center(
-                                          child: SpinKitWave(
-                                        color: TColor.primary2,
-                                        size: 30,
-                                      ));
                                     } else {
-                                      return const SizedBox();
+                                      return const SizedBox.shrink();
                                     }
                                   }),
                                 )),
@@ -215,6 +222,54 @@ class _DashboardViewState extends State<DashboardView> {
                   ),
                 ),
               ),
+
+              // Display category filter indicator if a category is selected
+              if (selectedCategory != null)
+                SliverToBoxAdapter(
+                  child: Padding(
+                    padding: const EdgeInsets.fromLTRB(20, 20, 20, 0),
+                    child: Row(
+                      children: [
+                        Expanded(
+                          child: Container(
+                            padding: const EdgeInsets.symmetric(
+                                vertical: 8, horizontal: 16),
+                            decoration: BoxDecoration(
+                              color: theme.primaryContainer,
+                              borderRadius: BorderRadius.circular(20),
+                            ),
+                            child: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Text(
+                                  "Filtered by: $selectedCategory",
+                                  style: TextStyle(
+                                    color: theme.inversePrimary,
+                                    fontWeight: FontWeight.bold,
+                                    fontFamily: 'Poppins',
+                                  ),
+                                ),
+                                const Spacer(),
+                                IconButton(
+                                  icon: const Icon(Icons.close),
+                                  onPressed: () {
+                                    setState(() {
+                                      selectedCategory = null;
+                                    });
+                                  },
+                                  iconSize: 18,
+                                  padding: EdgeInsets.zero,
+                                  constraints: const BoxConstraints(),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+
               //=======================================
               SliverToBoxAdapter(
                 child: BlocBuilder<ExpenseBloc, ExpenseState>(
@@ -223,6 +278,13 @@ class _DashboardViewState extends State<DashboardView> {
                     print("Dashboard expense state: ${state.runtimeType}");
 
                     if (state is ExpenseLoaded) {
+                      // Filter expenses if a category is selected
+                      final expenses = selectedCategory != null
+                          ? state.expenses
+                              .where((exp) => exp.category == selectedCategory)
+                              .toList()
+                          : state.expenses;
+
                       // Display regular expenses
                       if (state.expenses.isEmpty) {
                         return Padding(
@@ -236,13 +298,26 @@ class _DashboardViewState extends State<DashboardView> {
                                       fontSize: 17,
                                       fontFamily: 'Poppins'))),
                         );
+                      } else if (expenses.isEmpty && selectedCategory != null) {
+                        // Show message when no expenses match the selected category
+                        return Padding(
+                          padding: const EdgeInsets.only(top: 30),
+                          child: Center(
+                              child: Text(
+                                  "No expenses found for $selectedCategory",
+                                  textAlign: TextAlign.center,
+                                  style: TextStyle(
+                                      color: theme.inversePrimary,
+                                      fontSize: 17,
+                                      fontFamily: 'Poppins'))),
+                        );
                       } else {
                         return ListView.builder(
                           shrinkWrap: true,
                           physics: const NeverScrollableScrollPhysics(),
-                          itemCount: state.expenses.length,
+                          itemCount: expenses.length,
                           itemBuilder: ((context, index) {
-                            var exp = state.expenses[index];
+                            var exp = expenses[index];
                             return ZoomInDown(
                               delay: const Duration(milliseconds: 500),
                               child: Slidable(
@@ -271,7 +346,9 @@ class _DashboardViewState extends State<DashboardView> {
                                                           .read<ExpenseBloc>()
                                                           .add(
                                                               DeleteExpenseEvent(
-                                                                  exp.id));
+                                                            id: exp.id,
+                                                            expense: exp,
+                                                          ));
                                                       context
                                                           .read<ExpenseBloc>()
                                                           .add(LoadExpensesEvent(

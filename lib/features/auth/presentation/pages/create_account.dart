@@ -95,7 +95,7 @@ class _CreatAccountState extends State<CreatAccount> {
                   builder: (context, state) {
                     return state is AccountCreating
                         ? Center(
-                            child: SpinKitSpinningLines(
+                            child: SpinKitWave(
                             color: TColor.primary2,
                             size: 40,
                           ))

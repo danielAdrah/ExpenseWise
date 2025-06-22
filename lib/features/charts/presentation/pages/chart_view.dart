@@ -225,11 +225,11 @@ class ChartsPage extends StatelessWidget {
     List<IconData> icons = [
       Icons.restaurant_menu,
       Icons.airport_shuttle_outlined,
-      CupertinoIcons.wrench,
+      Icons.power,
       CupertinoIcons.house,
       CupertinoIcons.cart,
       Icons.monitor_heart,
-      CupertinoIcons.lab_flask,
+      Icons.school,
     ];
     final values = [350.0, 280.0, 220.0, 150.0, 600.0, 400.0, 1500.0];
 

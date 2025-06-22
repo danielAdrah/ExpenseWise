@@ -25,7 +25,7 @@ class EditLimit extends StatefulWidget {
 
 class _EditLimitState extends State<EditLimit> {
   List<String> categories = [
-    "Transportation",
+    "Transport",
     "Food",
     "Utilities",
     "Housing",
@@ -35,7 +35,7 @@ class _EditLimitState extends State<EditLimit> {
   ];
 
   Map<String, IconData> categoryIcons = {
-    "Transportation": Icons.directions_car,
+    "Transport": Icons.directions_car,
     "Food": Icons.restaurant,
     "Utilities": Icons.power,
     "Housing": Icons.home,
@@ -45,6 +45,7 @@ class _EditLimitState extends State<EditLimit> {
   };
 
   String? selectedCategory;
+  String originalCategory = '';
   final TextEditingController limitAmount = TextEditingController();
   final TextEditingController startDate = TextEditingController();
   final TextEditingController endDate = TextEditingController();
@@ -57,6 +58,7 @@ class _EditLimitState extends State<EditLimit> {
     super.initState();
     // Pre-fill form with existing limit data
     selectedCategory = widget.limit.category;
+    originalCategory = widget.limit.category; // Store original category
     limitAmount.text = widget.limit.limitAmount.toString();
     startDate.text = widget.limit.startDate;
     endDate.text = widget.limit.endDate;
@@ -97,17 +99,30 @@ class _EditLimitState extends State<EditLimit> {
       return;
     }
 
+    // Determine if the category has changed
+    bool categoryChanged = selectedCategory != widget.limit.category;
+  
+    // Create the updated limit entity
     final updatedLimit = LimitEntity(
       id: widget.limit.id,
       category: selectedCategory!,
       limitAmount: double.parse(limitAmount.text),
-      spentAmount: widget.limit.spentAmount, // Keep the current spent amount
+      // Reset spent amount to 0 if category changed, otherwise keep the current value
+      spentAmount: categoryChanged ? 0.0 : widget.limit.spentAmount,
       startDate: startDate.text,
       endDate: endDate.text,
       accountId: widget.limit.accountId,
       userId: widget.limit.userId,
       createdAt: widget.limit.createdAt,
     );
+
+    // Add a message to inform the user that the spent amount was reset
+    if (categoryChanged) {
+      final snackbar = Methods().infoSnackBar(
+        "Category changed from '${widget.limit.category}' to '$selectedCategory'. Spent amount has been reset to 0."
+      );
+      ScaffoldMessenger.of(context).showSnackBar(snackbar);
+    }
 
     context.read<LimitBloc>().add(UpdateLimitEvent(limit: updatedLimit));
   }
@@ -745,4 +760,7 @@ class LimitSummaryCard extends StatelessWidget {
     );
   }
 }
+
+
+
 

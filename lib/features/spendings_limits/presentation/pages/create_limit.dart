@@ -27,7 +27,7 @@ class CreateLimit extends StatefulWidget {
 
 class _CreateLimitState extends State<CreateLimit> {
   List<String> categories = [
-    "Transportation",
+    "Transport",
     "Food",
     "Utilities",
     "Housing",
@@ -37,7 +37,7 @@ class _CreateLimitState extends State<CreateLimit> {
   ];
 
   Map<String, IconData> categoryIcons = {
-    "Transportation": Icons.directions_car,
+    "Transport": Icons.directions_car,
     "Food": Icons.restaurant,
     "Utilities": Icons.power,
     "Housing": Icons.home,

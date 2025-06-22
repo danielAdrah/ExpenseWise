@@ -36,7 +36,6 @@ class _LimitDetailState extends State<LimitDetail> {
     final snapshot = await FirebaseFirestore.instance
         .collection('expenses')
         .where("category", isEqualTo: limit.category)
-        .where("accountId", isEqualTo: limit.accountId)
         .get();
 
     // Convert the query snapshot to a list of ExpenseEntity objects
@@ -181,22 +180,45 @@ class _LimitDetailState extends State<LimitDetail> {
                       SlideInUp(
                         duration: const Duration(milliseconds: 1000),
                         child: BlurCard(
+                          isMaxedOut: limit.spentAmount >= limit.limitAmount,
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              // Category Badge
+                              // Category Badge with different style for maxed-out limits
                               Container(
                                 padding: const EdgeInsets.symmetric(
                                     horizontal: 12, vertical: 6),
                                 decoration: BoxDecoration(
-                                  color: theme.onSecondaryContainer,
+                                  color: limit.spentAmount >= limit.limitAmount
+                                      ? Colors.red.withOpacity(0.2)
+                                      : theme.onSecondaryContainer,
                                   borderRadius: BorderRadius.circular(20),
                                 ),
-                                child: Text(limit.category,
-                                    style: TextStyle(
-                                        color: theme.inversePrimary,
-                                        fontFamily: 'Poppins',
-                                        fontWeight: FontWeight.bold)),
+                                child: Row(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    Text(
+                                      limit.category,
+                                      style: TextStyle(
+                                          color: limit.spentAmount >=
+                                                  limit.limitAmount
+                                              ? Colors.red
+                                              : theme.inversePrimary,
+                                          fontFamily: 'Poppins',
+                                          fontWeight: FontWeight.bold),
+                                    ),
+                                    // Add indicator for maxed-out limits
+                                    if (limit.spentAmount >=
+                                        limit.limitAmount) ...[
+                                      const SizedBox(width: 8),
+                                      const Icon(
+                                        Icons.warning_amber_rounded,
+                                        color: Colors.red,
+                                        size: 16,
+                                      ),
+                                    ],
+                                  ],
+                                ),
                               ),
 
                               const SizedBox(height: 16),
@@ -417,7 +439,7 @@ class _LimitDetailState extends State<LimitDetail> {
         padding: const EdgeInsets.all(16.0),
         child: Column(
           children: [
-            Icon(
+            const Icon(
               Icons.error_outline,
               color: Colors.red,
               size: 40,
@@ -562,7 +584,7 @@ class _LimitDetailState extends State<LimitDetail> {
 
   IconData _getCategoryIcon(String category) {
     final Map<String, IconData> categoryIcons = {
-      "Transportation": Icons.directions_car,
+      "Transport": Icons.directions_car,
       "Food": Icons.restaurant,
       "Utilities": Icons.power,
       "Housing": Icons.home,

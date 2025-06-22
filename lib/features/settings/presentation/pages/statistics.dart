@@ -100,7 +100,7 @@ class _StatisticsViewState extends State<StatisticsView> {
                 const SizedBox(height: 40),
                 const Padding(
                   padding: EdgeInsets.symmetric(horizontal: 40, vertical: 7),
-                  child: SectionTitle(title: "Transportation"),
+                  child: SectionTitle(title: "Transport"),
                 ),
                 //T R A N S P R T A T I O N
                 Container(

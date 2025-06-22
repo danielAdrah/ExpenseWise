@@ -86,7 +86,9 @@ class LimitRemoteDataSourceImpl implements LimitRemoteDataSource {
     
     final data = doc.data() as Map<String, dynamic>;
     final spentAmount = (data['spentAmount'] as num).toDouble();
-    final newAmount = spentAmount + amount;
+    
+    // Calculate new amount, ensuring it doesn't go below zero
+    final newAmount = (spentAmount + amount) < 0 ? 0.0 : spentAmount + amount;
     
     print("Current spent amount: $spentAmount, new amount after update: $newAmount");
     
@@ -94,3 +96,4 @@ class LimitRemoteDataSourceImpl implements LimitRemoteDataSource {
     print("Limit spending updated successfully");
   }
 }
+

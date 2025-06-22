@@ -116,10 +116,10 @@ class _MyListTileState extends State<MyListTile> {
     switch (category.toLowerCase()) {
       case 'food':
         return const Icon(Icons.restaurant, color: Colors.white);
-      case 'transportation':
+      case 'transport':
         return const Icon(CupertinoIcons.car_detailed, color: Colors.white);
       case 'utilities':
-        return const Icon(CupertinoIcons.wrench, color: Colors.white);
+        return const Icon(Icons.power, color: Colors.white);
       case 'housing':
         return const Icon(Icons.home, color: Colors.white);
       case 'shopping':
@@ -127,7 +127,7 @@ class _MyListTileState extends State<MyListTile> {
       case 'healthcare':
         return const Icon(Icons.monitor_heart, color: Colors.white);
       case 'education':
-        return const Icon(CupertinoIcons.lab_flask, color: Colors.white);
+        return const Icon(Icons.school, color: Colors.white);
       default:
         return const Icon(Icons.category, color: Colors.white);
     }

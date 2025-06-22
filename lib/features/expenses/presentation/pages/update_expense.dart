@@ -41,7 +41,7 @@ class _EditExpenseState extends State<EditExpense>
   final newPrice = TextEditingController();
 
   final Map<String, List<String>> categoryData = {
-    "Transportation": ["Car", "Train", "Plane"],
+    "Transport": ["Car", "Train", "Plane"],
     "Food": ["Groceries", "Restaurant", "Snacks", "Drinks"],
     "Utilities": ["Electricity", "Water", "Internet"],
     "Housing": ["Rent", "House Fixing", "Furniture"],
@@ -51,7 +51,7 @@ class _EditExpenseState extends State<EditExpense>
   };
 
   final Map<String, List<Color>> categoryGradients = {
-    "Transportation": const [Color(0xFF17a2b8), Color(0xFF0d9488)],
+    "Transport": const [Color(0xFF17a2b8), Color(0xFF0d9488)],
     "Food": [const Color(0xFFFF416C), const Color(0xFFFF4B2B)],
     "Utilities": const [Color(0xFFFFC107), Color(0xFFFF8F00)],
     "Housing": const [Color(0xFFFF6B6B), Color(0xFFFFA17F)],
@@ -64,13 +64,13 @@ class _EditExpenseState extends State<EditExpense>
   };
 
   final Map<String, IconData> categoryIcon = {
-    "Transportation": CupertinoIcons.car_detailed,
+    "Transport": CupertinoIcons.car_detailed,
     "Food": CupertinoIcons.cart,
-    "Utilities": CupertinoIcons.wrench,
+    "Utilities":Icons.power,
     "Housing": CupertinoIcons.house,
     "Shopping": CupertinoIcons.bag_fill,
     "HealthCare": Icons.monitor_heart,
-    "Education": CupertinoIcons.lab_flask,
+    "Education": Icons.school,
   };
 
   final Map<String, IconData> subcategoryIcon = {
@@ -171,19 +171,28 @@ class _EditExpenseState extends State<EditExpense>
       ScaffoldMessenger.of(context).showSnackBar(Snackbar);
       return;
     }
-    print('================$selectedCategory ,,,,,,,$selectedSubcategory');
-    final expense = ExpenseEntity(
+    
+    // Create the updated expense
+    final updatedExpense = ExpenseEntity(
       id: widget.expense.id,
       category: selectedCategory ?? 'try again',
       subCategory: selectedSubcategory ?? 'again',
       name: newName.text,
       quantity: int.parse(newQuan.text),
       price: double.parse(newPrice.text),
-      createdAt: DateTime.now().toIso8601String(),
+      createdAt: widget.expense.createdAt, // Keep the original creation date
       accountId: storage.read('selectedAcc'),
       userId: FirebaseAuth.instance.currentUser!.uid,
     );
-    context.read<ExpenseBloc>().add(UpdateExpenseEvent(expense));
+    
+    // Pass both the updated expense and the original expense
+    context.read<ExpenseBloc>().add(
+      UpdateExpenseEvent(
+        expense: updatedExpense,
+        originalExpense: widget.expense, // Pass the original expense
+      )
+    );
+    
     clearField();
   }
 
@@ -365,7 +374,7 @@ class _EditExpenseState extends State<EditExpense>
                             ),
                             const SizedBox(height: 60),
                             state is UpdateExpenseInProgress
-                                ? SpinKitSpinningLines(
+                                ? SpinKitWave(
                                     color: TColor.primary2,
                                     size: 40,
                                   )
@@ -452,3 +461,4 @@ class _EditExpenseState extends State<EditExpense>
     );
   }
 }
+

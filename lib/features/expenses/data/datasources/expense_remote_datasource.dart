@@ -29,13 +29,13 @@ class ExpenseRemoteDataSourceImpl implements ExpenseRemoteDataSource {
     print("from addexp data 1");
     final docRef = firestore.collection('expenses').doc();
     print("from addexp data 2");
-    
+
     // Ensure createdAt is a string, not a function
     String createdAt = expense.createdAt;
     if (createdAt.isEmpty) {
       createdAt = DateTime.now().toIso8601String();
     }
-    
+
     final model = ExpenseModel(
       id: docRef.id,
       name: expense.name,
@@ -132,6 +132,7 @@ class ExpenseRemoteDataSourceImpl implements ExpenseRemoteDataSource {
   Future<void> deleteUpcomingExpense(String id) async {
     await firestore.collection('upcomingexpenses').doc(id).delete();
   }
+
 //=================================================
   @override
   Future<List<ExpenseModel>> getExpenses(String accountId) async {
@@ -143,16 +144,19 @@ class ExpenseRemoteDataSourceImpl implements ExpenseRemoteDataSource {
     print("from getexp data 2");
     return snapshot.docs.map((doc) => ExpenseModel.fromDocument(doc)).toList();
   }
+
   //---
   @override
-  Future<List<UpcomingExpenseModel>> getUpcomingExpenses(String accountId)async {
-     print("from getupexp data 1");
+  Future<List<UpcomingExpenseModel>> getUpcomingExpenses(
+      String accountId) async {
+    print("from getupexp data 1");
     final snapshot = await firestore
         .collection('upcomingexpenses')
         .where('accountId', isEqualTo: accountId)
         .get();
     print("from getupexp data 2");
-    return snapshot.docs.map((doc) => UpcomingExpenseModel.fromDocument(doc)).toList();
+    return snapshot.docs
+        .map((doc) => UpcomingExpenseModel.fromDocument(doc))
+        .toList();
   }
 }
-
