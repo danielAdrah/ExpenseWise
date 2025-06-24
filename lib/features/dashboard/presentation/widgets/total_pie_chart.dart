@@ -23,13 +23,13 @@ class _InteractivePieChartState extends State<InteractivePieChart> {
 
   // Category colors map with visually distinct, accessible colors
   final Map<String, Color> categoryColors = {
-    'Transport': const Color(0xFFFF9800),    // Vibrant Orange
-    'Food': const Color(0xFF2196F3),         // Bright Blue
-    'Utilities': const Color(0xFF4CAF50),    // Green
-    'Housing': const Color(0xFF9C27B0),      // Purple
-    'Shopping': const Color(0xFFE91E63),     // Pink
-    'HealthCare': const Color(0xFF00BCD4),   // Cyan
-    'Education': const Color(0xFFFF5252),    // Red
+    'Transport': const Color(0xFFFF9800), // Vibrant Orange
+    'Food': const Color(0xFF2196F3), // Bright Blue
+    'Utilities': const Color(0xFF4CAF50), // Green
+    'Housing': const Color(0xFF9C27B0), // Purple
+    'Shopping': const Color(0xFFE91E63), // Pink
+    'HealthCare': const Color(0xFF00BCD4), // Cyan
+    'Education': const Color(0xFFFF5252), // Red
   };
 
   @override
@@ -103,7 +103,7 @@ class _InteractivePieChartState extends State<InteractivePieChart> {
                             PieChartSectionData(
                               color: Colors.grey.withOpacity(0.3),
                               value: 100,
-                              title: 'No Data',
+                              title: '',
                               radius: 35,
                               titleStyle: TextStyle(
                                 fontSize: 14,

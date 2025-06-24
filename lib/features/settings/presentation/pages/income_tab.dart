@@ -133,7 +133,7 @@ class _IncomeTabViewState extends State<IncomeTabView> {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       SpinKitWave(
-                        color: TColor.primary2,
+                        color: TColor.secondaryG50,
                         size: 40,
                       ),
                       const SizedBox(height: 16),

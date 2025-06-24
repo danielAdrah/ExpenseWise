@@ -139,7 +139,7 @@ class ExpenseRemoteDataSourceImpl implements ExpenseRemoteDataSource {
     print("from getexp data 1");
     final snapshot = await firestore
         .collection('expenses')
-        .where('accountId', isEqualTo: accountId)
+        .where('accountId', isEqualTo: accountId).orderBy('createdAt' , descending: true)
         .get();
     print("from getexp data 2");
     return snapshot.docs.map((doc) => ExpenseModel.fromDocument(doc)).toList();
@@ -152,7 +152,7 @@ class ExpenseRemoteDataSourceImpl implements ExpenseRemoteDataSource {
     print("from getupexp data 1");
     final snapshot = await firestore
         .collection('upcomingexpenses')
-        .where('accountId', isEqualTo: accountId)
+        .where('accountId', isEqualTo: accountId).orderBy('date' , descending: true)
         .get();
     print("from getupexp data 2");
     return snapshot.docs

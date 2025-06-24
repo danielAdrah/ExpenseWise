@@ -32,10 +32,12 @@ class _LimitDetailState extends State<LimitDetail> {
   String? transactionError;
 
   Future<List<ExpenseEntity>> fetchExpenseByCategory() async {
-    // Query Firestore for expenses matching the category
+    // Query Firestore for expenses matching the category, user ID, and account ID
     final snapshot = await FirebaseFirestore.instance
         .collection('expenses')
         .where("category", isEqualTo: limit.category)
+        .where("userId", isEqualTo: limit.userId)
+        .where("accountId", isEqualTo: limit.accountId)
         .get();
 
     // Convert the query snapshot to a list of ExpenseEntity objects
@@ -54,8 +56,15 @@ class _LimitDetailState extends State<LimitDetail> {
       );
     }).toList();
 
-    // Filter expenses by date range
-    return expenses;
+    // Filter expenses by date range to only include those within the limit's time period
+    final startDate = DateTime.parse(limit.startDate);
+    final endDate = DateTime.parse(limit.endDate);
+    
+    return expenses.where((expense) {
+      final expenseDate = DateTime.parse(expense.createdAt);
+      return expenseDate.isAfter(startDate.subtract(const Duration(days: 1))) && 
+             expenseDate.isBefore(endDate.add(const Duration(days: 1)));
+    }).toList();
   }
 
   @override
@@ -606,3 +615,4 @@ class _LimitDetailState extends State<LimitDetail> {
     }
   }
 }
+

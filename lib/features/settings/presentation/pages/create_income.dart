@@ -232,7 +232,7 @@ class _CreateIncomeState extends State<CreateIncome> {
                                   child: Column(
                                     children: [
                                       SpinKitWave(
-                                        color: TColor.primary2,
+                                        color: TColor.secondaryG50,
                                         size: 40,
                                       ),
                                       const SizedBox(height: 16),
