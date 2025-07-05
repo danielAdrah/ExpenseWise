@@ -23,8 +23,14 @@ class UserRepositoryImp implements UserRepository {
   }
 
   @override
-  Future<void> updateUserInfo(UserEntity user) {
-    // TODO: implement updateUserInfo
-    throw UnimplementedError();
+  Future<void> updateUserInfo(UserEntity user)async {
+    try {
+      print("from user repo imp update");
+      await remote.updateUserData(user);
+    } on FirebaseException catch (e) {
+      print('error from user repo imp update $e');
+      rethrow;
+    }
+    
   }
 }

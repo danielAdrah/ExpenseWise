@@ -32,12 +32,21 @@ class UserRemoteDataSourceImp implements UserRemoteDataSource {
       }
     }
     throw Exception("error from user datasource");
- 
   }
 
   @override
-  Future<void> updateUserData(UserEntity user) {
-    // TODO: implement updateUserData
-    throw UnimplementedError();
+  Future<void> updateUserData(UserEntity finalUser) async {
+    print("form user remotedata");
+    final user = auth.currentUser;
+    if (user != null) {
+      await firestore.collection('users').doc(user.uid).update({
+        'name': finalUser.name,
+        'email': finalUser.email,
+      });
+      print("form user remotedata 2 ");
+      return; // Successfully updated, return without throwing exception
+    }
+    // Only throw exception if user is null
+    throw Exception("User not authenticated");
   }
 }

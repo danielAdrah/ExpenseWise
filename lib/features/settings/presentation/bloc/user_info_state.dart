@@ -26,3 +26,17 @@ class UserInfoFail extends UserInfoState {
   @override
   List<Object> get props => [message];
 }
+
+class UserUpdateInProgress extends UserInfoState{}
+
+class UserUpdateSuccess extends UserInfoState {}
+
+class UserUpdateFail extends UserInfoState {
+  final String message;
+
+  const UserUpdateFail({required this.message});
+  
+  @override
+  List<Object> get props => [message];
+}
+

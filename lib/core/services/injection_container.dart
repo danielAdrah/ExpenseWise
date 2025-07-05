@@ -39,6 +39,7 @@ import '../../features/settings/domain/usecases/get_user_data_usecase.dart';
 import '../../features/settings/domain/usecases/income_usecases.dart';
 import '../../features/settings/domain/usecases/update_user_data_usecase.dart';
 import '../../features/settings/presentation/bloc/income_bloc.dart';
+import '../../features/settings/presentation/bloc/statistics_bloc.dart';
 import '../../features/settings/presentation/bloc/user_info_bloc.dart';
 import '../../features/spendings_limits/data/datasources/limit_remote_datasource.dart';
 import '../../features/spendings_limits/data/repositories/limit_repository_impl.dart';
@@ -128,7 +129,7 @@ Future<void> init() async {
   sl.registerFactory(
       () => AuthBloc(sl(), sl(), sl(), sl(), sl(), sl(), sl(), sl()));
   //---
-  sl.registerFactory(() => UserInfoBloc(getInfoUseecase: sl()));
+  sl.registerFactory(() => UserInfoBloc(getInfoUseecase: sl(),updateUserDataUsecase: sl()));
   //---
   sl.registerFactory(
     () => ExpenseBloc(
@@ -205,4 +206,8 @@ Future<void> init() async {
   // Data Sources
   sl.registerLazySingleton<LimitRemoteDataSource>(
       () => LimitRemoteDataSourceImpl(sl()));
+
+  // Statistics BLoC
+  sl.registerFactory(
+      () => StatisticsBloc(getExpenses: sl()),);
 }

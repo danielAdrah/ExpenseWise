@@ -3,12 +3,15 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'dart:ui';
 import '../../../../core/components/inline_nav_bar.dart';
+import '../../../../core/components/methods.dart';
 import '../../../../core/components/settings_value.dart';
 import '../../../../core/services/injection_container.dart';
 import '../../../../core/theme/app_color.dart';
 import '../../../../core/theme/bloc/theme_bloc.dart';
 import '../../../auth/presentation/bloc/auth_bloc.dart';
+import '../../domain/entity/user_entity.dart';
 import '../bloc/user_info_bloc.dart';
 
 class SettingsView extends StatefulWidget {
@@ -23,416 +26,747 @@ class _SettingsViewState extends State<SettingsView>
   bool isEditing = false;
   bool isDarkTheme = true;
   bool isExpanded = true;
+
+  // Add controllers for the editable fields
+  final TextEditingController nameController = TextEditingController();
+  final TextEditingController emailController = TextEditingController();
+
+  @override
+  void dispose() {
+    nameController.dispose();
+    emailController.dispose();
+    super.dispose();
+  }
+
   @override
   void initState() {
-    // context.read<UserInfoBloc>().add(GetUserDataEvent());
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context).colorScheme;
+    final isDarkMode = theme.brightness == Brightness.dark;
+
     return BlocProvider(
       create: (context) => sl<UserInfoBloc>()..add(GetUserDataEvent()),
       child: Scaffold(
-          backgroundColor: theme.surface,
-          body: BlocBuilder<ThemeBloc, ThemeData>(
-            builder: (context, state) {
-              //to check if the dark theme is triggered
-              final isDarkMode = theme.brightness == Brightness.dark;
-              return SafeArea(
-                child: SingleChildScrollView(
-                  child: Column(children: [
-                    const InlineNavBar(title: "Settings"),
-                    const SizedBox(height: 35),
-                    FadeInDown(
-                      delay: const Duration(milliseconds: 300),
-                      curve: Curves.decelerate,
-                      child: Stack(
-                        children: [
-                          const CircleAvatar(
-                            radius: 70,
-                            backgroundColor: Colors.deepPurple,
-                            // backgroundImage: controller.imagePath.value ==
-                            //         null
-                            //     ? AssetImage("assets/img/u1.png")
-                            //     : FileImage(File(controller.imagePath.value!))
-                            //         as ImageProvider<Object>?
+        backgroundColor: theme.surface,
+        body: BlocBuilder<ThemeBloc, ThemeData>(
+          builder: (context, state) {
+            return SafeArea(
+              child: CustomScrollView(
+                physics: const BouncingScrollPhysics(),
+                slivers: [
+                  // App Bar
+                const  SliverToBoxAdapter(
+                    child: Padding(
+                      padding:   EdgeInsets.only(top: 8.0),
+                      child: InlineNavBar(title: "Settings"),
+                    ),
+                  ),
+
+                  // Profile Section
+                  SliverToBoxAdapter(
+                    child: Padding(
+                      padding: const EdgeInsets.only(top: 20),
+                      child: FadeInDown(
+                        duration: const Duration(milliseconds: 600),
+                        child: Center(
+                          child: Hero(
+                            tag: 'profile-avatar',
+                            child: Stack(
+                              children: [
+                                Container(
+                                  decoration: BoxDecoration(
+                                    shape: BoxShape.circle,
+                                    boxShadow: [
+                                      BoxShadow(
+                                        color: theme.primary.withOpacity(0.3),
+                                        blurRadius: 20,
+                                        spreadRadius: 2,
+                                      ),
+                                    ],
+                                  ),
+                                  child: const CircleAvatar(
+                                    radius: 65,
+                                    backgroundColor: Colors.deepPurple,
+                                  ),
+                                ),
+                                Positioned(
+                                  right: 0,
+                                  bottom: 5,
+                                  child: InkWell(
+                                    onTap: () {
+                                      //choose a pic
+                                    },
+                                    child: Container(
+                                      padding: const EdgeInsets.all(8),
+                                      decoration: BoxDecoration(
+                                        color: theme.primaryContainer,
+                                        shape: BoxShape.circle,
+                                        border: Border.all(
+                                          color: theme.primary,
+                                          width: 2,
+                                        ),
+                                        boxShadow: [
+                                          BoxShadow(
+                                            color:
+                                                theme.shadow.withOpacity(0.3),
+                                            blurRadius: 8,
+                                          ),
+                                        ],
+                                      ),
+                                      child: Icon(
+                                        Icons.camera_alt,
+                                        color: theme.primary,
+                                        size: 20,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
                           ),
-                          Positioned(
-                            right: 10,
-                            bottom: 1,
-                            child: InkWell(
-                              onTap: () {
-                                //choose a pic
+                        ),
+                      ),
+                    ),
+                  ),
+
+                  // Profile Information Section
+                  SliverToBoxAdapter(
+                    child: Padding(
+                      padding: const EdgeInsets.only(top: 30),
+                      child: FadeInUp(
+                        duration: const Duration(milliseconds: 800),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            // Profile Information Header
+                            Padding(
+                              padding:
+                                  const EdgeInsets.symmetric(horizontal: 20),
+                              child: Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Row(
+                                    children: [
+                                      Container(
+                                        height: 24,
+                                        width: 4,
+                                        decoration: BoxDecoration(
+                                          color: theme.primary,
+                                          borderRadius:
+                                              BorderRadius.circular(2),
+                                        ),
+                                      ),
+                                      const SizedBox(width: 8),
+                                      Text(
+                                        "Profile Information",
+                                        style: TextStyle(
+                                          color: theme.onSurface,
+                                          fontSize: 18,
+                                          fontFamily: 'Poppins',
+                                          fontWeight: FontWeight.w600,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                  TextButton.icon(
+                                    onPressed: () {
+                                      if (isEditing) {
+                                        final currentState =
+                                            context.read<UserInfoBloc>().state;
+                                        if (currentState is UserInfoLoaded) {
+                                          final updatedUser = UserEntity(
+                                            name: nameController.text,
+                                            email: emailController.text,
+                                          );
+                                          context.read<UserInfoBloc>().add(
+                                                UpdateUserDataEvent(
+                                                    user: updatedUser),
+                                              );
+                                        }
+                                      } else {
+                                        setState(() => isEditing = true);
+                                      }
+                                    },
+                                    icon: Icon(
+                                      isEditing ? Icons.save : Icons.edit,
+                                      size: 18,
+                                      color: theme.primary,
+                                    ),
+                                    label: Text(
+                                      isEditing ? 'Save' : 'Edit',
+                                      style: TextStyle(
+                                        fontFamily: 'Poppins',
+                                        color: theme.primary,
+                                        fontWeight: FontWeight.w500,
+                                      ),
+                                    ),
+                                    style: TextButton.styleFrom(
+                                      backgroundColor: theme.primaryContainer
+                                          .withOpacity(0.3),
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(12),
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+
+                            // Profile Information Card
+                            BlocConsumer<UserInfoBloc, UserInfoState>(
+                              listener: (context, userState) {
+                                if (userState is UserInfoLoaded) {
+                                  nameController.text = userState.user.name;
+                                  emailController.text = userState.user.email;
+                                } else if (userState is UserUpdateSuccess) {
+                                  final snackbar = Methods().successSnackBar(
+                                      'Your information was updated successfully');
+                                  ScaffoldMessenger.of(context)
+                                      .showSnackBar(snackbar);
+                                  setState(() => isEditing = false);
+                                } else if (userState is UserUpdateFail) {
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    SnackBar(
+                                      content: Text(
+                                          'Update failed: ${userState.message}'),
+                                      backgroundColor: Colors.red,
+                                    ),
+                                  );
+                                }
                               },
-                              child: CircleAvatar(
-                                backgroundColor: TColor.white,
-                                radius: 20,
-                                child: const Icon(
-                                  Icons.camera_alt,
-                                  color: Colors.black,
+                              builder: (context, userState) {
+                                return AnimatedContainer(
+                                  duration: const Duration(milliseconds: 300),
+                                  margin: const EdgeInsets.only(
+                                      top: 15, left: 20, right: 20),
+                                  decoration: BoxDecoration(
+                                    color: theme.primaryContainer,
+                                    borderRadius: BorderRadius.circular(24),
+                                    boxShadow: [
+                                      BoxShadow(
+                                        color: theme.shadow.withOpacity(0.1),
+                                        blurRadius: 10,
+                                        offset: const Offset(0, 4),
+                                      ),
+                                    ],
+                                  ),
+                                  child: ClipRRect(
+                                    borderRadius: BorderRadius.circular(24),
+                                    child: BackdropFilter(
+                                      filter: ImageFilter.blur(
+                                          sigmaX: 10, sigmaY: 10),
+                                      child: Padding(
+                                        padding: const EdgeInsets.all(16.0),
+                                        child: userState is UserInfoLoading ||
+                                                userState
+                                                    is UserUpdateInProgress
+                                            ? _buildLoadingProfileItems(theme)
+                                            : userState is UserInfoFail
+                                                ? Center(
+                                                    child: Padding(
+                                                      padding:
+                                                          const EdgeInsets.all(
+                                                              16.0),
+                                                      child: Text(
+                                                        userState.message,
+                                                        style: TextStyle(
+                                                            color: theme.error),
+                                                      ),
+                                                    ),
+                                                  )
+                                                : userState is UserInfoLoaded
+                                                    ? _buildProfileItems(
+                                                        userState.user, theme)
+                                                    : const SizedBox(),
+                                      ),
+                                    ),
+                                  ),
+                                );
+                              },
+                            ),
+
+                            // General Settings Header
+                            Padding(
+                              padding: const EdgeInsets.only(
+                                  top: 30, left: 20, right: 20),
+                              child: Row(
+                                children: [
+                                  Container(
+                                    height: 24,
+                                    width: 4,
+                                    decoration: BoxDecoration(
+                                      color: theme.primary,
+                                      borderRadius: BorderRadius.circular(2),
+                                    ),
+                                  ),
+                                  const SizedBox(width: 8),
+                                  Text(
+                                    "General",
+                                    style: TextStyle(
+                                      color: theme.onSurface,
+                                      fontSize: 18,
+                                      fontFamily: 'Poppins',
+                                      fontWeight: FontWeight.w600,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+
+                            // General Settings Card
+                            Container(
+                              margin: const EdgeInsets.only(
+                                  top: 15, left: 20, right: 20),
+                              decoration: BoxDecoration(
+                                color: theme.primaryContainer,
+                                borderRadius: BorderRadius.circular(24),
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: theme.shadow.withOpacity(0.1),
+                                    blurRadius: 10,
+                                    offset: const Offset(0, 4),
+                                  ),
+                                ],
+                              ),
+                              child: ClipRRect(
+                                borderRadius: BorderRadius.circular(24),
+                                child: BackdropFilter(
+                                  filter:
+                                      ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+                                  child: Column(
+                                    children: [
+                                      // Dark Theme Toggle
+                                      SwitchListTile(
+                                        value: isDarkMode,
+                                        onChanged: (val) {
+                                          context
+                                              .read<ThemeBloc>()
+                                              .add(SwitchThemeEvent());
+                                        },
+                                        title: Text(
+                                          'Dark Theme',
+                                          style: TextStyle(
+                                            color: theme.onSurface,
+                                            fontFamily: 'Poppins',
+                                            fontWeight: FontWeight.w500,
+                                          ),
+                                        ),
+                                        secondary: Container(
+                                          padding: const EdgeInsets.all(8),
+                                          decoration: BoxDecoration(
+                                            color: isDarkMode
+                                                ? theme.primary.withOpacity(0.2)
+                                                : theme.primaryContainer,
+                                            shape: BoxShape.circle,
+                                          ),
+                                          child: Icon(
+                                            CupertinoIcons.moon_fill,
+                                            color: isDarkMode
+                                                ? theme.primary
+                                                : theme.onSurface,
+                                          ),
+                                        ),
+                                        activeColor: theme.primary,
+                                        activeTrackColor:
+                                            theme.primary.withOpacity(0.3),
+                                        inactiveTrackColor:
+                                            theme.onSurface.withOpacity(0.1),
+                                        inactiveThumbColor:
+                                            theme.onSurfaceVariant,
+                                      ),
+
+                                      // Settings Items
+                                      _buildAnimatedSettingsItem(
+                                        "My Statistics",
+                                        CupertinoIcons.chart_pie_fill,
+                                        theme,
+                                        () =>
+                                            context.pushNamed('statisticsTab'),
+                                      ),
+                                      _buildAnimatedSettingsItem(
+                                        "My Incomes",
+                                        CupertinoIcons.money_dollar_circle_fill,
+                                        theme,
+                                        () => context.pushNamed('incomeView'),
+                                      ),
+                                      _buildAnimatedSettingsItem(
+                                        "My Accounts",
+                                        CupertinoIcons.person_2_fill,
+                                        theme,
+                                        () => context.pushNamed('accView'),
+                                      ),
+                                      _buildAnimatedSettingsItem(
+                                        "AI Chat",
+                                        CupertinoIcons.chat_bubble_text_fill,
+                                        theme,
+                                        () {},
+                                      ),
+                                    ],
+                                  ),
                                 ),
                               ),
                             ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    const SizedBox(height: 20),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 20),
-                      child: FadeInUp(
-                        delay: const Duration(milliseconds: 300),
-                        curve: Curves.decelerate,
-                        child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Padding(
-                                padding:
-                                    const EdgeInsets.only(top: 15, left: 10),
-                                child: Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
-                                  children: [
-                                    Text(
-                                      "Profile Information",
-                                      style: TextStyle(
-                                          color: theme.inversePrimary,
-                                          fontSize: 14,
-                                          fontFamily: 'Poppins',
-                                          fontWeight: FontWeight.w600),
+
+                            // Account Actions Header
+                            Padding(
+                              padding: const EdgeInsets.only(
+                                  top: 30, left: 20, right: 20),
+                              child: Row(
+                                children: [
+                                  Container(
+                                    height: 24,
+                                    width: 4,
+                                    decoration: BoxDecoration(
+                                      color: theme.error,
+                                      borderRadius: BorderRadius.circular(2),
                                     ),
-                                    TextButton(
-                                      onPressed: () {
-                                        setState(() => isEditing = !isEditing);
-                                      },
-                                      child: Text(isEditing ? 'Save' : 'Edit',
-                                          style: const TextStyle(
-                                              fontFamily: 'Poppins')),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                              BlocConsumer<UserInfoBloc, UserInfoState>(
-                                listener: (context, userState) {},
-                                builder: (context, userState) {
-                                  return AnimatedSize(
-                                      duration:
-                                          const Duration(milliseconds: 300),
-                                      child: Padding(
-                                        padding: const EdgeInsets.symmetric(
-                                            horizontal: 15),
-                                        child: Card(
-                                          color: theme.primaryContainer,
-                                          shape: RoundedRectangleBorder(
-                                              borderRadius:
-                                                  BorderRadius.circular(25)),
-                                          child: Padding(
-                                              padding:
-                                                  const EdgeInsets.all(16.0),
-                                              child: userState
-                                                      is UserInfoLoading
-                                                  ? Column(
-                                                      crossAxisAlignment:
-                                                          CrossAxisAlignment
-                                                              .start,
-                                                      children: [
-                                                        profileItem(
-                                                            Icons.person,
-                                                            'Name',
-                                                            'wait...',
-                                                            theme),
-                                                        const SizedBox(
-                                                            height: 16),
-                                                        profileItem(
-                                                            Icons.email,
-                                                            'E-mail',
-                                                            'wait ...',
-                                                            theme),
-                                                        const SizedBox(
-                                                            height: 16),
-                                                        profileItem(
-                                                            Icons.lock,
-                                                            ' Password',
-                                                            'Encrypted',
-                                                            theme),
-                                                        const SizedBox(
-                                                            height: 1),
-                                                      ],
-                                                    )
-                                                  : userState is UserInfoFail
-                                                      ? Text(userState.message)
-                                                      : userState
-                                                              is UserInfoLoaded
-                                                          ? Column(
-                                                              crossAxisAlignment:
-                                                                  CrossAxisAlignment
-                                                                      .start,
-                                                              children: [
-                                                                profileItem(
-                                                                    Icons
-                                                                        .person,
-                                                                    'Name',
-                                                                    userState
-                                                                        .user
-                                                                        .name,
-                                                                    theme),
-                                                                const SizedBox(
-                                                                    height: 16),
-                                                                profileItem(
-                                                                    Icons.email,
-                                                                    'E-mail',
-                                                                    userState
-                                                                        .user
-                                                                        .email,
-                                                                    theme),
-                                                                const SizedBox(
-                                                                    height: 16),
-                                                                profileItem(
-                                                                    Icons.lock,
-                                                                    ' Password',
-                                                                    'Encrypted',
-                                                                    theme),
-                                                                const SizedBox(
-                                                                    height: 1),
-                                                              ],
-                                                            )
-                                                          : SizedBox()),
-                                        ),
-                                      ));
-                                },
-                              ),
-                              Padding(
-                                padding: const EdgeInsets.only(
-                                    top: 15, bottom: 2, left: 10),
-                                child: Text(
-                                  "General",
-                                  style: TextStyle(
-                                      color: theme.inversePrimary,
+                                  ),
+                                  const SizedBox(width: 8),
+                                  Text(
+                                    "Account Actions",
+                                    style: TextStyle(
+                                      color: theme.onSurface,
+                                      fontSize: 18,
                                       fontFamily: 'Poppins',
-                                      fontSize: 14,
-                                      fontWeight: FontWeight.w600),
-                                ),
+                                      fontWeight: FontWeight.w600,
+                                    ),
+                                  ),
+                                ],
                               ),
-                              Container(
-                                margin: const EdgeInsets.only(
-                                    top: 10, left: 20, right: 20, bottom: 20),
-                                padding: const EdgeInsets.all(15),
-                                decoration: BoxDecoration(
-                                  color: theme.primaryContainer,
-                                  borderRadius: BorderRadius.circular(24),
-                                  boxShadow: [
-                                    BoxShadow(
-                                      color: isDarkMode
-                                          ? Colors.grey.shade900
-                                          : Colors.grey.shade300,
-                                      offset: const Offset(2, 2),
-                                      blurRadius: 0.1,
-                                      blurStyle: BlurStyle.inner,
-                                    )
-                                  ],
-                                ),
-                                child: Column(
-                                  children: [
-                                    SwitchListTile(
-                                      value: isDarkMode,
-                                      onChanged: (val) {
-                                        context
-                                            .read<ThemeBloc>()
-                                            .add(SwitchThemeEvent());
-                                      },
-                                      title: Text('Dark Theme',
-                                          style: TextStyle(
-                                              color: theme.inversePrimary)),
-                                      secondary: Icon(CupertinoIcons.moon,
-                                          color: theme.inversePrimary),
-                                      activeColor: theme.primary,
-                                    ),
-                                    const SizedBox(height: 5),
-                                    SettingsValue(
-                                      name: "My Statistics",
-                                      icon: CupertinoIcons.chart_pie,
-                                      child: Icon(
-                                        Icons.arrow_forward_ios,
-                                        color: theme.inversePrimary,
-                                      ),
-                                      onTap2: () {
-                                        context.pushNamed('statisticsTab');
-                                      },
-                                    ),
-                                    const SizedBox(height: 5),
-                                    SettingsValue(
-                                      name: "My Incomes",
-                                      icon: CupertinoIcons.money_dollar_circle,
-                                      child: Icon(
-                                        Icons.arrow_forward_ios,
-                                        color: theme.inversePrimary,
-                                      ),
-                                      onTap2: () {
-                                        context.pushNamed('incomeView');
-                                      },
-                                    ),
-                                    const SizedBox(height: 5),
-                                    SettingsValue(
-                                      name: "My Accounts",
-                                      icon: CupertinoIcons.person_2_fill,
-                                      child: Icon(
-                                        Icons.arrow_forward_ios,
-                                        color: theme.inversePrimary,
-                                      ),
-                                      onTap2: () {
-                                        context.pushNamed('accView');
-                                      },
-                                    ),
-                                  ],
-                                ),
+                            ),
+
+                            // Account Actions Card
+                            Container(
+                              margin: const EdgeInsets.only(
+                                  top: 15, left: 20, right: 20, bottom: 30),
+                              decoration: BoxDecoration(
+                                color: theme.errorContainer.withOpacity(0.2),
+                                borderRadius: BorderRadius.circular(24),
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: theme.shadow.withOpacity(0.1),
+                                    blurRadius: 10,
+                                    offset: const Offset(0, 4),
+                                  ),
+                                ],
                               ),
-                              const SizedBox(height: 10),
-                              Padding(
-                                padding: const EdgeInsets.only(
-                                    top: 15, bottom: 2, left: 10),
-                                child: Text(
-                                  "Account Action",
-                                  style: TextStyle(
-                                      color: theme.inversePrimary,
-                                      fontSize: 14,
-                                      fontWeight: FontWeight.w600),
-                                ),
-                              ),
-                              Container(
-                                margin: const EdgeInsets.only(
-                                    top: 10, left: 20, right: 20, bottom: 20),
-                                padding: const EdgeInsets.all(15),
-                                decoration: BoxDecoration(
-                                  color: theme.primaryContainer,
-                                  borderRadius: BorderRadius.circular(24),
-                                  boxShadow: [
-                                    BoxShadow(
-                                      color: isDarkMode
-                                          ? Colors.grey.shade900
-                                          : Colors.grey.shade300,
-                                      offset: const Offset(2, 2),
-                                      blurRadius: 0.1,
-                                      blurStyle: BlurStyle.inner,
-                                    )
-                                  ],
-                                ),
-                                child: Column(
-                                  children: [
-                                    BlocConsumer<AuthBloc, AuthState>(
-                                      listener: (context, state2) {},
-                                      builder: (context, state2) {
-                                        return SettingsValue(
-                                          name: "Log Out",
-                                          icon: Icons.logout_outlined,
-                                          child: Icon(
-                                            Icons.arrow_forward_ios,
-                                            color: theme.inversePrimary,
-                                          ),
-                                          onTap2: () {
-                                            context.read<AuthBloc>().add(
-                                                  SignOutRequested(),
-                                                );
-                                            context.pushNamed('signIn');
-                                          },
-                                        );
-                                      },
-                                    ),
-                                    const SizedBox(height: 5),
-                                    SettingsValue(
-                                      name: "Delete My Account",
-                                      icon: Icons.delete,
-                                      child: Icon(
-                                        Icons.arrow_forward_ios,
-                                        color: theme.inversePrimary,
+                              child: ClipRRect(
+                                borderRadius: BorderRadius.circular(24),
+                                child: BackdropFilter(
+                                  filter:
+                                      ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+                                  child: Column(
+                                    children: [
+                                      BlocConsumer<AuthBloc, AuthState>(
+                                        listener: (context, state2) {},
+                                        builder: (context, state2) {
+                                          return _buildAnimatedSettingsItem(
+                                            "Log Out",
+                                            Icons.logout_rounded,
+                                            theme,
+                                            () {
+                                              context
+                                                  .read<AuthBloc>()
+                                                  .add(SignOutRequested());
+                                              context.pushNamed('signIn');
+                                            },
+                                            isDestructive: true,
+                                          );
+                                        },
                                       ),
-                                      onTap2: () {
-                                        showDialog(
-                                          context: context,
-                                          builder: (context) {
-                                            return AlertDialog(
-                                              backgroundColor:
-                                                  theme.primaryContainer,
-                                              content: Text(
-                                                "Are You Sure You Want To Delete This Account?",
-                                                style: TextStyle(
-                                                    color: theme.inversePrimary,
-                                                    fontFamily: 'Poppins'),
-                                              ),
-                                              actions: [
-                                                TextButton(
-                                                  onPressed: () {
-                                                    context.pop();
-                                                  },
-                                                  child: Text(
-                                                    "Yes",
-                                                    style: TextStyle(
-                                                        color: theme
-                                                            .inversePrimary),
+                                      _buildAnimatedSettingsItem(
+                                        "Delete My Account",
+                                        Icons.delete_rounded,
+                                        theme,
+                                        () {
+                                          showDialog(
+                                            context: context,
+                                            builder: (context) {
+                                              return AlertDialog(
+                                                backgroundColor: theme.surface,
+                                                shape: RoundedRectangleBorder(
+                                                  borderRadius:
+                                                      BorderRadius.circular(20),
+                                                ),
+                                                title: Text(
+                                                  "Delete Account",
+                                                  style: TextStyle(
+                                                    color: theme.onSurface,
+                                                    fontWeight: FontWeight.bold,
                                                   ),
                                                 ),
-                                                TextButton(
-                                                  onPressed: () {
-                                                    context.pop();
-                                                  },
-                                                  child: Text("No",
-                                                      style: TextStyle(
-                                                          color: theme
-                                                              .inversePrimary)),
+                                                content: Text(
+                                                  "Are you sure you want to delete your account? This action cannot be undone.",
+                                                  style: TextStyle(
+                                                    color:
+                                                        theme.onSurfaceVariant,
+                                                  ),
                                                 ),
-                                              ],
-                                            );
-                                          },
-                                        );
-                                      },
-                                    ),
-                                  ],
+                                                actions: [
+                                                  TextButton(
+                                                    onPressed: () =>
+                                                        context.pop(),
+                                                    child: Text(
+                                                      "Cancel",
+                                                      style: TextStyle(
+                                                          color: theme.primary),
+                                                    ),
+                                                  ),
+                                                  ElevatedButton(
+                                                    onPressed: () =>
+                                                        context.pop(),
+                                                    style: ElevatedButton
+                                                        .styleFrom(
+                                                      backgroundColor:
+                                                          theme.error,
+                                                      foregroundColor:
+                                                          theme.onError,
+                                                      shape:
+                                                          RoundedRectangleBorder(
+                                                        borderRadius:
+                                                            BorderRadius
+                                                                .circular(10),
+                                                      ),
+                                                    ),
+                                                    child: const Text("Delete"),
+                                                  ),
+                                                ],
+                                              );
+                                            },
+                                          );
+                                        },
+                                        isDestructive: true,
+                                      ),
+                                    ],
+                                  ),
                                 ),
                               ),
-                            ]),
+                            ),
+                          ],
+                        ),
                       ),
                     ),
-                  ]),
-                ),
-              );
-            },
-          )),
+                  ),
+                ],
+              ),
+            );
+          },
+        ),
+      ),
     );
   }
 
+  // Helper methods for UI components
+  Widget _buildLoadingProfileItems(ColorScheme theme) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        _buildShimmerItem(theme),
+        const SizedBox(height: 16),
+        _buildShimmerItem(theme),
+        const SizedBox(height: 16),
+        _buildShimmerItem(theme),
+      ],
+    );
+  }
+
+  Widget _buildShimmerItem(ColorScheme theme) {
+    return Row(
+      children: [
+        Container(
+          width: 40,
+          height: 40,
+          decoration: BoxDecoration(
+            color: theme.onSurface.withOpacity(0.1),
+            borderRadius: BorderRadius.circular(20),
+          ),
+        ),
+        const SizedBox(width: 16),
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Container(
+                width: 100,
+                height: 14,
+                decoration: BoxDecoration(
+                  color: theme.onSurface.withOpacity(0.1),
+                  borderRadius: BorderRadius.circular(7),
+                ),
+              ),
+              const SizedBox(height: 8),
+              Container(
+                width: 150,
+                height: 14,
+                decoration: BoxDecoration(
+                  color: theme.onSurface.withOpacity(0.1),
+                  borderRadius: BorderRadius.circular(7),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildProfileItems(UserEntity user, ColorScheme theme) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        profileItem(Icons.person, 'Name', user.name, theme),
+        const SizedBox(height: 16),
+        profileItem(Icons.email, 'E-mail', user.email, theme),
+        const SizedBox(height: 16),
+        profileItem(Icons.lock, 'Password', 'Encrypted', theme),
+      ],
+    );
+  }
+
+  Widget _buildAnimatedSettingsItem(
+    String title,
+    IconData icon,
+    ColorScheme theme,
+    VoidCallback onTap, {
+    bool isDestructive = false,
+  }) {
+    return InkWell(
+      onTap: onTap,
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+        child: Row(
+          children: [
+            Container(
+              padding: const EdgeInsets.all(10),
+              decoration: BoxDecoration(
+                color: isDestructive
+                    ? theme.error.withOpacity(0.1)
+                    : theme.primary.withOpacity(0.1),
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Icon(
+                icon,
+                color: isDestructive ? theme.error : theme.primary,
+                size: 22,
+              ),
+            ),
+            const SizedBox(width: 16),
+            Expanded(
+              child: Text(
+                title,
+                style: TextStyle(
+                  color: isDestructive ? theme.error : theme.onSurface,
+                  fontFamily: 'Poppins',
+                  fontSize: 16,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+            ),
+            Icon(
+              Icons.chevron_right_rounded,
+              color: isDestructive
+                  ? theme.error.withOpacity(0.7)
+                  : theme.onSurfaceVariant,
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  // Modified profile item for better UI
   Widget profileItem(
-      IconData icon, String label, String value, ColorScheme theme) {
+    IconData icon,
+    String label,
+    String value,
+    ColorScheme theme,
+  ) {
+    // Determine which controller to use based on the label
+    TextEditingController? controller;
+    if (label == 'Name') {
+      controller = nameController;
+    } else if (label == 'E-mail') {
+      controller = emailController;
+    }
+
     return AnimatedSwitcher(
       duration: const Duration(milliseconds: 300),
-      child: isEditing
+      child: isEditing && controller != null
           ? Padding(
               key: ValueKey('$label-edit'),
               padding: const EdgeInsets.symmetric(vertical: 8),
               child: TextField(
-                style: const TextStyle(color: Colors.white),
+                controller: controller,
+                style: TextStyle(color: theme.onSurface),
                 decoration: InputDecoration(
-                  prefixIcon: Icon(icon, color: theme.inversePrimary),
-                  hintText: label,
-                  hintStyle: const TextStyle(color: Colors.grey),
+                  prefixIcon: Icon(icon, color: theme.primary),
+                  labelText: label,
+                  labelStyle: TextStyle(color: theme.primary.withOpacity(0.7)),
                   filled: true,
-                  fillColor: theme.primaryContainer,
+                  fillColor: theme.surface.withOpacity(0.5),
                   border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(10)),
+                    borderRadius: BorderRadius.circular(16),
+                    borderSide: BorderSide.none,
+                  ),
+                  enabledBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(16),
+                    borderSide: BorderSide.none,
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(16),
+                    borderSide: BorderSide(color: theme.primary, width: 2),
+                  ),
                 ),
               ),
             )
-          : ListTile(
+          : Container(
               key: ValueKey('$label-display'),
-              leading: Icon(icon, color: theme.inversePrimary),
-              title: Text(label,
-                  style: TextStyle(
-                      color: theme.inversePrimary, fontFamily: 'Poppins')),
-              trailing: Text(value,
-                  style: TextStyle(
-                      color: theme.inversePrimary,
-                      fontFamily: 'Poppins',
-                      fontSize: 13)),
+              padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+              decoration: BoxDecoration(
+                color: theme.surface.withOpacity(0.3),
+                borderRadius: BorderRadius.circular(16),
+              ),
+              child: Row(
+                children: [
+                  Container(
+                    padding: const EdgeInsets.all(10),
+                    decoration: BoxDecoration(
+                      color: theme.primary.withOpacity(0.1),
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: Icon(icon, color: theme.primary, size: 20),
+                  ),
+                  const SizedBox(width: 16),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        label,
+                        style: TextStyle(
+                          color: theme.onSurfaceVariant,
+                          fontSize: 14,
+                          fontFamily: 'Poppins',
+                        ),
+                      ),
+                      const SizedBox(height: 4),
+                      Text(
+                        value,
+                        style: TextStyle(
+                          color: theme.onSurface,
+                          fontFamily: 'Poppins',
+                          fontSize: 16,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
             ),
     );
   }
