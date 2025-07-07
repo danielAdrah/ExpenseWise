@@ -18,6 +18,7 @@ import '../../../features/goals/presentation/pages/goal_detail.dart';
 import '../../../features/goals/presentation/pages/goals_view.dart';
 import '../../../features/on_boarding/presentation/pages/onboarding_view.dart';
 import '../../../features/settings/presentation/pages/account_tab.dart';
+import '../../../features/settings/presentation/pages/chat_view.dart';
 import '../../../features/settings/presentation/pages/create_income.dart';
 import '../../../features/settings/presentation/pages/create_sec_account.dart';
 import '../../../features/settings/presentation/pages/income_tab.dart';
@@ -215,6 +216,12 @@ final GoRouter router = GoRouter(
       path: '/chartsView',
       name: 'chartsView',
       builder: (context, state) => const ChartsPage(),
+    ),
+    //======
+    GoRoute(
+      path: '/chatView',
+      name: 'chatView',
+      builder: (context, state) => const ChatView(),
     ),
     //======
   ],

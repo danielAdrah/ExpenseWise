@@ -87,64 +87,12 @@ class _GoalViewState extends State<GoalView> {
                 ),
                 if (state is GoalLoading)
                   SliverFillRemaining(
-                    child: Center(
-                      child: Padding(
-                        padding: EdgeInsets.only(top: height * 0.1),
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            SpinKitWave(
-                              color: TColor.primary2,
-                              size: 40,
-                            ),
-                            const SizedBox(height: 16),
-                            Text(
-                              "Loading your goals...",
-                              style: TextStyle(
-                                color: theme.inversePrimary,
-                                fontFamily: 'Poppins',
-                                fontSize: 16,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
+                    child: GoalLoadingState(height: height, theme: theme),
                   )
                 else if (state is GoalsLoaded)
                   if (state.goals.isEmpty)
                     SliverFillRemaining(
-                      child: Center(
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Image.asset(
-                              'assets/img/search.png',
-                              width: 150,
-                              height: 150,
-                            ),
-                            const SizedBox(height: 20),
-                            Text(
-                              'No goals yet',
-                              style: TextStyle(
-                                color: theme.inversePrimary,
-                                fontSize: 18,
-                                fontFamily: 'Poppins',
-                              ),
-                            ),
-                            const SizedBox(height: 10),
-                            Text(
-                              'Create a goal to start tracking your progress',
-                              style: TextStyle(
-                                color: theme.inversePrimary.withOpacity(0.7),
-                                fontSize: 14,
-                                fontFamily: 'Poppins',
-                              ),
-                              textAlign: TextAlign.center,
-                            ),
-                          ],
-                        ),
-                      ),
+                      child: GoalEmptyState(theme: theme),
                     )
                   else
                     SliverList(
@@ -240,6 +188,88 @@ class _GoalViewState extends State<GoalView> {
               ],
             );
           },
+        ),
+      ),
+    );
+  }
+}
+
+class GoalEmptyState extends StatelessWidget {
+  const GoalEmptyState({
+    super.key,
+    required this.theme,
+  });
+
+  final ColorScheme theme;
+
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Image.asset(
+            'assets/img/search.png',
+            width: 150,
+            height: 150,
+          ),
+          const SizedBox(height: 20),
+          Text(
+            'No goals yet',
+            style: TextStyle(
+              color: theme.inversePrimary,
+              fontSize: 18,
+              fontFamily: 'Poppins',
+            ),
+          ),
+          const SizedBox(height: 10),
+          Text(
+            'Create a goal to start tracking your progress',
+            style: TextStyle(
+              color: theme.inversePrimary.withOpacity(0.7),
+              fontSize: 14,
+              fontFamily: 'Poppins',
+            ),
+            textAlign: TextAlign.center,
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class GoalLoadingState extends StatelessWidget {
+  const GoalLoadingState({
+    super.key,
+    required this.height,
+    required this.theme,
+  });
+
+  final double height;
+  final ColorScheme theme;
+
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: Padding(
+        padding: EdgeInsets.only(top: height * 0.1),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            SpinKitFoldingCube(
+              color: TColor.primary2,
+              size: 40,
+            ),
+            const SizedBox(height: 16),
+            Text(
+              "Loading your goals...",
+              style: TextStyle(
+                color: theme.inversePrimary,
+                fontFamily: 'Poppins',
+                fontSize: 16,
+              ),
+            ),
+          ],
         ),
       ),
     );

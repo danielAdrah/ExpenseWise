@@ -1,4 +1,7 @@
+// ignore_for_file: avoid_print, use_build_context_synchronously
+
 import 'package:animate_do/animate_do.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -6,9 +9,7 @@ import 'package:go_router/go_router.dart';
 import 'dart:ui';
 import '../../../../core/components/inline_nav_bar.dart';
 import '../../../../core/components/methods.dart';
-import '../../../../core/components/settings_value.dart';
 import '../../../../core/services/injection_container.dart';
-import '../../../../core/theme/app_color.dart';
 import '../../../../core/theme/bloc/theme_bloc.dart';
 import '../../../auth/presentation/bloc/auth_bloc.dart';
 import '../../domain/entity/user_entity.dart';
@@ -59,9 +60,9 @@ class _SettingsViewState extends State<SettingsView>
                 physics: const BouncingScrollPhysics(),
                 slivers: [
                   // App Bar
-                const  SliverToBoxAdapter(
+                  const SliverToBoxAdapter(
                     child: Padding(
-                      padding:   EdgeInsets.only(top: 8.0),
+                      padding: EdgeInsets.only(top: 8.0),
                       child: InlineNavBar(title: "Settings"),
                     ),
                   ),
@@ -230,13 +231,10 @@ class _SettingsViewState extends State<SettingsView>
                                       .showSnackBar(snackbar);
                                   setState(() => isEditing = false);
                                 } else if (userState is UserUpdateFail) {
-                                  ScaffoldMessenger.of(context).showSnackBar(
-                                    SnackBar(
-                                      content: Text(
-                                          'Update failed: ${userState.message}'),
-                                      backgroundColor: Colors.red,
-                                    ),
-                                  );
+                                  final snackbar = Methods().errorSnackBar(
+                                      'Unable to update you data , try again.');
+                                  ScaffoldMessenger.of(context)
+                                      .showSnackBar(snackbar);
                                 }
                               },
                               builder: (context, userState) {
@@ -281,7 +279,30 @@ class _SettingsViewState extends State<SettingsView>
                                                   )
                                                 : userState is UserInfoLoaded
                                                     ? _buildProfileItems(
-                                                        userState.user, theme)
+                                                        userState.user,
+                                                        theme,
+                                                        () async {
+                                                          try {
+                                                            //this for sending an link to the email that the user forget its password
+                                                            await FirebaseAuth
+                                                                .instance
+                                                                .sendPasswordResetEmail(
+                                                                    email: userState
+                                                                        .user
+                                                                        .email);
+
+                                                            final snackbar = Methods()
+                                                                .alertSnackBar(
+                                                                    'An email has been sent to reset your password.');
+                                                            ScaffoldMessenger
+                                                                    .of(context)
+                                                                .showSnackBar(
+                                                                    snackbar);
+                                                          } catch (e) {
+                                                            print(e.toString());
+                                                          }
+                                                        },
+                                                      )
                                                     : const SizedBox(),
                                       ),
                                     ),
@@ -320,6 +341,7 @@ class _SettingsViewState extends State<SettingsView>
 
                             // General Settings Card
                             Container(
+                              // padding: const EdgeInsets.symmetric(vertical: 5),
                               margin: const EdgeInsets.only(
                                   top: 15, left: 20, right: 20),
                               decoration: BoxDecoration(
@@ -341,43 +363,59 @@ class _SettingsViewState extends State<SettingsView>
                                   child: Column(
                                     children: [
                                       // Dark Theme Toggle
-                                      SwitchListTile(
-                                        value: isDarkMode,
-                                        onChanged: (val) {
-                                          context
-                                              .read<ThemeBloc>()
-                                              .add(SwitchThemeEvent());
-                                        },
-                                        title: Text(
-                                          'Dark Theme',
-                                          style: TextStyle(
-                                            color: theme.onSurface,
-                                            fontFamily: 'Poppins',
-                                            fontWeight: FontWeight.w500,
+                                      Padding(
+                                        padding: const EdgeInsets.only(top: 3),
+                                        child: SwitchListTile(
+                                          value: isDarkMode,
+                                          onChanged: (val) {
+                                            context
+                                                .read<ThemeBloc>()
+                                                .add(SwitchThemeEvent());
+                                          },
+                                          title: Text(
+                                            'Dark Theme',
+                                            style: TextStyle(
+                                              color: theme.onSurface,
+                                              fontFamily: 'Poppins',
+                                              fontWeight: FontWeight.w500,
+                                            ),
                                           ),
+                                          secondary: Container(
+                                            padding: const EdgeInsets.all(10),
+                                            decoration: BoxDecoration(
+                                              color: theme.primary
+                                                  .withOpacity(0.1),
+                                              borderRadius:
+                                                  BorderRadius.circular(12),
+                                            ),
+                                            child: Icon(
+                                              CupertinoIcons.moon_fill,
+                                              color: theme.primary,
+                                            ),
+                                          ),
+                                          // Container(
+                                          //   padding: const EdgeInsets.all(8),
+                                          //   decoration: BoxDecoration(
+                                          //     color: isDarkMode
+                                          //         ? theme.primary.withOpacity(0.2)
+                                          //         : theme.primaryContainer,
+                                          //     shape: BoxShape.circle,
+                                          //   ),
+                                          // child: Icon(
+                                          //   CupertinoIcons.moon_fill,
+                                          //   color: isDarkMode
+                                          //       ? theme.primary
+                                          //       : theme.onSurface,
+                                          // ),
+                                          // ),
+                                          activeColor: theme.primary,
+                                          activeTrackColor:
+                                              theme.primary.withOpacity(0.3),
+                                          inactiveTrackColor:
+                                              theme.onSurface.withOpacity(0.1),
+                                          inactiveThumbColor:
+                                              theme.onSurfaceVariant,
                                         ),
-                                        secondary: Container(
-                                          padding: const EdgeInsets.all(8),
-                                          decoration: BoxDecoration(
-                                            color: isDarkMode
-                                                ? theme.primary.withOpacity(0.2)
-                                                : theme.primaryContainer,
-                                            shape: BoxShape.circle,
-                                          ),
-                                          child: Icon(
-                                            CupertinoIcons.moon_fill,
-                                            color: isDarkMode
-                                                ? theme.primary
-                                                : theme.onSurface,
-                                          ),
-                                        ),
-                                        activeColor: theme.primary,
-                                        activeTrackColor:
-                                            theme.primary.withOpacity(0.3),
-                                        inactiveTrackColor:
-                                            theme.onSurface.withOpacity(0.1),
-                                        inactiveThumbColor:
-                                            theme.onSurfaceVariant,
                                       ),
 
                                       // Settings Items
@@ -402,9 +440,9 @@ class _SettingsViewState extends State<SettingsView>
                                       ),
                                       _buildAnimatedSettingsItem(
                                         "AI Chat",
-                                        CupertinoIcons.chat_bubble_text_fill,
+                                        Icons.smart_toy_rounded,
                                         theme,
-                                        () {},
+                                        () => context.pushNamed('chatView'),
                                       ),
                                     ],
                                   ),
@@ -615,7 +653,8 @@ class _SettingsViewState extends State<SettingsView>
     );
   }
 
-  Widget _buildProfileItems(UserEntity user, ColorScheme theme) {
+  Widget _buildProfileItems(
+      UserEntity user, ColorScheme theme, void Function() onTap) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -623,7 +662,9 @@ class _SettingsViewState extends State<SettingsView>
         const SizedBox(height: 16),
         profileItem(Icons.email, 'E-mail', user.email, theme),
         const SizedBox(height: 16),
-        profileItem(Icons.lock, 'Password', 'Encrypted', theme),
+        InkWell(
+            onTap: onTap,
+            child: profileItem(Icons.lock, 'Password', 'Encrypted', theme)),
       ],
     );
   }
@@ -642,6 +683,7 @@ class _SettingsViewState extends State<SettingsView>
         child: Row(
           children: [
             Container(
+              margin: EdgeInsets.symmetric(vertical: 3),
               padding: const EdgeInsets.all(10),
               decoration: BoxDecoration(
                 color: isDestructive
@@ -679,7 +721,7 @@ class _SettingsViewState extends State<SettingsView>
     );
   }
 
-  // Modified profile item for better UI
+  //profile item
   Widget profileItem(
     IconData icon,
     String label,

@@ -132,7 +132,7 @@ class _IncomeTabViewState extends State<IncomeTabView> {
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      SpinKitWave(
+                      SpinKitFoldingCube(
                         color: TColor.secondaryG50,
                         size: 40,
                       ),

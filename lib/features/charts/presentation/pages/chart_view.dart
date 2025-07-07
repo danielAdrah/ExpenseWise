@@ -144,7 +144,7 @@ class _ChartsPageState extends State<ChartsPage> {
       builder: (context, state) {
         if (state is ExpenseLoading) {
           return Center(
-              child: SpinKitWave(
+              child: SpinKitFoldingCube(
             color: TColor.primary2,
             size: 30,
           ));
@@ -180,7 +180,7 @@ class _ChartsPageState extends State<ChartsPage> {
               ),
             );
           }
-          
+
           // Calculate daily expenses
           final dailyData = _calculateDailyExpenses(state.expenses);
           final days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
@@ -261,7 +261,7 @@ class _ChartsPageState extends State<ChartsPage> {
             if (expenseState is ExpenseLoading ||
                 incomeState is IncomeLoading) {
               return Center(
-                  child: SpinKitWave(
+                  child: SpinKitFoldingCube(
                 color: TColor.primary2,
                 size: 30,
               ));
@@ -284,7 +284,6 @@ class _ChartsPageState extends State<ChartsPage> {
               double totalIncome = 0.0;
 
               if (expenseState is ExpenseLoaded) {
-                
                 totalExpenses = _calculateTotalExpenses(expenseState.expenses);
               }
 
@@ -365,7 +364,7 @@ class _ChartsPageState extends State<ChartsPage> {
       builder: (context, state) {
         if (state is ExpenseLoading) {
           return Center(
-              child: SpinKitWave(
+              child: SpinKitFoldingCube(
             color: TColor.primary2,
             size: 30,
           ));
@@ -519,12 +518,13 @@ class _ChartsPageState extends State<ChartsPage> {
     for (var expense in expenses) {
       try {
         final expenseDate = DateTime.parse(expense.createdAt);
-        
+
         // Check if the expense is within the last 7 days
         final difference = now.difference(expenseDate).inDays;
         if (difference >= 0 && difference < 7) {
           // Get the weekday (0 = Sunday, 1 = Monday, ..., 6 = Saturday)
-          final weekday = expenseDate.weekday % 7; // Convert to 0-based index where 0 is Sunday
+          final weekday = expenseDate.weekday %
+              7; // Convert to 0-based index where 0 is Sunday
           dailyTotals[weekday] += expense.price * expense.quantity;
         }
       } catch (e) {

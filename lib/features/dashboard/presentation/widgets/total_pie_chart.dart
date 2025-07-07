@@ -1,3 +1,5 @@
+// ignore_for_file: unused_local_variable
+
 import 'package:animate_do/animate_do.dart';
 import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';

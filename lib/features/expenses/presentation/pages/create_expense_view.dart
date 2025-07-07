@@ -7,13 +7,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:get_storage/get_storage.dart';
-
-import '../../../../core/components/custom_button.dart';
 import '../../../../core/components/gradient_icon.dart';
 import '../../../../core/components/gradient_text.dart';
-import '../../../../core/components/inline_nav_bar.dart';
+import '../../../../core/components/icon_custom_btn.dart';
 import '../../../../core/components/methods.dart';
-import '../../../../core/components/rounded_textField.dart';
 import '../../../../core/theme/app_color.dart';
 import '../../domain/entities/expense_entity.dart';
 import '../bloc/expense_bloc.dart';
@@ -200,7 +197,6 @@ class _CreateExpenseViewState extends State<CreateExpenseView> {
   Widget build(BuildContext context) {
     final theme = Theme.of(context).colorScheme;
     final textTheme = Theme.of(context).textTheme;
-    // final height = MediaQuery.of(context).size.height;
     final width = MediaQuery.of(context).size.width;
     final media = MediaQuery.of(context).size;
     final subcategories =
@@ -209,188 +205,433 @@ class _CreateExpenseViewState extends State<CreateExpenseView> {
     return Scaffold(
       backgroundColor: theme.surface,
       body: SafeArea(
-        child: SingleChildScrollView(
-          child: BlocConsumer<ExpenseBloc, ExpenseState>(
-            listener: (context, state) {
-              if (state is AddExpenseDone) {
-                final Snackbar = Methods()
-                    .successSnackBar('Your expense is created successfuly');
-                ScaffoldMessenger.of(context).showSnackBar(Snackbar);
-                clearField();
-              } else if (state is AddExpenseError) {
-                final Snackbar = Methods().errorSnackBar(state.message);
-                ScaffoldMessenger.of(context).showSnackBar(Snackbar);
-              }
-            },
-            builder: (context, state) {
-              return Column(
-                children: [
-                  const SizedBox(height: 20),
-                  const InlineNavBar(title: "Create Expense"),
-                  Padding(
-                    // padding: const EdgeInsets.symmetric(horizontal: 20),
-                    padding: const EdgeInsets.only(left: 20),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        const SizedBox(height: 40),
-                        FadeInDown(
-                          duration: const Duration(milliseconds: 500),
-                          curve: Curves.decelerate,
-                          child: Text(
-                            "Selcet Category",
+        child: BlocConsumer<ExpenseBloc, ExpenseState>(
+          listener: (context, state) {
+            if (state is AddExpenseDone) {
+              final Snackbar = Methods()
+                  .successSnackBar('Your expense is created successfuly');
+              ScaffoldMessenger.of(context).showSnackBar(Snackbar);
+              clearField();
+            } else if (state is AddExpenseError) {
+              final Snackbar = Methods().errorSnackBar(state.message);
+              ScaffoldMessenger.of(context).showSnackBar(Snackbar);
+            }
+          },
+          builder: (context, state) {
+            return Stack(
+              children: [
+                // Background design elements
+                Positioned(
+                  top: -50,
+                  right: -50,
+                  child: Container(
+                    height: 150,
+                    width: 150,
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      gradient: LinearGradient(
+                        colors: [
+                          TColor.primary.withOpacity(0.2),
+                          theme.primary.withOpacity(0.1),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+                Positioned(
+                  bottom: -80,
+                  left: -80,
+                  child: Container(
+                    height: 200,
+                    width: 200,
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      gradient: LinearGradient(
+                        colors: [
+                          theme.primary.withOpacity(0.2),
+                          TColor.primary.withOpacity(0.1),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+
+                // Main content
+                CustomScrollView(
+                  physics: const BouncingScrollPhysics(),
+                  slivers: [
+                    // App Bar
+                    SliverAppBar(
+                      backgroundColor: Colors.transparent,
+                      elevation: 0,
+                      floating: true,
+                      pinned: false,
+                      expandedHeight: 80,
+                      flexibleSpace: FlexibleSpaceBar(
+                        title: FadeInDown(
+                          duration: const Duration(milliseconds: 400),
+                          child: const Text(
+                            "Create Expense",
                             style: TextStyle(
-                              color: theme.inversePrimary,
+                              color: Colors.white,
                               fontFamily: 'Poppins',
                               fontSize: 19,
                               fontWeight: FontWeight.w600,
                             ),
                           ),
                         ),
-                        const SizedBox(height: 10),
-                        SingleChildScrollView(
-                          scrollDirection: Axis.horizontal,
-                          physics: const BouncingScrollPhysics(),
-                          child: Wrap(
-                            spacing: 8,
-                            children: categoryData.keys.map((category) {
-                              final gradient = categoryGradients[category]!;
-                              final icons = categoryIcon[category]!;
-                              return ZoomInDown(
-                                duration: const Duration(milliseconds: 700),
-                                child: buildGradientChip(
-                                  label: category,
-                                  icon: icons,
-                                  gradientColors: gradient,
-                                  selected: selectedCategory == category,
-                                  onTap: () => _onCategorySelected(category),
-                                ),
-                              );
-                            }).toList(),
+                        centerTitle: true,
+                        background: Container(
+                          decoration: BoxDecoration(
+                            gradient: LinearGradient(
+                              begin: Alignment.topLeft,
+                              end: Alignment.bottomRight,
+                              colors: [
+                                TColor.primary,
+                                theme.primary.withOpacity(0.7),
+                              ],
+                            ),
+                            borderRadius: const BorderRadius.only(
+                              bottomLeft: Radius.circular(25),
+                              bottomRight: Radius.circular(25),
+                            ),
                           ),
                         ),
-                        const SizedBox(height: 20),
-                        AnimatedOpacity(
-                          duration: const Duration(milliseconds: 400),
-                          opacity: showSubcategories ? 1.0 : 0.0,
-                          child: showSubcategories
-                              ? Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text(
-                                      "Select Subcategory",
-                                      style: TextStyle(
-                                        color: theme.inversePrimary,
-                                        fontFamily: 'Poppins',
-                                        fontSize: 16,
-                                        fontWeight: FontWeight.w600,
-                                      ),
-                                    ),
-                                    SingleChildScrollView(
-                                      scrollDirection: Axis.horizontal,
-                                      physics: const BouncingScrollPhysics(),
-                                      child: Wrap(
-                                        spacing: 8,
-                                        children:
-                                            subcategories.map((subcategory) {
-                                          final icons =
-                                              subcategoryIcon[subcategory] ??
-                                                  Icons.add;
-                                          final gradient = subcategoryGradients[
-                                                  subcategory] ??
-                                              [
-                                                Colors.grey,
-                                                Colors.grey.shade700
-                                              ];
-                                          return buildGradientChip(
-                                            label: subcategory,
-                                            gradientColors: gradient,
-                                            icon: icons,
-                                            selected: selectedSubcategory ==
-                                                subcategory,
-                                            onTap: () => _onSubcategorySelected(
-                                                subcategory),
-                                          );
-                                        }).toList(),
-                                      ),
-                                    ),
-                                  ],
-                                )
-                              : const SizedBox(),
-                        ),
-                        const SizedBox(height: 50),
-                        Padding(
-                          padding: const EdgeInsets.only(right: 20),
-                          child: Column(
-                            children: [
-                              FadeInDown(
-                                duration: const Duration(milliseconds: 800),
-                                curve: Curves.decelerate,
-                                child: RoundedTextField(
-                                    title: "Expense Title",
-                                    controller: expTitle,
-                                    onIconPressed: () {},
-                                    preIcon: Icons.view_headline_sharp),
-                              ),
-                              const SizedBox(height: 25),
-                              FadeInDown(
-                                duration: const Duration(milliseconds: 900),
-                                curve: Curves.decelerate,
-                                child: RoundedTextField(
-                                    title: "Expense Quantity",
-                                    controller: expQuan,
-                                    keyboardType: TextInputType.number,
-                                    onIconPressed: () {},
-                                    preIcon:
-                                        CupertinoIcons.bag_fill_badge_plus),
-                              ),
-                              const SizedBox(height: 25),
-                              FadeInDown(
-                                duration: const Duration(milliseconds: 900),
-                                curve: Curves.decelerate,
-                                child: RoundedTextField(
-                                    title: "Expense Price",
-                                    controller: expPrice,
-                                    keyboardType: TextInputType.number,
-                                    onIconPressed: () {},
-                                    preIcon: Icons.attach_money_outlined),
-                              ),
-                            ],
-                          ),
-                        ),
-                        const SizedBox(height: 60),
-                        state is AddExpenseInProgress
-                            ? Center(
-                                child: SpinKitWave(
-                                color: TColor.primary2,
-                                size: 40,
-                              ))
-                            : Padding(
-                                padding:
-                                    const EdgeInsets.symmetric(horizontal: 40),
-                                child: ZoomInDown(
-                                    duration:
-                                        const Duration(milliseconds: 1000),
-                                    child: CustomButton(
-                                        title: "Create",
-                                        onPressed: () {
-                                          expenseSumbimt();
-                                          // context.read<ExpenseBloc>().add();
-                                        })),
-                              ),
-                      ],
+                      ),
                     ),
-                  ),
-                ],
-              );
-            },
-          ),
+
+                    // Main content
+                    SliverPadding(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 20, vertical: 10),
+                      sliver: SliverList(
+                        delegate: SliverChildListDelegate([
+                          const SizedBox(height: 20),
+
+                          // Category selection section
+                          FadeInDown(
+                            duration: const Duration(milliseconds: 500),
+                            child: Container(
+                              padding: const EdgeInsets.all(15),
+                              decoration: BoxDecoration(
+                                color: theme.surface,
+                                borderRadius: BorderRadius.circular(20),
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: Colors.black.withOpacity(0.05),
+                                    blurRadius: 10,
+                                    offset: const Offset(0, 5),
+                                  ),
+                                ],
+                              ),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Row(
+                                    children: [
+                                      Container(
+                                        padding: const EdgeInsets.all(8),
+                                        decoration: BoxDecoration(
+                                          gradient: LinearGradient(
+                                            colors: [
+                                              TColor.primary.withOpacity(0.2),
+                                              theme.primary.withOpacity(0.5),
+                                            ],
+                                          ),
+                                          borderRadius:
+                                              BorderRadius.circular(10),
+                                        ),
+                                        child: Icon(
+                                          Icons.category_rounded,
+                                          color: TColor.primary,
+                                          size: 20,
+                                        ),
+                                      ),
+                                      const SizedBox(width: 10),
+                                      Text(
+                                        "Select Category",
+                                        style: TextStyle(
+                                          color: theme.inversePrimary,
+                                          fontFamily: 'Poppins',
+                                          fontSize: 18,
+                                          fontWeight: FontWeight.w600,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                  const SizedBox(height: 15),
+                                  SingleChildScrollView(
+                                    scrollDirection: Axis.horizontal,
+                                    physics: const BouncingScrollPhysics(),
+                                    child: Wrap(
+                                      spacing: 8,
+                                      children:
+                                          categoryData.keys.map((category) {
+                                        final gradient =
+                                            categoryGradients[category]!;
+                                        final icons = categoryIcon[category]!;
+                                        return ZoomInDown(
+                                          duration:
+                                              const Duration(milliseconds: 700),
+                                          child: buildGradientChip(
+                                            label: category,
+                                            icon: icons,
+                                            gradientColors: gradient,
+                                            selected:
+                                                selectedCategory == category,
+                                            onTap: () =>
+                                                _onCategorySelected(category),
+                                          ),
+                                        );
+                                      }).toList(),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+
+                          const SizedBox(height: 20),
+
+                          // Subcategory selection section
+                          AnimatedOpacity(
+                            duration: const Duration(milliseconds: 400),
+                            opacity: showSubcategories ? 1.0 : 0.0,
+                            child: showSubcategories
+                                ? FadeInDown(
+                                    duration: const Duration(milliseconds: 600),
+                                    child: Container(
+                                      padding: const EdgeInsets.all(15),
+                                      decoration: BoxDecoration(
+                                        color: theme.surface,
+                                        borderRadius: BorderRadius.circular(20),
+                                        boxShadow: [
+                                          BoxShadow(
+                                            color:
+                                                Colors.black.withOpacity(0.05),
+                                            blurRadius: 10,
+                                            offset: const Offset(0, 5),
+                                          ),
+                                        ],
+                                      ),
+                                      child: Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          Row(
+                                            children: [
+                                              Container(
+                                                padding:
+                                                    const EdgeInsets.all(8),
+                                                decoration: BoxDecoration(
+                                                  gradient: LinearGradient(
+                                                    colors: selectedCategory !=
+                                                            null
+                                                        ? categoryGradients[
+                                                                selectedCategory]!
+                                                            .map((c) =>
+                                                                c.withOpacity(
+                                                                    0.2))
+                                                            .toList()
+                                                        : [
+                                                            TColor.primary
+                                                                .withOpacity(
+                                                                    0.2),
+                                                            TColor.primary2
+                                                                .withOpacity(
+                                                                    0.2),
+                                                          ],
+                                                  ),
+                                                  borderRadius:
+                                                      BorderRadius.circular(10),
+                                                ),
+                                                child: Icon(
+                                                  Icons.style,
+                                                  color: selectedCategory !=
+                                                          null
+                                                      ? categoryGradients[
+                                                              selectedCategory]!
+                                                          .last
+                                                      : TColor.primary,
+                                                  size: 20,
+                                                ),
+                                              ),
+                                              const SizedBox(width: 10),
+                                              Text(
+                                                "Select Subcategory",
+                                                style: TextStyle(
+                                                  color: theme.inversePrimary,
+                                                  fontFamily: 'Poppins',
+                                                  fontSize: 16,
+                                                  fontWeight: FontWeight.w600,
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                          const SizedBox(height: 15),
+                                          SingleChildScrollView(
+                                            scrollDirection: Axis.horizontal,
+                                            physics:
+                                                const BouncingScrollPhysics(),
+                                            child: Wrap(
+                                              spacing: 8,
+                                              children: subcategories
+                                                  .map((subcategory) {
+                                                final icons = subcategoryIcon[
+                                                        subcategory] ??
+                                                    Icons.add;
+                                                final gradient =
+                                                    subcategoryGradients[
+                                                            subcategory] ??
+                                                        [
+                                                          Colors.grey,
+                                                          Colors.grey.shade700
+                                                        ];
+                                                return buildGradientChip(
+                                                  label: subcategory,
+                                                  gradientColors: gradient,
+                                                  icon: icons,
+                                                  selected:
+                                                      selectedSubcategory ==
+                                                          subcategory,
+                                                  onTap: () =>
+                                                      _onSubcategorySelected(
+                                                          subcategory),
+                                                );
+                                              }).toList(),
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  )
+                                : const SizedBox(),
+                          ),
+
+                          const SizedBox(height: 25),
+
+                          // Form fields section
+                          FadeInDown(
+                            duration: const Duration(milliseconds: 700),
+                            child: Container(
+                              padding: const EdgeInsets.all(20),
+                              decoration: BoxDecoration(
+                                color: theme.surface,
+                                borderRadius: BorderRadius.circular(20),
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: Colors.black.withOpacity(0.05),
+                                    blurRadius: 10,
+                                    offset: const Offset(0, 5),
+                                  ),
+                                ],
+                              ),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Row(
+                                    children: [
+                                      Container(
+                                        padding: const EdgeInsets.all(8),
+                                        decoration: BoxDecoration(
+                                          gradient: LinearGradient(
+                                            colors: [
+                                              TColor.primary.withOpacity(0.2),
+                                              theme.primary.withOpacity(0.5),
+                                            ],
+                                          ),
+                                          borderRadius:
+                                              BorderRadius.circular(10),
+                                        ),
+                                        child: Icon(
+                                          Icons.edit_note,
+                                          color: TColor.primary,
+                                          size: 20,
+                                        ),
+                                      ),
+                                      const SizedBox(width: 10),
+                                      Text(
+                                        "Expense Details",
+                                        style: TextStyle(
+                                          color: theme.inversePrimary,
+                                          fontFamily: 'Poppins',
+                                          fontSize: 18,
+                                          fontWeight: FontWeight.w600,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                  const SizedBox(height: 20),
+
+                                  // form fields
+                                  _buildEnhancedTextField(
+                                    controller: expTitle,
+                                    icon: Icons.view_headline_sharp,
+                                    label: "Expense Title",
+                                    hint: "What did you spend on?",
+                                    theme: theme,
+                                  ),
+
+                                  const SizedBox(height: 15),
+
+                                  _buildEnhancedTextField(
+                                    controller: expQuan,
+                                    icon: CupertinoIcons.bag_fill_badge_plus,
+                                    label: "Quantity",
+                                    hint: "How many items?",
+                                    keyboardType: TextInputType.number,
+                                    theme: theme,
+                                  ),
+
+                                  const SizedBox(height: 15),
+
+                                  _buildEnhancedTextField(
+                                    controller: expPrice,
+                                    icon: Icons.attach_money_outlined,
+                                    label: "Price",
+                                    hint: "How much did it cost?",
+                                    keyboardType: TextInputType.number,
+                                    theme: theme,
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+
+                          const SizedBox(height: 40),
+
+                          // Submit button
+                          state is AddExpenseInProgress
+                              ? Center(
+                                  child: SpinKitWave(
+                                    color: TColor.primary2,
+                                    size: 40,
+                                  ),
+                                )
+                              : FadeInUp(
+                                  duration: const Duration(milliseconds: 800),
+                                  child: IconCustomBtn(
+                                    label: 'create expense',
+                                    icon: Icons.add_circle_outline,
+                                    onTap: expenseSumbimt,
+                                  ),
+                                ),
+
+                          const SizedBox(height: 30),
+                        ]),
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            );
+          },
         ),
       ),
     );
   }
 
-  //========GRADIENT CHIP
+  // Enhanced gradient chip with improved visual feedback
   Widget buildGradientChip({
     required String label,
     required IconData icon,
@@ -400,7 +641,8 @@ class _CreateExpenseViewState extends State<CreateExpenseView> {
   }) {
     return GestureDetector(
       onTap: onTap,
-      child: Container(
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 300),
         margin: const EdgeInsets.symmetric(horizontal: 4, vertical: 6),
         padding: const EdgeInsets.symmetric(horizontal: 1, vertical: 1),
         decoration: BoxDecoration(
@@ -409,17 +651,17 @@ class _CreateExpenseViewState extends State<CreateExpenseView> {
           boxShadow: selected
               ? [
                   BoxShadow(
-                      color: gradientColors.last.withOpacity(0.5),
-                      blurRadius: 11)
+                    color: gradientColors.last.withOpacity(0.5),
+                    blurRadius: 11,
+                    offset: const Offset(0, 3),
+                  )
                 ]
               : [],
         ),
         child: Container(
-          // margin: EdgeInsets.symmetric(horizontal: 1, vertical: 2),
-          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
           decoration: BoxDecoration(
             color: Theme.of(context).colorScheme.surface,
-            // gradient: LinearGradient(colors: gradientColors),
             borderRadius: BorderRadius.circular(30),
           ),
           child: Row(
@@ -427,23 +669,86 @@ class _CreateExpenseViewState extends State<CreateExpenseView> {
             children: [
               GradientIcon(
                 icon: icon,
-                size: 15,
+                size: 16,
                 gradient: LinearGradient(colors: gradientColors),
               ),
-              const SizedBox(width: 5),
+              const SizedBox(width: 8),
               GradientText(
                 label,
                 gradient: LinearGradient(colors: gradientColors),
-                style: const TextStyle(
+                style: TextStyle(
                   color: Colors.white,
                   fontFamily: "Arvo",
-                  fontWeight: FontWeight.w500,
+                  fontWeight: selected ? FontWeight.w600 : FontWeight.w500,
+                  fontSize: selected ? 14 : 13,
                 ),
               ),
             ],
           ),
         ),
       ),
+    );
+  }
+
+  // Enhanced text field with modern styling
+  Widget _buildEnhancedTextField({
+    required TextEditingController controller,
+    required IconData icon,
+    required String label,
+    required String hint,
+    required ColorScheme theme,
+    TextInputType keyboardType = TextInputType.text,
+  }) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Padding(
+          padding: const EdgeInsets.only(left: 5, bottom: 8),
+          child: Text(
+            label,
+            style: TextStyle(
+              color: theme.inversePrimary.withOpacity(0.8),
+              fontFamily: 'Poppins',
+              fontSize: 14,
+              fontWeight: FontWeight.w500,
+            ),
+          ),
+        ),
+        Container(
+          decoration: BoxDecoration(
+            color: theme.surface,
+            borderRadius: BorderRadius.circular(15),
+            border: Border.all(
+              color: theme.inversePrimary.withOpacity(0.1),
+              width: 1,
+            ),
+          ),
+          child: TextField(
+            controller: controller,
+            keyboardType: keyboardType,
+            style: TextStyle(
+              color: theme.inversePrimary,
+              fontFamily: 'Poppins',
+            ),
+            decoration: InputDecoration(
+              hintText: hint,
+              hintStyle: TextStyle(
+                color: theme.inversePrimary.withOpacity(0.4),
+                fontFamily: 'Poppins',
+                fontSize: 14,
+              ),
+              prefixIcon: Icon(
+                icon,
+                color: theme.primary.withOpacity(0.7),
+                size: 20,
+              ),
+              border: InputBorder.none,
+              contentPadding:
+                  const EdgeInsets.symmetric(vertical: 15, horizontal: 15),
+            ),
+          ),
+        ),
+      ],
     );
   }
 }

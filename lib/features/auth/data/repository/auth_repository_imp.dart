@@ -2,7 +2,6 @@
 
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:trackme/features/auth/data/datasources/auth_remote_data_source.dart';
-import 'package:trackme/features/auth/data/model/account_model.dart';
 import 'package:trackme/features/auth/domain/entity/account_entity.dart';
 import 'package:trackme/features/auth/domain/entity/user_entity.dart';
 import 'package:trackme/features/auth/domain/repository/auth_repository.dart';

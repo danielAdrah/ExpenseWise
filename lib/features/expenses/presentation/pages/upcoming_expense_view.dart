@@ -62,70 +62,30 @@ class _UpcomingExpenseViewState extends State<UpcomingExpenseView> {
                 background: MainAppBar(),
               ),
             ),
-            SliverToBoxAdapter(
-              child: BlocConsumer<UpcomingExpenseBloc, UpcomingExpenseState>(
-                listener: (context, state) {
-                  if (state is DeleteUpcomingExpenseDone ||
-                      state is AddUpcomingExpenseDone ||
-                      state is UpdateUpcomingExpenseDone) {
-                    refreshList();
-                  }
-                },
-                builder: (context, state) {
-                  if (state is UpcomingExpenseLoading) {
-                    return Center(
-                      child: Padding(
-                        padding: EdgeInsets.only(top: height * 0.3),
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            SpinKitWave(
-                              color: TColor.primary2,
-                              size: 40,
-                            ),
-                            const SizedBox(height: 16),
-                            Text(
-                              "Loading your upcoming expenses...",
-                              style: TextStyle(
-                                color: theme.inversePrimary,
-                                fontFamily: 'Poppins',
-                                fontSize: 16,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
+            BlocConsumer<UpcomingExpenseBloc, UpcomingExpenseState>(
+              listener: (context, state) {
+                if (state is DeleteUpcomingExpenseDone ||
+                    state is AddUpcomingExpenseDone ||
+                    state is UpdateUpcomingExpenseDone) {
+                  refreshList();
+                }
+              },
+              builder: (context, state) {
+                if (state is UpcomingExpenseLoading) {
+                  return SliverToBoxAdapter(
+                    child: UpcomingexpenseLoadingState(
+                        height: height, theme: theme),
+                  );
+                } else if (state is UpcomingExpenseLoaded) {
+                  if (state.expenses.isEmpty) {
+                    return SliverToBoxAdapter(
+                      child: UpcomingexpenseEmptyState(
+                          height: height, theme: theme),
                     );
-                  } else if (state is UpcomingExpenseLoaded) {
-                    if (state.expenses.isEmpty) {
-                      return Padding(
-                        padding: EdgeInsets.only(top: height * 0.2),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Image.asset(
-                              "assets/img/search.png",
-                              width: height * 0.2,
-                              height: height * 0.2,
-                            ),
-                            const SizedBox(height: 10),
-                            Text(
-                                "There are no upcoming expenses to be displayed. Add one first",
-                                textAlign: TextAlign.center,
-                                style: TextStyle(
-                                    color: theme.inversePrimary,
-                                    fontSize: 15,
-                                    fontFamily: 'Poppins')),
-                          ],
-                        ),
-                      );
-                    }
-                    return ListView.builder(
-                      shrinkWrap: true,
-                      physics: const NeverScrollableScrollPhysics(),
-                      itemCount: state.expenses.length,
-                      itemBuilder: ((context, index) {
+                  }
+                  return SliverList(
+                    delegate: SliverChildBuilderDelegate(
+                      (context, index) {
                         var exp = state.expenses[index];
                         return Slidable(
                           endActionPane: ActionPane(
@@ -368,22 +328,97 @@ class _UpcomingExpenseViewState extends State<UpcomingExpenseView> {
                               ),
                             ),
                           ),
-
-// Add this helper method at the end of the class
                         );
-                      }),
-                    );
-                  } else if (state is UpcomingExpenseError) {
-                    return Center(
+                      },
+                      childCount: state.expenses.length,
+                    ),
+                  );
+                } else if (state is UpcomingExpenseError) {
+                  return SliverToBoxAdapter(
+                    child: Center(
                       child: Text(state.message,
                           style: TextStyle(
                               color: theme.inversePrimary,
                               fontSize: 17,
                               fontFamily: 'Poppins')),
-                    );
-                  }
-                  return const SizedBox.shrink();
-                },
+                    ),
+                  );
+                }
+                return const SliverToBoxAdapter(child: SizedBox.shrink());
+              },
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class UpcomingexpenseEmptyState extends StatelessWidget {
+  const UpcomingexpenseEmptyState({
+    super.key,
+    required this.height,
+    required this.theme,
+  });
+
+  final double height;
+  final ColorScheme theme;
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: EdgeInsets.only(top: height * 0.2),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Image.asset(
+            "assets/img/search.png",
+            width: height * 0.2,
+            height: height * 0.2,
+          ),
+          const SizedBox(height: 10),
+          Text("There are no upcoming expenses to be displayed. Add one first",
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                  color: theme.inversePrimary,
+                  fontSize: 15,
+                  fontFamily: 'Poppins')),
+        ],
+      ),
+    );
+  }
+}
+
+class UpcomingexpenseLoadingState extends StatelessWidget {
+  const UpcomingexpenseLoadingState({
+    super.key,
+    required this.height,
+    required this.theme,
+  });
+
+  final double height;
+  final ColorScheme theme;
+
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: Padding(
+        padding: EdgeInsets.only(top: height * 0.3),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            SpinKitFoldingCube(
+              color: TColor.primary2,
+              size: 40,
+            ),
+            const SizedBox(height: 16),
+            Text(
+              "Loading your upcoming expenses...",
+              style: TextStyle(
+                color: theme.inversePrimary,
+                fontFamily: 'Poppins',
+                fontSize: 16,
               ),
             ),
           ],

@@ -16,7 +16,6 @@ class Methods {
 
   SnackBar successSnackBar(String msg) {
     return SnackBar(
-   
         elevation: 0,
         behavior: SnackBarBehavior.floating,
         backgroundColor: Colors.transparent,
@@ -36,6 +35,18 @@ class Methods {
         content: AwesomeSnackbarContent(
           contentType: ContentType.warning,
           title: "Warning!",
+          message: msg,
+        ));
+  }
+
+  SnackBar alertSnackBar(String msg) {
+    return SnackBar(
+        elevation: 0,
+        behavior: SnackBarBehavior.floating,
+        backgroundColor: Colors.transparent,
+        content: AwesomeSnackbarContent(
+          contentType: ContentType.help,
+          title: "Notice!",
           message: msg,
         ));
   }

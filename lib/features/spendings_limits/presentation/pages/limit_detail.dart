@@ -59,11 +59,11 @@ class _LimitDetailState extends State<LimitDetail> {
     // Filter expenses by date range to only include those within the limit's time period
     final startDate = DateTime.parse(limit.startDate);
     final endDate = DateTime.parse(limit.endDate);
-    
+
     return expenses.where((expense) {
       final expenseDate = DateTime.parse(expense.createdAt);
-      return expenseDate.isAfter(startDate.subtract(const Duration(days: 1))) && 
-             expenseDate.isBefore(endDate.add(const Duration(days: 1)));
+      return expenseDate.isAfter(startDate.subtract(const Duration(days: 1))) &&
+          expenseDate.isBefore(endDate.add(const Duration(days: 1)));
     }).toList();
   }
 
@@ -109,7 +109,7 @@ class _LimitDetailState extends State<LimitDetail> {
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        SpinKitWave(
+                        SpinKitFoldingCube(
                           color: TColor.primary2,
                           size: 40,
                         ),
@@ -615,4 +615,3 @@ class _LimitDetailState extends State<LimitDetail> {
     }
   }
 }
-

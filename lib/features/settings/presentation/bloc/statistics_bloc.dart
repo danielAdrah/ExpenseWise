@@ -1,6 +1,5 @@
 // ignore_for_file: avoid_print
 
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../expenses/domain/entities/expense_entity.dart';
@@ -11,7 +10,7 @@ import 'package:flutter/cupertino.dart';
 
 class StatisticsBloc extends Bloc<StatisticsEvent, StatisticsState> {
   final GetExpensesUseCase getExpenses;
-  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  
 
   // Category structure with subcategories and icons
   final Map<String, Map<String, IconData>> categoryData = {

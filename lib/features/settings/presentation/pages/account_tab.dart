@@ -32,6 +32,7 @@ class _AccountsViewState extends State<AccountsView> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context).colorScheme;
+    var height = MediaQuery.of(context).size.height;
     return Scaffold(
       backgroundColor: theme.surface,
       appBar: AppBar(
@@ -175,10 +176,28 @@ class _AccountsViewState extends State<AccountsView> {
                       )));
             } else if (authState is GetAccountsLoading) {
               return Center(
-                  child: SpinKitWave(
-                color: TColor.primary2,
-                size: 30,
-              ));
+                child: Padding(
+                  padding: EdgeInsets.only(top: height * 0.1),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      SpinKitFoldingCube(
+                        color: TColor.primary2,
+                        size: 40,
+                      ),
+                      const SizedBox(height: 16),
+                      Text(
+                        "Loading your accounts...",
+                        style: TextStyle(
+                          color: theme.inversePrimary,
+                          fontFamily: 'Poppins',
+                          fontSize: 16,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              );
             } else {
               return const SizedBox();
             }
